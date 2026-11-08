@@ -18,9 +18,19 @@ modern browser.
   grows on the glass, the heater sets the temperature. Test the water, do a water change, wipe the glass,
   trim plants (trimmings become cuttings).
 - **Fishing** - 9 spots (pond, rice paddy, stream, mangrove, blackwater, lagoon, glacier lake, open ocean,
-  harbour) with their own weather, day and night, and catch lists. Hold to cast, wait for the bite, then keep
-  the line tension in the zone while you reel. 47 species across 5 rarities, golden variants, a bucket for
-  fish you are not ready to place.
+  harbour) with their own weather, day and night, and catch lists. 47 species across 5 rarities, golden
+  variants, a bucket for fish you are not ready to place.
+- **Flick fishing** - the controls of the 2008 iPhone game *Flick Fishing*, rebuilt for the web: swipe up on
+  the water to cast (speed and a straight flick set the distance), flick again to strike, then turn the
+  on-screen reel. Watch line tension against fish strength, set the drag, and let the fish run when the line
+  goes red or it snaps. Long casts reach deeper water and bigger fish. Optional phone-motion casting and
+  vibration. The old hold-the-button controls stay available as *Classic*.
+- **Tackle** - 5 baits (used up per cast) and 5 lures (kept until a line snaps, and they only work while you
+  reel) that each favour different fish, plus 12 lb and 20 lb line upgrades.
+- **Tournaments** - 2, 3 or 5 minute rounds scored as *Big catch* or *Big fish*, against three CPU anglers,
+  with up to four people taking turns on one device. Fish are weighed in and released.
+- **Quests, album and challenges** - 12 angler quests, a photo album with shareable trophy cards, and
+  challenge links: send a friend your catch and their Riak asks them to beat it. No server involved.
 - **Breeding** - happy adult pairs in a roomy tank have fry; colours mix from both parents.
 - **Aquascaping** - 16 aquatic plants, 8 hardscape pieces, 3 substrates, 3 tank sizes, a second tank and a
   reef room for saltwater.
@@ -53,9 +63,10 @@ then open http://localhost:8000/.
 
 Needs Python 3 with Playwright (`pip install playwright` and `playwright install chromium`).
 
-- `python tests/unit.py` - 16 simulation tests in a real browser (deterministic world, nitrogen cycle,
+- `python tests/unit.py` - 26 simulation tests in a real browser (deterministic world, nitrogen cycle,
   plant uptake, breeding, offline catch-up, share link round trip, coral genetics, levels, catch rolls,
-  save migration, no purple colours, English and Indonesian key parity) plus a static scan of the source
+  save migration, the reel fight (careful reeling lands, cranking flat out snaps, idle loses the fish),
+  tackle and distance odds, CPU anglers, challenge links, quests, no purple colours, English and Indonesian key parity) plus a static scan of the source
   for purple hex colours and emoji.
 - `python tests/smoke.py` - full end-to-end play at 390 px and 1440 px: onboarding, feeding, care, shop,
   scaping, fishing to a catch, garden, reef, journal, focus, settings, share link, visit mode and save

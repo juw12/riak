@@ -8,6 +8,7 @@ import {
 import { TANK_SIZES, BAITS, FOODS, HARDSCAPE, PLANTS, HOUSEPLANTS, MILESTONES } from "./data.js";
 import { store, uid, dayKey, clamp } from "./util.js";
 import { t } from "./i18n.js";
+import { LINES, QUESTS, catchFlags, fishKg, isLure, castMetres } from "./angler.js";
 
 const SAVE_KEY = "riak.save.v1";
 export const BUCKET_CAP = 8;
@@ -475,12 +476,108 @@ export function buyHard(id) {
 }
 export function buyBait(id, qty = 5) {
   const b = BAITS.find((x) => x.id === id);
-  if (id === "glowlure" && level() < LEVEL_GATES.glowlure) return false;
+  if (!b || level() < (b.level || 1)) return false;
+  if (b.lure) qty = 1;
   if (!spend(b.price * qty)) return false;
   game.state.inv.bait[id] = (game.state.inv.bait[id] || 0) + qty;
   changed();
   return true;
 }
+// ---------- angler ----------
+export const angler = () => game.state.angler;
+
+export function buyLine(lv) {
+  const L = LINES[lv];
+  const a = game.state.angler;
+  if (!L || a.line >= lv || level() < L.level) return false;
+  if (!spend(L.price)) return false;
+  a.line = lv;
+  notify("shop.bought", { what: t("line." + L.id) });
+  changed();
+  return true;
+}
+
+// Bait is used up when cast; lures stay in the tackle box.
+export function useBait(id) {
+  const inv = game.state.inv.bait;
+  if (id === "worm" || isLure(id)) return (inv[id] || 0) > 0 || id === "worm";
+  if (!(inv[id] > 0)) return false;
+  inv[id]--;
+  changed();
+  return true;
+}
+
+export function recordCast(metres) {
+  const a = game.state.angler;
+  a.casts++;
+  a.maxCast = Math.max(a.maxCast, metres);
+  changed();
+}
+
+// A snapped line costs the lure on it.
+export function recordSnap(bait) {
+  const a = game.state.angler;
+  a.snaps++;
+  let lostLure = false;
+  if (isLure(bait) && game.state.inv.bait[bait] > 0) {
+    game.state.inv.bait[bait]--;
+    lostLure = true;
+  }
+  changed();
+  return lostLure;
+}
+
+export function recordLanded({ sp, size, bait, spotId, phase, peak, water }) {
+  const a = game.state.angler;
+  const kg = fishKg(size);
+  a.landed++;
+  a.bestKg = Math.max(a.bestKg, kg);
+  for (const f of catchFlags({ bait, spotId, phase, peak, water })) if (!a.flags.includes(f)) a.flags.push(f);
+  let duelBeaten = false;
+  if (a.duel && !a.duel.beaten && a.duel.sp === sp && size > a.duel.size) {
+    a.duel.beaten = true;
+    duelBeaten = true;
+  }
+  changed();
+  return { kg, duelBeaten };
+}
+
+export function addPhoto(fish, extra = {}) {
+  const a = game.state.angler;
+  a.album.unshift({ sp: fish.sp, size: fish.size, kg: fishKg(fish.size), colors: fish.colors, golden: !!fish.golden, ts: Date.now(), ...extra });
+  a.album = a.album.slice(0, 60);
+  a.photos++;
+  changed();
+}
+
+export function claimQuest(id) {
+  const a = game.state.angler;
+  const q = QUESTS.find((x) => x.id === id);
+  if (!q || a.claimed[id] || !q.test(a)) return false;
+  a.claimed[id] = true;
+  game.state.shells += q.reward;
+  addXp(20);
+  notify("quest.claimed", { n: q.reward });
+  changed();
+  return true;
+}
+
+export function finishTournament({ won, place, score, mode }) {
+  const a = game.state.angler;
+  if (won) a.wins++;
+  a.tourneyBest[mode] = Math.max(a.tourneyBest[mode] || 0, score);
+  const reward = [120, 60, 30][place] || 10;
+  game.state.shells += reward;
+  addXp(15 + (won ? 25 : 0));
+  changed();
+  return reward;
+}
+
+export function setDuel(duel) {
+  game.state.angler.duel = duel ? { ...duel, beaten: false, at: Date.now() } : null;
+  changed();
+}
+
 export function buyFood(id, qty = 5) {
   const f = FOODS.find((x) => x.id === id);
   if (!spend(f.price * qty)) return false;
@@ -749,4 +846,4 @@ export function focusWeek(now = Date.now()) {
 export function stocking(tank) {
   return { load: bioload(game.state, tank), cap: tankSize(tank).capacity };
 }
-export { MILESTONES, PLANTS, HOUSEPLANTS, HARDSCAPE, BAITS, FOODS, TANK_SIZES, strainKey };
+export { MILESTONES, PLANTS, HOUSEPLANTS, HARDSCAPE, BAITS, FOODS, TANK_SIZES, strainKey, LINES, castMetres };

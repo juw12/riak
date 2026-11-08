@@ -652,8 +652,19 @@ export class TankPanel {
         }
       } else if (tab === "supplies") {
         row(t("food.bloodworm") + " x5", t("shop.bloodwormHint") + " · " + t("common.owned", { n: s.inv.food.bloodworm || 0 }), 15, () => core.buyFood("bloodworm", 5));
-        row(t("bait.shrimpbait") + " x5", t("bait.shrimpbait.d") + " · " + t("common.owned", { n: s.inv.bait.shrimpbait || 0 }), 30, () => core.buyBait("shrimpbait", 5));
-        row(t("bait.glowlure") + " x5", t("bait.glowlure.d") + " · " + t("common.owned", { n: s.inv.bait.glowlure || 0 }), 90, () => core.buyBait("glowlure", 5), { lockedAt: core.LEVEL_GATES.glowlure });
+        // bait comes in packs of five; lures are single and kept until a line snaps
+        for (const bt of core.BAITS) {
+          if (bt.id === "worm") continue;
+          const qty = bt.lure ? 1 : 5;
+          const name = t("bait." + bt.id) + (bt.lure ? " · " + t("tackle.lure") : " x5");
+          row(name, t("bait." + bt.id + ".d") + " · " + t("common.owned", { n: s.inv.bait[bt.id] || 0 }), bt.price * qty, () => core.buyBait(bt.id, qty), { lockedAt: bt.level > 1 ? bt.level : 0 });
+        }
+        const angler = core.angler();
+        for (const [lv, ln] of core.LINES.entries()) {
+          if (lv === 0) continue;
+          const owned = angler.line >= lv;
+          row(t("line." + ln.id), t("line.hint", { lb: ln.lb, m: core.castMetres(1, lv) }), ln.price, () => core.buyLine(lv), { lockedAt: ln.level > 1 ? ln.level : 0, disabled: owned || angler.line !== lv - 1, label: owned ? t("common.owned", { n: 1 }) : undefined });
+        }
         if (s.reef.unlocked) row(t("reef.starter"), t("shop.fragHint"), core.PRICES.starterFrag, () => !!core.buyStarterFrag());
       } else {
         for (const tk of s.tanks) {

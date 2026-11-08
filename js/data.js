@@ -124,10 +124,18 @@ export const TANK_SIZES = [
   { id: "large", litres: 240, capacity: 9, price: 1400 },
 ];
 
+// Bait is used up on every cast (bought in packs of 5); lures are kept and only lost when the line snaps.
 export const BAITS = [
-  { id: "worm", price: 0 },
-  { id: "shrimpbait", price: 6 },
-  { id: "glowlure", price: 18 },
+  { id: "worm", price: 0, level: 1 },
+  { id: "cricket", price: 4, level: 1 },
+  { id: "shrimpbait", price: 6, level: 1 },
+  { id: "minnow", price: 10, level: 2 },
+  { id: "glowlure", price: 18, level: 3 },
+  { id: "spinner", price: 40, level: 1, lure: true },
+  { id: "fly", price: 45, level: 2, lure: true },
+  { id: "crankbait", price: 55, level: 2, lure: true },
+  { id: "popper", price: 60, level: 3, lure: true },
+  { id: "jig", price: 70, level: 4, lure: true },
 ];
 
 export const FOODS = [

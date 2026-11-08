@@ -6,6 +6,7 @@ Prints JSON on the last line: {"errors": [...], "checks": {...}, "overflow": {..
 import argparse
 import http.server
 import json
+import re
 import os
 import socketserver
 import sys
@@ -141,22 +142,93 @@ def run_flow(page, ctx, size, w, out, errors, checks, overflow, port):
             page.wait_for_timeout(600)
             shot("scene")
             fp = "riak.app.panels.fishing"
-            page.evaluate(f"{fp}.press(true)")
-            page.wait_for_timeout(700)
-            page.evaluate(f"{fp}.press(false)")
-            page.wait_for_timeout(900)
-            page.evaluate(f"{fp}.biteAt = performance.now(); {fp}.nibbles = []")
+            # flick cast: a real upward swipe on the water
+            cv = page.locator(".scene-wrap canvas").bounding_box()
+            sx = cv["x"] + cv["width"] * 0.4
+            page.mouse.move(sx, cv["y"] + cv["height"] * 0.9)
+            page.mouse.down()
+            for i in range(1, 7):
+                page.mouse.move(sx + i * 2, cv["y"] + cv["height"] * (0.9 - i * 0.12), steps=1)
+                page.wait_for_timeout(12)
+            page.mouse.up()
+            page.wait_for_timeout(150)
+            checks[f"flick-cast-{w}"] = page.evaluate(f"{fp}.stateName + ' ' + {fp}.castM + 'm'")
+            page.wait_for_timeout(1200)
+            # crank the reel in circles to retrieve
+            page.locator(".crank").scroll_into_view_if_needed()
+            crank = page.locator(".crank").bounding_box()
+            cx = crank["x"] + crank["width"] / 2
+            cy = crank["y"] + crank["height"] / 2
+            page.mouse.move(cx + 40, cy)
+            page.mouse.down()
+            import math as _m
+            for i in range(1, 40):
+                a = i * 0.5
+                page.mouse.move(cx + 40 * _m.cos(a), cy + 40 * _m.sin(a))
+                page.wait_for_timeout(16)
+            checks[f"crank-{w}"] = page.evaluate(f"Math.round({fp}.reelInput * 100) / 100")
+            page.mouse.up()
+            page.evaluate(f"{fp}.biteProgress = {fp}.biteNeed; {fp}.nibbles = []")
             page.wait_for_timeout(200)
             checks[f"bite-{w}"] = page.evaluate(f"{fp}.stateName")
             page.evaluate(f"{fp}.press(true)")
-            page.wait_for_timeout(300)
-            shot("reel")
-            page.evaluate(f"{fp}.landed()")
+            page.wait_for_timeout(900)
+            checks[f"fight-{w}"] = page.evaluate(f"{fp}.stateName")
+            shot("fight")
+            page.evaluate(f"{fp}.press(false)")
+            page.evaluate(f"{fp}.landed(0.5)")
             page.wait_for_timeout(500)
             checks[f"caught-{w}"] = page.evaluate("riak.core.S().stats.caught")
+            checks[f"landed-{w}"] = page.evaluate("riak.core.angler().landed")
             shot("catch")
+            page.locator(".sheet .catch-share .btn").first.click()
+            checks[f"album-{w}"] = page.evaluate("riak.core.angler().album.length")
             page.locator(".sheet-foot .btn").first.click()
             page.wait_for_timeout(300)
+            # trophy card renders without throwing
+            checks[f"trophy-{w}"] = page.evaluate("import('./js/anglerui.js').then(m => { const c = m.trophyCanvas(riak.core.angler().album[0]); return c.width + 'x' + c.height; })")
+            # classic controls still work
+            page.evaluate("riak.core.angler().controls = 'classic'")
+            page.evaluate(f"{fp}.resetCast(); {fp}.press(true)")
+            page.wait_for_timeout(500)
+            page.evaluate(f"{fp}.press(false)")
+            page.wait_for_timeout(1200)
+            page.evaluate(f"{fp}.biteProgress = {fp}.biteNeed; {fp}.nibbles = []")
+            page.wait_for_timeout(200)
+            page.evaluate(f"{fp}.press(true)")
+            page.wait_for_timeout(300)
+            checks[f"classic-{w}"] = page.evaluate(f"{fp}.stateName")
+            shot("classic")
+            page.evaluate(f"{fp}.press(false); riak.core.angler().controls = 'flick'; {fp}.resetCast()")
+            # tournament against the CPU anglers
+            page.evaluate(f"{fp}.startTournament({{ spotId: 'pond', mode: 'bigcatch', seconds: 120, humans: 2 }})")
+            page.wait_for_timeout(400)
+            page.locator(".sheet-foot .btn").first.click()
+            page.wait_for_timeout(600)
+            checks[f"tourney-{w}"] = page.evaluate(f"!!{fp}.tourney && {fp}.tourney.running")
+            shot("tournament")
+            page.evaluate(f"{fp}.tourney.elapsed = 119.9")
+            page.wait_for_timeout(500)
+            page.locator(".sheet-foot .btn").first.click()
+            page.wait_for_timeout(400)
+            page.locator(".sheet-foot .btn").first.click()
+            page.wait_for_timeout(300)
+            page.evaluate(f"{fp}.tourney.elapsed = 119.9")
+            page.wait_for_timeout(600)
+            checks[f"tourney-done-{w}"] = page.evaluate(f"{fp}.tourney === null")
+            shot("tournament-results")
+            close_sheets()
+            page.evaluate(f"{fp}.renderList()")
+            page.wait_for_timeout(300)
+            shot("fishing-list")
+            page.get_by_role("button", name=re.compile("^Quests")).click()
+            page.wait_for_timeout(300)
+            shot("quests")
+            close_sheets()
+            page.get_by_role("button", name=re.compile("^Album")).click()
+            page.wait_for_timeout(400)
+            shot("album")
+            close_sheets()
             # garden
             page.evaluate("riak.core.addXp(800)")
             page.evaluate("riak.app.go('garden')")

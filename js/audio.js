@@ -121,4 +121,32 @@ export class Ambience {
     this.note(523.3, t, 1.6, 0.05);
     this.note(784, t + 0.15, 1.8, 0.04);
   }
+
+  // a short noise burst through a filter: reel clicks, line zipping out, the splash of a cast
+  noise(dur, freq, gain, type = "bandpass") {
+    if (!this.ctx || !this.on) return;
+    const t = this.ctx.currentTime;
+    const len = Math.max(1, Math.floor(this.ctx.sampleRate * dur));
+    const buf = this.ctx.createBuffer(1, len, this.ctx.sampleRate);
+    const data = buf.getChannelData(0);
+    for (let i = 0; i < len; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / len);
+    const src = this.ctx.createBufferSource();
+    src.buffer = buf;
+    const f = this.ctx.createBiquadFilter();
+    f.type = type;
+    f.frequency.value = freq;
+    const g = this.ctx.createGain();
+    g.gain.value = gain;
+    src.connect(f).connect(g).connect(this.master);
+    src.start(t);
+  }
+  click() {
+    this.noise(0.012, 3200, 0.12);
+  }
+  zip() {
+    this.noise(0.09, 5200, 0.06, "highpass");
+  }
+  splash() {
+    this.noise(0.35, 900, 0.18, "lowpass");
+  }
 }

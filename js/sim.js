@@ -1,6 +1,7 @@
 // Game rules. Pure functions over a plain state object, so they can be tested without a page.
 import { FISH, PLANTS, HOUSEPLANTS, SPOTS, RARITY_WEIGHT, TANK_SIZES, CORAL_FORMS, CORAL_HUES, CORAL_PATTERNS, FISH_NAMES, PERSONALITIES, MILESTONES, HARDSCAPE } from "./data.js";
 import { clamp, lerp, rng, hashString, pick, weightedPick, bell, uid, hexToRgb, rgbToHex, hexToHue, hsl, safeHue, dayKey } from "./util.js";
+import { tackleFactor, distanceFactor, newAngler } from "./angler.js";
 
 export const SAVE_VERSION = 1;
 export const HOUR = 3600000;
@@ -128,7 +129,7 @@ export function newState() {
     activeTank: tank.id,
     fish: [],
     bucket: [],
-    inv: { cuttings: {}, house: {}, hard: {}, bait: { worm: 999, shrimpbait: 3, glowlure: 0 }, food: { flakes: 999, bloodworm: 3 }, frags: 0 },
+    inv: { cuttings: {}, house: {}, hard: {}, bait: { worm: 999, shrimpbait: 3, glowlure: 0, cricket: 3, spinner: 1 }, food: { flakes: 999, bloodworm: 3 }, frags: 0 },
     greenhouse: { trays: Array.from({ length: 4 }, () => ({ id: uid("g"), crop: null })), unlocked: false },
     reef: { unlocked: false, corals: [] },
     journal: { fish: {}, plants: {}, house: {}, strains: {} },
@@ -139,6 +140,7 @@ export function newState() {
     milestones: {},
     events: [],
     unlockedSpots: ["pond", "sawah"],
+    angler: newAngler(),
   };
 }
 
@@ -384,7 +386,7 @@ export function newCrop(kind, id, now, r = Math.random) {
 }
 
 // ---------- Fishing ----------
-export function spotCandidates(spotId, ts, bait = "worm") {
+export function spotCandidates(spotId, ts, bait = "worm", distance = null) {
   const phase = phaseOf(ts);
   const weather = weatherAt(spotId, ts);
   return FISH.filter((f) => f.spots.includes(spotId)).map((f) => {
@@ -400,15 +402,18 @@ export function spotCandidates(spotId, ts, bait = "worm") {
       if (f.rar >= 3) w *= 1.8;
       if (f.time === "night" || f.time === "dusk") w *= 1.6;
     }
+    w *= tackleFactor(f, bait, phase) * distanceFactor(f, distance);
     return { sp: f, w };
   });
 }
 
-export function rollCatch(spotId, ts, bait, r = Math.random) {
-  const list = spotCandidates(spotId, ts, bait);
+export function rollCatch(spotId, ts, bait, r = Math.random, distance = null) {
+  const list = spotCandidates(spotId, ts, bait, distance);
   const chosen = weightedPick(list, (c) => c.w, r).sp;
   const golden = r() < (bait === "glowlure" ? 0.06 : 0.03);
-  const size = +(chosen.size[0] + (chosen.size[1] - chosen.size[0]) * bell(r)).toFixed(1);
+  // long casts reach deeper water, so the same species runs a little bigger out there
+  const reach = distance == null ? 0 : (clamp(distance, 0, 1) - 0.5) * 0.24;
+  const size = +(chosen.size[0] + (chosen.size[1] - chosen.size[0]) * clamp(bell(r) + reach, 0, 1)).toFixed(1);
   return { sp: chosen.id, golden, size, wildFrag: spotById[spotId].water === "salt" && r() < 0.08 };
 }
 
@@ -641,6 +646,14 @@ export function migrate(raw) {
   s.focus = Object.assign(newState().focus, raw.focus || {});
   s.care = Object.assign(newState().care, raw.care || {});
   s.sound = Object.assign(newState().sound, raw.sound || {});
+  s.inv.bait = Object.assign({}, raw.inv?.bait || base.inv.bait);
+  if (!raw.angler) {
+    // first run with the angler update: hand over a starter spinner
+    s.inv.bait.spinner = (s.inv.bait.spinner || 0) + 1;
+  }
+  s.angler = Object.assign(newAngler(), raw.angler || {});
+  if (!Array.isArray(s.angler.album)) s.angler.album = [];
+  if (!Array.isArray(s.angler.flags)) s.angler.flags = [];
   if (!Array.isArray(s.tanks) || !s.tanks.length) s.tanks = base.tanks;
   if (!s.tanks.find((t) => t.id === s.activeTank)) s.activeTank = s.tanks[0].id;
   s.v = SAVE_VERSION;

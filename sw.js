@@ -1,5 +1,5 @@
 // Offline cache. Bump VERSION when shipping changes.
-const VERSION = "riak-v1.0.0";
+const VERSION = "riak-v1.1.0";
 const ASSETS = [
   "./",
   "index.html",
@@ -8,6 +8,8 @@ const ASSETS = [
   "fonts/fonts.css",
   "fonts/6NU78FyLNQOQZAnv9bYEvDiIdE9Ea92uemAk_WBq8U_9v0c2Wa0KxC9TeA.woff2",
   "fonts/nwpStKy2OAdR1K-IwhWudF-R3w8aZQ.woff2",
+  "js/angler.js",
+  "js/anglerui.js",
   "js/app.js",
   "js/audio.js",
   "js/core.js",

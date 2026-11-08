@@ -17,7 +17,8 @@
     import { rng, hexToHue, BANNED_HUE } from "../js/util.js";
     import { packTank, unpackTank } from "../js/share.js";
     import { STRINGS } from "../js/i18n.js";
-    import { FISH, PLANTS, SPOTS } from "../js/data.js";
+    import { FISH, PLANTS, SPOTS, BAITS } from "../js/data.js";
+    import * as angler from "../js/angler.js";
 
     const results = [];
     const out = document.getElementById("out");
@@ -231,6 +232,125 @@
       const missing = en.filter((k) => !(k in STRINGS.id));
       const extra = id.filter((k) => !(k in STRINGS.en));
       assert(missing.length === 0 && extra.length === 0, { missing, extra });
+    });
+
+    // ---------- angler (flick fishing) ----------
+    test("fish weight grows with the cube of length", () => {
+      const a = angler.fishKg(20);
+      const b = angler.fishKg(40);
+      assert(Math.abs(b / a - 8) < 0.2, { a, b });
+      assert(angler.fishKg(60) > 2 && angler.fishKg(60) < 3.5, angler.fishKg(60));
+    });
+
+    test("faster flicks cast further, line upgrades add reach", () => {
+      let last = -1;
+      for (const v of [0.1, 0.4, 0.8, 1.2, 1.8, 2.4, 3]) {
+        const p = angler.flickPower(v);
+        assert(p >= last && p >= 0 && p <= 1, { v, p });
+        last = p;
+      }
+      assert(angler.castMetres(0) < angler.castMetres(0.5) && angler.castMetres(0.5) < angler.castMetres(1));
+      assert(angler.castMetres(1, 2) > angler.castMetres(1, 0));
+      assert(angler.castMetres(1, 2) <= angler.MAX_CAST, angler.castMetres(1, 2));
+      assert(angler.crankSpeed(Math.PI * 2, 0.55) === 1 && angler.crankSpeed(0, 0.1) === 0);
+    });
+
+    function runFight(sp, size, policy, seed, drag = 1, line = 0) {
+      const r = rng(seed);
+      const f = angler.newFight(sp, size, false, 30, line);
+      for (let i = 0; i < 12000 && !f.outcome; i++) angler.fightStep(f, { reel: policy(f), drag }, 0.05, r);
+      return f.outcome;
+    }
+    const bigFish = FISH.slice().sort((a, b) => b.size[1] - a.size[1])[0];
+    const smallFish = FISH.slice().sort((a, b) => a.size[1] - b.size[1])[0];
+    const careful = (f) => (f.tension < 0.75 ? 1 : 0);
+
+    test("careful reeling lands small and big fish", () => {
+      const results = [];
+      for (const [sp, size] of [[smallFish, smallFish.size[1]], [bigFish, bigFish.size[1] * 0.8]]) {
+        for (let seed = 1; seed <= 6; seed++) results.push(runFight(sp, size, careful, seed));
+      }
+      const landed = results.filter((x) => x === "landed").length;
+      assert(landed >= results.length - 1, results);
+    });
+
+    test("cranking flat out on heavy drag snaps a big fish", () => {
+      const results = [];
+      for (let seed = 1; seed <= 6; seed++) results.push(runFight(bigFish, bigFish.size[1], () => 1, seed, 2));
+      assert(results.filter((x) => x === "snap").length >= 4, results);
+    });
+
+    test("never reeling loses the fish", () => {
+      const results = [];
+      for (let seed = 1; seed <= 6; seed++) results.push(runFight(bigFish, bigFish.size[1] * 0.7, () => 0, seed));
+      assert(results.every((x) => x === "unhooked" || x === "spooled"), results);
+    });
+
+    test("tackle and cast distance change the odds", () => {
+      const spot = "ocean";
+      const ts = new Date(2026, 5, 1, 12).getTime();
+      const share = (bait, d, pred) => {
+        const list = sim.spotCandidates(spot, ts, bait, d);
+        const total = list.reduce((a, c) => a + c.w, 0);
+        return list.filter((c) => pred(c.sp)).reduce((a, c) => a + c.w, 0) / total;
+      };
+      const big = (sp) => sp.size[1] >= 30 || sp.rar >= 3;
+      assert(share("worm", 1, big) > share("worm", 0, big), "far casts favour big fish");
+      // the jig should shift a salt spot's odds toward bottom and big fish
+      const bottom = (sp) => sp.beh === "bottom" || sp.size[1] >= 20;
+      const saltSpot = SPOTS.find((s) => {
+        const here = FISH.filter((f) => f.spots.includes(s.id) && f.water !== "fresh");
+        return s.water === "salt" && here.some(bottom) && !here.every(bottom);
+      });
+      assert(saltSpot, "a salt spot with mixed fish");
+      const shareAt = (bait) => {
+        const list = sim.spotCandidates(saltSpot.id, ts, bait, 0.5);
+        const total = list.reduce((a, c) => a + c.w, 0);
+        return list.filter((c) => bottom(c.sp)).reduce((a, c) => a + c.w, 0) / total;
+      };
+      assert(shareAt("jig") > shareAt("worm"), "jig favours bottom and big sea fish at " + saltSpot.id);
+      for (const b of BAITS) assert(angler.TACKLE[b.id], "tackle kind for " + b.id);
+    });
+
+    test("CPU anglers are deterministic for a seed", () => {
+      const pick = (r) => ({ sp: FISH[0].id, size: 5 + r() * 10 });
+      const a = angler.cpuCatches(42, "pond", 180, pick);
+      const b = angler.cpuCatches(42, "pond", 180, pick);
+      assert(JSON.stringify(a) === JSON.stringify(b));
+      assert(a.length === 3 && a.every((p) => p.catches.length > 0), a.map((p) => p.catches.length));
+      const ranked = angler.rankPlayers(a, "bigfish");
+      assert(ranked[0].score >= ranked[1].score && ranked[1].score >= ranked[2].score);
+      assert(angler.tournamentScore([{ at: 10, kg: 1 }, { at: 200, kg: 5 }], "bigcatch", 100) === 1);
+    });
+
+    test("challenge links round-trip and reject bad input", () => {
+      const sp = FISH.find((f) => f.spots.includes("pond"));
+      const code = angler.packDuel({ sp: sp.id, size: sp.size[1] * 0.9, spot: "pond", from: "Ayu" });
+      const back = angler.unpackDuel(code);
+      assert(back && back.sp === sp.id && back.spot === "pond" && back.from === "Ayu", back);
+      assert(angler.unpackDuel("not-a-code") === null);
+      assert(angler.unpackDuel(angler.packDuel({ sp: sp.id, size: 9999, spot: "pond" })) === null, "oversized fish");
+      assert(angler.unpackDuel(angler.packDuel({ sp: "nope", size: 5, spot: "pond" })) === null, "unknown species");
+    });
+
+    test("old saves gain the angler and a starter spinner", () => {
+      const old = JSON.parse(JSON.stringify(sim.newState()));
+      delete old.angler;
+      old.inv.bait = { worm: 999, shrimpbait: 3, glowlure: 0 };
+      const s = sim.migrate(old);
+      assert(s.angler && Array.isArray(s.angler.album) && s.angler.controls === "flick", s.angler);
+      assert(s.inv.bait.spinner === 1 && s.inv.bait.shrimpbait === 3, s.inv.bait);
+      const again = sim.migrate(JSON.parse(JSON.stringify(s)));
+      assert(again.inv.bait.spinner === 1, "spinner only once");
+    });
+
+    test("quests unlock from angler progress", () => {
+      const a = angler.newAngler();
+      assert(angler.questProgress(a).every((q) => !q.done));
+      a.maxCast = 30;
+      a.flags.push(...angler.catchFlags({ bait: "fly", spotId: "stream", phase: "night", peak: 0.5, water: "fresh" }));
+      const done = angler.questProgress(a).filter((q) => q.done).map((q) => q.id).sort();
+      assert(JSON.stringify(done) === JSON.stringify(["cast25", "fly", "night", "smooth"]), done);
     });
 
     window.__results = results;

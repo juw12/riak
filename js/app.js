@@ -5,6 +5,8 @@ import { el, formatDuration } from "./util.js";
 import { icon, button, openSheet, toast, clearToasts, confirmSheet, meter, segmented } from "./ui.js";
 import { Ambience } from "./audio.js";
 import { readVisit } from "./share.js";
+import { unpackDuel } from "./angler.js";
+import { speciesName } from "./tankpanel.js";
 import { cropProgress, xpForLevel } from "./sim.js";
 import { SPOTS } from "./data.js";
 import { fishThumb } from "./draw.js";
@@ -15,7 +17,7 @@ import { GardenPanel } from "./garden.js";
 import { JournalPanel } from "./journal.js";
 import { FocusPanel } from "./focus.js";
 
-const VERSION = "1.0.0";
+const VERSION = "1.1.0";
 const NAV = [
   { id: "tank", icon: "tank" },
   { id: "fishing", icon: "hook" },
@@ -385,7 +387,20 @@ async function boot() {
     app.panels.tank.refresh();
   }
 
-  app.go("tank");
+  // a friend's challenge link (#duel=...) opens the fishing tab with the target set
+  let startTab = "tank";
+  const duelMatch = !visit && /#duel=([A-Za-z0-9_-]+)/.exec(location.hash);
+  if (duelMatch) {
+    history.replaceState(null, "", location.pathname + location.search);
+    const duel = unpackDuel(duelMatch[1]);
+    if (duel) {
+      core.setDuel(duel);
+      startTab = "fishing";
+      toast(t("duel.received", { fish: speciesName(duel.sp), size: duel.size }), "big");
+    } else toast(t("duel.bad"), "warn");
+  }
+
+  app.go(startTab);
   updateTop();
   core.startLoop();
   if (!visit) {

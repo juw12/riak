@@ -1,12 +1,15 @@
-// Fishing: nine places with real-time weather and time of day, a cast, a bite window and a reel-tension minigame.
+// Fishing: nine places with real-time weather and time of day. Flick to cast, crank the reel and play the
+// line tension against the fish (after the 2008 iPhone game Flick Fishing), or use the classic hold controls.
 import * as core from "./core.js";
 import { t } from "./i18n.js";
 import { el, clamp, lerp, mix, rgba, rng, hashString, TAU } from "./util.js";
-import { icon, button, openSheet, toast, meter } from "./ui.js";
+import { icon, button, openSheet, toast, meter, segmented, confirmSheet } from "./ui.js";
 import { SPOTS, FISH } from "./data.js";
 import { spotById, fishById, phaseOf, weatherAt, daylight, rollCatch, spotCandidates, fishValue } from "./sim.js";
 import { fishThumb } from "./draw.js";
 import { speciesName } from "./tankpanel.js";
+import { flickPower, motionPower, castMetres, crankSpeed, newFight, fightStep, isLure, MAX_CAST, lineOf, tournamentScore } from "./angler.js";
+import { Tournament, clock, boardList, kgText, openTournamentSetup, openQuests, questsReady, openAlbum, shareTrophy, shareDuel } from "./anglerui.js";
 
 const NIGHT_SKY = "#1c2a35";
 
@@ -160,6 +163,23 @@ export class FishingPanel {
     this.stateName = "idle";
     this.raf = 0;
     this.visible = false;
+    this.tourney = null;
+    this.dist = 0;
+    this.crank = { acc: 0, angle: 0, rate: 0, drag: false, last: 0, clickAcc: 0 };
+    this.reelHold = false;
+    this.reelInput = 0;
+    this.sideS = 0;
+    this.mPeak = 0;
+    this.mPeakAt = 0;
+    this.mCooldown = 0;
+    this.onKey = (e) => this.key(e);
+  }
+
+  get a() {
+    return core.angler();
+  }
+  get flick() {
+    return this.a.controls !== "classic";
   }
 
   init() {
@@ -167,12 +187,20 @@ export class FishingPanel {
   }
   show() {
     this.visible = true;
-    if (this.spot) this.loop();
-    else this.renderList();
+    window.addEventListener("keydown", this.onKey);
+    window.addEventListener("keyup", this.onKey);
+    if (this.spot) {
+      this.startMotion();
+      this.loop();
+    } else this.renderList();
   }
   hide() {
     this.visible = false;
+    window.removeEventListener("keydown", this.onKey);
+    window.removeEventListener("keyup", this.onKey);
     cancelAnimationFrame(this.raf);
+    this.stopMotion();
+    this.reelHold = false;
     if (this.stateName !== "idle" && this.stateName !== "result") this.resetCast();
   }
   refresh() {
@@ -180,11 +208,27 @@ export class FishingPanel {
     else this.renderSide();
   }
 
+  vibrate(pattern) {
+    if (this.a.haptics === false || !navigator.vibrate) return;
+    try {
+      navigator.vibrate(pattern);
+    } catch {
+      // some browsers refuse vibration without a recent tap
+    }
+  }
+
   // ---------- spot list ----------
   renderList() {
     cancelAnimationFrame(this.raf);
+    this.stopMotion();
+    clearTimeout(this.resetTimer);
     this.spot = null;
+    this.tourney = null;
+    this.fight = null;
+    this.bobber = null;
+    this.stateName = "idle";
     const s = core.S();
+    const a = this.a;
     const root = this.root;
     root.innerHTML = "";
     const totalFound = Object.values(s.journal.fish).filter((j) => j.count > 0).length;
@@ -192,13 +236,39 @@ export class FishingPanel {
       el("div", {}, [el("h2", { text: t("fishing.title") }), el("p", { text: t("fishing.lead") })]),
       el("span", { class: "chip" }, [icon("book", 16), el("span", { text: t("fishing.found", { a: totalFound, b: FISH.length }) })]),
     ]));
+    const ready = questsReady();
+    root.append(el("div", { class: "angler-bar" }, [
+      button(t("tourney.title"), { icon: "timer", kind: "quiet", onclick: () => openTournamentSetup(this) }),
+      button(ready ? t("quest.titleReady", { n: ready }) : t("quest.title"), { icon: "check", kind: ready ? "primary" : "quiet", onclick: () => openQuests(() => this.renderList()) }),
+      button(t("album.title") + " (" + a.album.length + ")", { icon: "camera", kind: "quiet", onclick: () => openAlbum() }),
+      el("span", { class: "angler-stats muted", text: t("angler.stats", { cast: a.maxCast, kg: kgText(a.bestKg), n: a.landed }) }),
+    ]));
+    if (a.duel) {
+      const duel = a.duel;
+      const spot = spotById[duel.spot];
+      const open = s.unlockedSpots.includes(duel.spot);
+      const target = t("duel.target", { fish: speciesName(duel.sp), size: duel.size, kg: kgText(duel.kg), spot: t("spot." + duel.spot) });
+      root.append(el("div", { class: "duel-banner" + (duel.beaten ? " beaten" : ""), role: "status" }, [
+        el("div", {}, [
+          el("b", { text: duel.beaten ? t("duel.won") : t("duel.title", { name: duel.from || t("duel.friend") }) }),
+          el("div", { class: "muted", text: target }),
+        ]),
+        el("div", { class: "row" }, [
+          !duel.beaten && open ? button(t("duel.go"), { kind: "primary small", onclick: () => this.enter(duel.spot) }) : null,
+          !open ? el("span", { class: "tag muted" }, [icon("lock", 12), t("common.unlockAt", { n: spot.level })]) : null,
+          button(duel.beaten ? t("common.close") : t("duel.dismiss"), { kind: "quiet small", onclick: () => {
+            core.setDuel(null);
+            this.renderList();
+          } }),
+        ]),
+      ]));
+    }
     const grid = el("div", { class: "spot-grid" });
     const now = Date.now();
     for (const spot of SPOTS) {
       const unlocked = s.unlockedSpots.includes(spot.id);
       const fishHere = FISH.filter((f) => f.spots.includes(spot.id));
       const found = fishHere.filter((f) => s.journal.fish[f.id]?.count > 0).length;
-      const weather = weatherAt(spot.id, now);
       const cv = el("canvas", { "aria-hidden": "true" });
       const card = el("button", { type: "button", class: "spot" + (unlocked ? "" : " locked"), disabled: !unlocked, "aria-label": t("spot." + spot.id) + (unlocked ? "" : ". " + t("common.unlockAt", { n: spot.level })) }, [
         cv,
@@ -224,61 +294,259 @@ export class FishingPanel {
     root.append(grid);
   }
 
+  // ---------- tournament flow ----------
+  startTournament(cfg) {
+    this.enter(cfg.spotId);
+    this.tourney = new Tournament(cfg);
+    this.renderTourney();
+    this.renderSide();
+    this.readyTurn();
+  }
+
+  readyTurn() {
+    const tr = this.tourney;
+    const body = el("div", {}, [
+      el("p", { text: t("tourney.readyText", { name: tr.player.name, time: clock(tr.seconds), mode: t("tourney." + tr.mode) }) }),
+      el("p", { class: "explain", text: t("tourney." + tr.mode + "Hint") }),
+    ]);
+    const sheet = openSheet({
+      title: tr.humans.length > 1 ? t("tourney.passTo", { name: tr.player.name }) : t("tourney.title"),
+      body,
+      actions: [button(t("tourney.go"), { kind: "primary", onclick: () => sheet.close() })],
+      // closing the sheet any other way also starts the clock; Leave ends a tournament
+      onClose: () => {
+        if (!this.tourney) return;
+        tr.running = true;
+        this.resetCast();
+      },
+    });
+  }
+
+  renderTourney() {
+    const tr = this.tourney;
+    if (!this.tourneyBar) return;
+    this.tourneyBar.hidden = !tr;
+    if (!tr) return;
+    const rows = tr.standings();
+    const myRank = rows.findIndex((r) => r.me) + 1;
+    const mine = rows.find((r) => r.me);
+    this.tourneyBar.innerHTML = "";
+    this.tourneyBar.append(
+      el("b", { text: tr.player.name }),
+      el("span", { class: "tourney-clock" + (tr.left < 20 ? " low" : ""), text: clock(tr.left) }),
+      el("span", { text: t("tourney." + tr.mode) + ": " + kgText(mine ? mine.score : 0) }),
+      el("span", { class: "muted", text: t("tourney.rank", { n: myRank, of: rows.length }) }),
+    );
+    if (this.boardEl) {
+      this.boardEl.innerHTML = "";
+      this.boardEl.append(boardList(rows));
+    }
+  }
+
+  endTurn() {
+    const tr = this.tourney;
+    tr.running = false;
+    this.fight = null;
+    this.reelBox.hidden = true;
+    this.resetCast();
+    const score = tournamentScore(tr.player.catches, tr.mode);
+    if (tr.current < tr.humans.length - 1) {
+      const done = tr.player;
+      const sheet = openSheet({
+        title: t("tourney.timeUp"),
+        body: el("p", { text: t("tourney.turnDone", { name: done.name, kg: kgText(score), n: done.catches.length }) }),
+        actions: [button(t("common.next"), { kind: "primary", onclick: () => sheet.close() })],
+        onClose: () => {
+          if (!this.tourney) return;
+          tr.current++;
+          tr.elapsed = 0;
+          this.renderTourney();
+          this.readyTurn();
+        },
+      });
+      return;
+    }
+    const rows = tr.standings(true);
+    const place = rows.findIndex((r) => r.human);
+    const best = rows[place];
+    const reward = core.finishTournament({ won: place === 0, place, score: best.score, mode: tr.mode });
+    const body = el("div", {}, [
+      el("p", { class: "lead-line", text: place === 0 ? t("tourney.won", { name: best.name }) : t("tourney.result", { name: best.name, n: place + 1 }) }),
+      boardList(rows),
+      el("p", { class: "explain", text: t("tourney.reward", { n: reward }) }),
+    ]);
+    this.tourney = null;
+    this.renderTourney();
+    this.renderSide();
+    this.app.audio.chime();
+    openSheet({ title: t("tourney.results"), body, actions: [] });
+  }
+
+  leave() {
+    if (this.tourney) {
+      confirmSheet(t("tourney.quit"), () => this.renderList());
+      return;
+    }
+    this.renderList();
+  }
+
   // ---------- scene ----------
   enter(spotId) {
     this.spot = spotById[spotId];
+    this.tourney = null;
     const s = core.S();
     if (this.bait !== "worm" && !(s.inv.bait[this.bait] > 0)) this.bait = "worm";
     const root = this.root;
     root.innerHTML = "";
-    this.canvas = el("canvas", { role: "img", "aria-label": t("spot." + spotId) });
+    this.canvas = el("canvas", { role: "img", "aria-label": t("spot." + spotId) + ". " + t("flick.canvasLabel") });
     this.status = el("div", { class: "scene-status", role: "status", "aria-live": "assertive" });
+    this.tourneyBar = el("div", { class: "tourney-bar", hidden: true, "aria-live": "off" });
     const wrap = el("div", { class: "scene-wrap" }, [this.canvas, this.status]);
     this.actionBtn = el("button", { type: "button", class: "btn primary big-btn" });
     this.reelBox = el("div", { class: "reel", hidden: true });
+    this.rig = this.buildRig();
     this.side = el("aside", { class: "notes" });
     root.append(el("div", { class: "panel-head" }, [
       el("div", {}, [el("h2", { text: t("spot." + spotId) }), el("p", { text: t("spot." + spotId + ".d") })]),
-      button(t("fishing.leave"), { icon: "back", kind: "quiet", onclick: () => this.renderList() }),
+      button(t("fishing.leave"), { icon: "back", kind: "quiet", onclick: () => this.leave() }),
     ]));
-    root.append(el("div", { class: "scene" }, [el("div", {}, [wrap, this.reelBox, el("div", { style: { marginTop: "12px" } }, [this.actionBtn])]), this.side]));
+    root.append(el("div", { class: "scene" }, [el("div", {}, [this.tourneyBar, wrap, this.rig, this.reelBox, el("div", { style: { marginTop: "12px" } }, [this.actionBtn])]), this.side]));
     this.bindAction();
+    this.bindCanvas();
     this.resetCast();
     this.renderSide();
+    this.startMotion();
     this.loop();
+  }
+
+  // the reel, the drag and the two gauges from the old phone game
+  buildRig() {
+    this.tensionMeter = el("div", { class: "gauge-bar", role: "meter", "aria-valuemin": "0", "aria-valuemax": "100", "aria-label": t("flick.tension") }, [el("i")]);
+    this.fishMeter = el("div", { class: "gauge-bar fish", role: "meter", "aria-valuemin": "0", "aria-valuemax": "100", "aria-label": t("flick.strength") }, [el("i")]);
+    this.lineOut = el("b", { text: "0 m" });
+    this.gauges = el("div", { class: "gauges" }, [
+      el("div", { class: "gauge" }, [el("span", { text: t("flick.tension") }), this.tensionMeter]),
+      el("div", { class: "gauge" }, [el("span", { text: t("flick.strength") }), this.fishMeter]),
+    ]);
+    this.crankCanvas = el("canvas", { "aria-hidden": "true" });
+    this.crankEl = el("div", { class: "crank", tabindex: "0", role: "button", "aria-label": t("flick.crankLabel") }, [this.crankCanvas]);
+    this.bindCrank();
+    this.dragSeg = segmented([0, 1, 2].map((d) => ({ id: String(d), label: t("flick.drag" + d) })), String(this.a.drag), (id) => {
+      this.a.drag = +id;
+      core.changed();
+    }, t("flick.drag"));
+    return el("div", { class: "rig", hidden: true }, [
+      this.crankEl,
+      el("div", { class: "rig-main" }, [
+        el("div", { class: "rig-top" }, [this.gauges, el("div", { class: "line-out" }, [el("span", { class: "muted", text: t("flick.lineOut") }), this.lineOut])]),
+        el("div", { class: "rig-drag" }, [el("span", { class: "rig-label", text: t("flick.drag") }), this.dragSeg]),
+      ]),
+    ]);
+  }
+
+  bindCrank() {
+    const c = this.crankEl;
+    const angleOf = (e) => {
+      const r = c.getBoundingClientRect();
+      return Math.atan2(e.clientY - (r.top + r.height / 2), e.clientX - (r.left + r.width / 2));
+    };
+    c.addEventListener("pointerdown", (e) => {
+      e.preventDefault();
+      c.setPointerCapture?.(e.pointerId);
+      this.crank.drag = true;
+      this.crank.last = angleOf(e);
+    });
+    c.addEventListener("pointermove", (e) => {
+      if (!this.crank.drag) return;
+      const ang = angleOf(e);
+      let d = ang - this.crank.last;
+      if (d > Math.PI) d -= TAU;
+      if (d < -Math.PI) d += TAU;
+      this.crank.last = ang;
+      this.turnCrank(d);
+    });
+    const up = () => (this.crank.drag = false);
+    c.addEventListener("pointerup", up);
+    c.addEventListener("pointercancel", up);
+    c.addEventListener("keydown", (e) => {
+      if (["ArrowRight", "ArrowDown", "ArrowLeft", "ArrowUp"].includes(e.key)) {
+        e.preventDefault();
+        this.turnCrank(Math.PI / 3);
+      }
+    });
+  }
+
+  turnCrank(d) {
+    this.crank.acc += Math.abs(d);
+    this.crank.angle += d;
+    this.crank.clickAcc += Math.abs(d);
+    if (this.crank.clickAcc > Math.PI / 3) {
+      this.crank.clickAcc = 0;
+      this.app.audio.click();
+    }
   }
 
   renderSide() {
     if (!this.side) return;
     const s = core.S();
+    const a = this.a;
     const now = Date.now();
     const spot = this.spot;
     const side = this.side;
     side.innerHTML = "";
+    if (this.tourney) {
+      this.boardEl = el("div");
+      side.append(el("section", {}, [el("h3", { text: t("tourney.board") }), this.boardEl]));
+      this.renderTourney();
+    } else this.boardEl = null;
     side.append(el("section", {}, [
       el("h3", { text: t("fishing.now", { phase: t("phase." + phaseOf(now)), weather: weatherLabel(spot.id, now) }) }),
       el("p", { class: "explain", text: t("fishing.timeHint") }),
     ]));
+    // controls
+    const controls = el("section", {}, [
+      el("h3", { text: t("flick.controls") }),
+      segmented([{ id: "flick", label: t("flick.modeFlick") }, { id: "classic", label: t("flick.modeClassic") }], a.controls === "classic" ? "classic" : "flick", (id) => {
+        a.controls = id;
+        core.changed();
+        this.resetCast();
+      }, t("flick.controls")),
+      el("p", { class: "explain", text: t(a.controls === "classic" ? "flick.classicHint" : "flick.flickHint") }),
+      el("div", { class: "row toggles" }, [
+        button(t("flick.motion"), { kind: "quiet small", pressed: !!a.motion, onclick: () => this.enableMotion(!a.motion) }),
+        button(t("flick.haptics"), { kind: "quiet small", pressed: a.haptics !== false, onclick: () => {
+          a.haptics = a.haptics === false;
+          core.changed();
+          this.renderSide();
+        } }),
+      ]),
+      el("p", { class: "explain", text: t("flick.lineNow", { line: t("line." + lineOf(a.line).id), m: castMetres(1, a.line) }) }),
+    ]);
+    side.append(controls);
+    // tackle box
     const baits = el("div", { class: "bait-list", role: "radiogroup", "aria-label": t("fishing.bait") });
     for (const b of core.BAITS) {
-      const count = b.id === "worm" ? t("food.unlimited") : t("food.left", { n: s.inv.bait[b.id] || 0 });
-      const locked = b.id === "glowlure" && core.level() < core.LEVEL_GATES.glowlure;
-      const disabled = locked || (b.id !== "worm" && !(s.inv.bait[b.id] > 0));
-      const btn = el("button", { type: "button", class: "bait", role: "radio", "aria-checked": String(this.bait === b.id), "aria-pressed": String(this.bait === b.id), disabled }, [
+      const lure = isLure(b.id);
+      const have = s.inv.bait[b.id] || 0;
+      const count = b.id === "worm" ? t("food.unlimited") : lure ? (have ? t("tackle.inBox", { n: have }) : t("tackle.none")) : t("food.left", { n: have });
+      const locked = core.level() < (b.level || 1);
+      const disabled = locked || (b.id !== "worm" && !(have > 0));
+      const btn = el("button", { type: "button", class: "bait" + (lure ? " lure" : ""), role: "radio", "aria-checked": String(this.bait === b.id), "aria-pressed": String(this.bait === b.id), disabled }, [
         el("b", { text: t("bait." + b.id) }),
-        el("span", { class: "muted", text: locked ? t("common.unlockAt", { n: core.LEVEL_GATES.glowlure }) : count }),
-        el("small", { text: t("bait." + b.id + ".d") }),
+        el("span", { class: "muted", text: locked ? t("common.unlockAt", { n: b.level }) : count }),
+        el("small", { text: (lure ? t("tackle.lure") + ". " : "") + t("bait." + b.id + ".d") }),
       ]);
       btn.addEventListener("click", () => {
+        if (this.stateName !== "idle") return toast(t("tackle.reelFirst"));
         this.bait = b.id;
         this.renderSide();
       });
       baits.append(btn);
     }
     side.append(el("section", {}, [el("h3", { text: t("fishing.bait") }), baits, el("p", { class: "explain", text: t("fishing.buyBait") })]));
-    // biting now
-    const list = spotCandidates(spot.id, now, this.bait).sort((a, b) => b.w - a.w);
-    const total = list.reduce((a, c) => a + c.w, 0);
+    // biting now, for a middle-distance cast with this tackle
+    const list = spotCandidates(spot.id, now, this.bait, 0.5).sort((x, y) => y.w - x.w);
+    const total = list.reduce((acc, c) => acc + c.w, 0);
     const chips = el("div", { class: "bite-list" });
     let unknownCount = 0;
     let unknownShare = 0;
@@ -294,7 +562,65 @@ export class FishingPanel {
     const biteSection = el("section", {}, [el("h3", { text: t("fishing.bites") })]);
     if (chips.children.length) biteSection.append(chips);
     if (unknownCount) biteSection.append(el("p", { class: "explain", text: t("fishing.unknownSum", { n: unknownCount, p: Math.round(unknownShare * 100) }) }));
+    biteSection.append(el("p", { class: "explain", text: t("flick.distanceHint") }));
     side.append(biteSection);
+  }
+
+  // ---------- phone motion ----------
+  async enableMotion(on) {
+    if (on && typeof DeviceMotionEvent === "undefined") {
+      toast(t("flick.motionNone"), "warn");
+      on = false;
+    }
+    if (on && typeof DeviceMotionEvent.requestPermission === "function") {
+      try {
+        if ((await DeviceMotionEvent.requestPermission()) !== "granted") {
+          toast(t("flick.motionDenied"), "warn");
+          on = false;
+        }
+      } catch {
+        on = false;
+      }
+    }
+    this.a.motion = on;
+    core.changed();
+    if (on) {
+      this.startMotion();
+      toast(t("flick.motionOn"));
+    } else this.stopMotion();
+    this.renderSide();
+  }
+
+  startMotion() {
+    if (this.motionHandler || !this.a.motion || typeof window.DeviceMotionEvent === "undefined") return;
+    this.motionHandler = (e) => {
+      const rr = e.rotationRate || {};
+      const rot = Math.max(Math.abs(rr.alpha || 0), Math.abs(rr.beta || 0), Math.abs(rr.gamma || 0));
+      const g = e.accelerationIncludingGravity || e.acceleration || {};
+      const acc = Math.hypot(g.x || 0, g.y || 0, g.z || 0);
+      const p = motionPower(rot, acc);
+      const now = performance.now();
+      if (p > this.mPeak) {
+        this.mPeak = p;
+        this.mPeakAt = now;
+      }
+      // act once the swing has peaked and eased off
+      if (this.mPeak > 0.12 && now - this.mPeakAt > 140) {
+        const power = this.mPeak;
+        this.mPeak = 0;
+        if (now < this.mCooldown) return;
+        this.mCooldown = now + 900;
+        if (this.stateName === "idle") this.cast(power, 0);
+        else if (this.stateName === "bite") this.hook();
+      }
+    };
+    window.addEventListener("devicemotion", this.motionHandler);
+  }
+
+  stopMotion() {
+    if (!this.motionHandler) return;
+    window.removeEventListener("devicemotion", this.motionHandler);
+    this.motionHandler = null;
   }
 
   // ---------- input ----------
@@ -322,6 +648,62 @@ export class FishingPanel {
     });
   }
 
+  // Space anywhere in the scene works like the big button (unless another control has focus).
+  key(e) {
+    if (!this.visible || !this.spot || e.code !== "Space") return;
+    const tag = document.activeElement?.tagName;
+    if (tag === "BUTTON" || tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || tag === "A") return;
+    if (document.querySelector(".sheet-backdrop")) return;
+    e.preventDefault();
+    if (e.type === "keydown" && !e.repeat) this.press(true);
+    else if (e.type === "keyup") this.press(false);
+  }
+
+  bindCanvas() {
+    const cv = this.canvas;
+    let samples = [];
+    cv.addEventListener("pointerdown", (e) => {
+      samples = [{ x: e.clientX, y: e.clientY, t: e.timeStamp }];
+      cv.setPointerCapture?.(e.pointerId);
+    });
+    cv.addEventListener("pointermove", (e) => {
+      if (!samples.length) return;
+      samples.push({ x: e.clientX, y: e.clientY, t: e.timeStamp });
+      while (samples.length > 2 && samples[0].t < e.timeStamp - 200) samples.shift();
+    });
+    cv.addEventListener("pointerup", (e) => {
+      if (!samples.length) return;
+      samples.push({ x: e.clientX, y: e.clientY, t: e.timeStamp });
+      this.swipe(samples);
+      samples = [];
+    });
+    cv.addEventListener("pointercancel", () => (samples = []));
+  }
+
+  // A flick: speed over the last ~120 ms of the swipe. Crooked flicks lose distance.
+  swipe(samples) {
+    const end = samples[samples.length - 1];
+    let start = samples[0];
+    for (const p of samples) {
+      if (end.t - p.t <= 120) {
+        start = p;
+        break;
+      }
+    }
+    const dt = Math.max(16, end.t - start.t);
+    const vy = (start.y - end.y) / dt;
+    const vx = (end.x - start.x) / dt;
+    const st = this.stateName;
+    if (vy < 0.25) {
+      if (st === "idle") this.setStatus(t("flick.swipeHint"));
+      return;
+    }
+    const straight = vy / Math.hypot(vx, vy);
+    if (st === "idle") this.cast(flickPower(vy) * (0.7 + 0.3 * straight), clamp(vx / vy, -0.6, 0.6));
+    else if (st === "bite") this.hook();
+    else if (st === "waiting" || st === "nibble") this.tooEarly();
+  }
+
   press(isDown) {
     this.holding = isDown;
     const st = this.stateName;
@@ -330,20 +712,27 @@ export class FishingPanel {
       this.stateName = "charging";
       this.chargeStart = now;
     } else if (st === "charging" && !isDown) {
-      this.cast(clamp((now - this.chargeStart) / 1200, 0.15, 1));
-    } else if ((st === "waiting" || st === "nibble") && isDown) {
-      this.setStatus(t("fishing.tooEarly"));
-      this.resetCast(900);
+      this.cast(clamp((now - this.chargeStart) / 1200, 0.15, 1), 0);
+    } else if (st === "waiting" || st === "nibble") {
+      if (this.flick) this.reelHold = isDown;
+      else if (isDown) this.tooEarly();
     } else if (st === "bite" && isDown) {
-      this.startReel();
-    } else if (st === "missed" || st === "lost") {
-      if (isDown) this.resetCast();
+      this.hook();
+    } else if (st === "fight") {
+      this.reelHold = isDown;
+    } else if ((st === "missed" || st === "lost") && isDown) {
+      this.resetCast();
     }
     this.renderAction();
   }
 
+  tooEarly() {
+    this.setStatus(t("fishing.tooEarly"));
+    this.resetCast(900);
+  }
+
   setStatus(text) {
-    this.status.textContent = text;
+    if (this.status.textContent !== text) this.status.textContent = text;
     this.status.hidden = !text;
   }
 
@@ -353,17 +742,21 @@ export class FishingPanel {
       idle: t("fishing.cast"),
       charging: t("fishing.release"),
       flying: t("fishing.wait"),
-      waiting: t("fishing.wait"),
-      nibble: t("fishing.wait"),
+      waiting: this.flick ? t("flick.retrieve") : t("fishing.wait"),
+      nibble: this.flick ? t("flick.retrieve") : t("fishing.wait"),
       bite: t("fishing.hook"),
+      fight: t("flick.holdReel"),
       reel: t("fishing.reelBtn"),
       lost: t("fishing.again"),
       missed: t("fishing.again"),
       result: t("fishing.again"),
     }[st];
-    this.actionBtn.textContent = label;
+    if (this.actionBtn.textContent !== label) this.actionBtn.textContent = label;
     this.actionBtn.disabled = st === "flying" || st === "result";
     this.actionBtn.classList.toggle("danger", st === "bite");
+    const showRig = this.flick && ["flying", "waiting", "nibble", "bite", "fight"].includes(st);
+    this.rig.hidden = !showRig;
+    this.gauges.classList.toggle("idle", st !== "fight");
   }
 
   resetCast(delay = 0) {
@@ -372,8 +765,11 @@ export class FishingPanel {
       this.stateName = "idle";
       this.bobber = null;
       this.reel = null;
+      this.fight = null;
+      this.reelHold = false;
+      this.dist = 0;
       this.reelBox.hidden = true;
-      this.setStatus(t("fishing.hold"));
+      this.setStatus(this.flick ? t("flick.idle") : t("fishing.hold"));
       this.renderAction();
     };
     if (delay) {
@@ -383,46 +779,66 @@ export class FishingPanel {
     } else go();
   }
 
-  cast(power) {
-    const s = core.S();
-    if (this.bait !== "worm") {
-      if (!(s.inv.bait[this.bait] > 0)) this.bait = "worm";
-      else {
-        s.inv.bait[this.bait]--;
-        core.changed();
-      }
-    }
+  cast(power, aim = 0) {
+    if (!core.useBait(this.bait)) this.bait = "worm";
     this.castBait = this.bait;
+    const metres = castMetres(power, this.a.line);
+    core.recordCast(metres);
+    this.castM = metres;
+    this.dist = metres;
+    this.aim = aim;
     this.stateName = "flying";
     const now = performance.now();
-    this.bobber = { x0: 0.2, y0: 0.62, x: 0.2, y: 0.62, tx: 0.38 + power * 0.48, ty: 0.52 + (1 - power) * 0.3, start: now, dip: 0 };
+    this.flight = { start: now, dur: 450 + (metres / MAX_CAST) * 550 };
+    this.bobber = { dip: 0 };
     const weather = weatherAt(this.spot.id, Date.now());
-    let wait = 2600 + Math.random() * 4800;
-    if (this.castBait === "shrimpbait") wait *= 0.85;
+    let wait = 2.6 + Math.random() * 4.8;
+    if (this.castBait === "shrimpbait" || this.castBait === "minnow") wait *= 0.85;
     if (this.castBait === "glowlure") wait *= 0.9;
     if (weather === "rain") wait *= 0.8;
-    this.biteAt = now + 700 + wait;
-    this.nibbles = [this.biteAt - 1500, this.biteAt - 800].filter((x) => x > now + 900 && Math.random() < 0.8);
-    this.app.audio.bubble(0.7);
-    this.setStatus(t("fishing.wait"));
+    wait *= 0.9 + 0.3 * (metres / MAX_CAST);
+    this.biteNeed = wait;
+    this.biteProgress = 0;
+    this.nibbles = [wait - 1.5, wait - 0.8].filter((x) => x > 0.9 && Math.random() < 0.8);
+    this.app.audio.zip();
+    this.vibrate(10);
+    this.setStatus(t("flick.castDone", { m: metres }));
+    this.renderAction();
     this.renderSide();
   }
 
+  hook() {
+    const d01 = clamp(this.dist / MAX_CAST, 0, 1);
+    this.pending = rollCatch(this.spot.id, Date.now(), this.castBait, Math.random, d01);
+    this.app.audio.bubble(1.6);
+    this.vibrate(40);
+    if (!this.flick) {
+      this.startReel();
+      this.renderAction();
+      return;
+    }
+    const sp = fishById[this.pending.sp];
+    this.fight = newFight(sp, this.pending.size, this.pending.golden, Math.max(3, this.dist), this.a.line);
+    this.lastLineOut = 0;
+    this.lastBuzz = 0;
+    this.stateName = "fight";
+    this.setStatus(t("flick.hooked"));
+    this.renderAction();
+  }
+
+  // classic controls: keep the fish inside the band
   startReel() {
-    const result = rollCatch(this.spot.id, Date.now(), this.castBait);
-    const sp = fishById[result.sp];
-    this.pending = result;
+    const sp = fishById[this.pending.sp];
     this.stateName = "reel";
     this.reel = {
       zone: 0.35,
       zoneV: 0,
-      zoneW: clamp(0.36 - sp.rar * 0.035 - (result.golden ? 0.03 : 0), 0.16, 0.36),
+      zoneW: clamp(0.36 - sp.rar * 0.035 - (this.pending.golden ? 0.03 : 0), 0.16, 0.36),
       fish: 0.5,
       fishT: 0.5,
       speed: 0.25 + sp.rar * 0.12,
       progress: 0.3,
       last: performance.now(),
-      seed: Math.random() * 100,
     };
     this.reelBox.hidden = false;
     this.reelBox.innerHTML = "";
@@ -437,17 +853,14 @@ export class FishingPanel {
     ]);
     this.reelBox.append(el("div", { class: "reel-track", "aria-hidden": "true" }, [this.zoneEl, this.fishEl]), legend, this.progressEl, el("p", { class: "explain", text: t("fishing.reel") }));
     this.setStatus(t("fishing.reelStatus"));
-    this.app.audio.bubble(1.6);
   }
 
   updateReel(now) {
     const r = this.reel;
     const dt = Math.min(0.05, (now - r.last) / 1000);
     r.last = now;
-    // the fish darts to new targets
     if (Math.abs(r.fish - r.fishT) < 0.02 || Math.random() < dt * r.speed * 0.8) r.fishT = clamp(Math.random(), 0.04, 0.96);
     r.fish += (r.fishT - r.fish) * clamp(dt * (1.2 + r.speed * 2.2), 0, 1);
-    // the zone rises while holding, sinks when released
     r.zoneV += (this.holding ? 2.2 : -1.9) * dt;
     r.zoneV = clamp(r.zoneV, -1.1, 1.1);
     r.zone += r.zoneV * dt;
@@ -467,7 +880,7 @@ export class FishingPanel {
     this.progressEl.firstChild.style.width = r.progress * 100 + "%";
     this.progressEl.setAttribute("aria-valuenow", String(Math.round(r.progress * 100)));
     if (this.bobber) this.bobber.dip = inside ? 0.6 : 1;
-    if (r.progress >= 1) this.landed();
+    if (r.progress >= 1) this.landed(0.95);
     else if (r.progress <= 0) {
       this.stateName = "lost";
       this.reelBox.hidden = true;
@@ -476,32 +889,109 @@ export class FishingPanel {
     }
   }
 
-  landed() {
-    this.stateName = "result";
-    this.reelBox.hidden = true;
-    this.renderAction();
-    const res = core.catchFish(this.pending, this.spot.id);
-    this.app.audio.chime();
-    this.openCatch(res);
+  // flick controls: tension against fish strength
+  updateFight(now, dt) {
+    const f = this.fight;
+    fightStep(f, { reel: this.reelInput, drag: this.a.drag }, dt);
+    this.dist = f.dist;
+    const tension = clamp(f.tension, 0, 1);
+    this.tensionMeter.firstChild.style.width = tension * 100 + "%";
+    this.tensionMeter.classList.toggle("warn", f.tension > 0.85);
+    this.tensionMeter.setAttribute("aria-valuenow", String(Math.round(tension * 100)));
+    this.fishMeter.firstChild.style.width = f.stamina * 100 + "%";
+    this.fishMeter.setAttribute("aria-valuenow", String(Math.round(f.stamina * 100)));
+    if (f.run > 0 && f.lineOut > this.lastLineOut + 0.6) {
+      this.lastLineOut = f.lineOut;
+      this.app.audio.zip();
+    }
+    if (f.tension > 0.95 && now - this.lastBuzz > 220) {
+      this.lastBuzz = now;
+      this.vibrate(15);
+    }
+    if (f.tension > 0.95) this.setStatus(t("flick.tooTight"));
+    else if (f.run > 0) this.setStatus(t("flick.running"));
+    else if (f.tension < 0.12) this.setStatus(t("flick.slack"));
+    else this.setStatus(t("flick.reelNow"));
+    if (f.outcome) this.endFight(f.outcome);
   }
 
-  openCatch(res) {
+  endFight(outcome) {
+    const f = this.fight;
+    if (outcome === "landed") return this.landed(f.peak);
+    let msg;
+    if (outcome === "snap") {
+      const lostLure = core.recordSnap(this.castBait);
+      msg = t("flick.snap") + (lostLure ? " " + t("flick.lureLost", { lure: t("bait." + this.castBait) }) : "");
+      this.vibrate(200);
+      if (lostLure && !(core.S().inv.bait[this.castBait] > 0)) this.bait = "worm";
+    } else if (outcome === "spooled") msg = t("flick.spooled");
+    else msg = t("flick.unhooked");
+    this.fight = null;
+    this.bobber = null;
+    this.reelHold = false;
+    this.stateName = "lost";
+    this.setStatus(msg);
+    this.renderAction();
+    this.renderSide();
+  }
+
+  landed(peak) {
+    this.stateName = "result";
+    this.reelBox.hidden = true;
+    this.fight = null;
+    this.reelHold = false;
+    this.renderAction();
+    const pending = this.pending;
+    const res = core.catchFish(pending, this.spot.id);
+    const info = core.recordLanded({ sp: pending.sp, size: pending.size, bait: this.castBait, spotId: this.spot.id, phase: phaseOf(Date.now()), peak, water: this.spot.water });
+    info.cast = this.castM;
+    this.app.audio.chime();
+    this.vibrate([30, 40, 30]);
+    if (info.duelBeaten) toast(t("duel.beatenToast", { fish: speciesName(pending.sp) }), "big");
+    if (this.tourney) {
+      const kg = this.tourney.weighIn(pending);
+      toast(t("tourney.weighed", { fish: speciesName(pending.sp), kg: kgText(kg) }));
+      this.renderTourney();
+      this.resetCast();
+      return;
+    }
+    this.openCatch(res, info);
+  }
+
+  openCatch(res, info) {
     const fish = res.fish;
     const sp = fishById[fish.sp];
     const s = core.S();
     let decided = false;
+    const entry = { sp: fish.sp, size: fish.size, kg: info.kg, colors: fish.colors, golden: !!fish.golden, ts: Date.now(), spot: this.spot.id, cast: info.cast };
     const cv = el("canvas", { "aria-hidden": "true" });
     const tags = el("div", { class: "row" }, [
       el("span", { class: "tag rar-" + sp.rar, text: t("rar." + sp.rar) }),
       res.isNew ? el("span", { class: "tag", text: t("fishing.newSpecies") }) : null,
       res.isRecord ? el("span", { class: "tag", text: t("fishing.record") }) : null,
       fish.golden ? el("span", { class: "tag gold", text: t("fishing.golden") }) : null,
+      info.duelBeaten ? el("span", { class: "tag gold", text: t("duel.won") }) : null,
     ]);
+    const photoBtn = button(t("album.take"), { icon: "camera", kind: "quiet small", onclick: () => {
+      core.addPhoto(fish, { spot: this.spot.id, cast: info.cast });
+      photoBtn.disabled = true;
+      toast(t("album.added"));
+    } });
     const body = el("div", {}, [
-      el("div", { class: "fish-hero" }, [cv, el("div", {}, [el("h3", { text: speciesName(fish.sp) }), el("div", { class: "muted", text: sp.sci + " · " + fish.size + " cm" }), tags])]),
+      el("div", { class: "fish-hero" }, [cv, el("div", {}, [
+        el("h3", { text: speciesName(fish.sp) }),
+        el("div", { class: "muted", text: sp.sci + " · " + fish.size + " cm" }),
+        el("div", { class: "catch-stats" }, [el("b", { text: kgText(info.kg) }), el("span", { class: "muted", text: t("flick.kgEst") + (info.cast ? " · " + t("flick.castM", { m: info.cast }) : "") })]),
+        tags,
+      ])]),
       el("p", { class: "muted", text: t("fishd." + fish.sp) }),
       el("p", { class: "explain", text: t("fish.card.temp", { min: sp.temp[0], max: sp.temp[1] }) + (sp.school ? " · " + t("fish.card.school", { n: sp.school }) : "") + " · " + t("journal.water") + ": " + t("water." + sp.water) }),
       res.frag ? el("p", { class: "tag", text: t("fishing.wildFrag") + (res.frag.pending ? " " + t("fishing.fragPending") : "") }) : null,
+      el("div", { class: "row catch-share" }, [
+        photoBtn,
+        button(t("album.share"), { icon: "share", kind: "quiet small", onclick: () => shareTrophy(entry) }),
+        button(t("duel.send"), { icon: "hook", kind: "quiet small", onclick: () => shareDuel(entry) }),
+      ]),
     ]);
     requestAnimationFrame(() => fishThumb(cv, fish));
     const homes = s.tanks.filter((tk) => core.canHouse(fish, tk));
@@ -535,6 +1025,7 @@ export class FishingPanel {
   // ---------- animation ----------
   loop() {
     cancelAnimationFrame(this.raf);
+    this.lastT = performance.now();
     const frame = (time) => {
       if (!this.visible || !this.spot) return;
       this.step(time);
@@ -545,34 +1036,69 @@ export class FishingPanel {
   }
 
   step(now) {
+    const dt = clamp((now - (this.lastT || now)) / 1000, 0, 0.1);
+    this.lastT = now;
+    // crank speed from how far the handle travelled this frame, smoothed
+    const inst = crankSpeed(this.crank.acc, Math.max(dt, 0.008));
+    this.crank.acc = 0;
+    this.crank.rate += (inst - this.crank.rate) * clamp(dt * 10, 0, 1);
+    this.reelInput = Math.max(this.crank.rate, this.reelHold ? 0.8 : 0);
     const st = this.stateName;
     const b = this.bobber;
+    if (this.tourney?.running) {
+      this.tourney.elapsed += dt;
+      this.hudT = (this.hudT || 0) + dt;
+      if (this.hudT > 0.25) {
+        this.hudT = 0;
+        this.renderTourney();
+      }
+      if (this.tourney.left <= 0) {
+        this.endTurn();
+        return;
+      }
+    }
     if (st === "flying" && b) {
-      const k = clamp((now - b.start) / 700, 0, 1);
-      b.x = lerp(b.x0, b.tx, k);
-      b.y = lerp(b.y0, b.ty, k) - Math.sin(k * Math.PI) * 0.25;
-      if (k >= 1) {
+      if (now - this.flight.start >= this.flight.dur) {
         this.stateName = "waiting";
-        this.splash = { x: b.tx, y: b.ty, t: now };
+        const p = this.lurePos(now);
+        this.splash = { x: p.x, y: p.y, s: p.scale, t: now };
+        this.app.audio.splash();
         this.renderAction();
       }
     } else if (st === "waiting" || st === "nibble") {
-      if (this.nibbles.length && now >= this.nibbles[0]) {
+      const lure = isLure(this.castBait);
+      const reel = this.flick ? this.reelInput : 0;
+      if (reel > 0.02) this.dist = Math.max(0, this.dist - reel * 4.2 * dt);
+      // a lure only works while it moves; bait prefers to sit still
+      const rate = !this.flick ? 1 : lure ? 0.25 + 1.5 * Math.min(1, reel * 1.6) : reel > 0.5 ? 0.6 : 1;
+      this.biteProgress += dt * rate;
+      if (this.flick) this.lineOut.textContent = this.dist.toFixed(1) + " m";
+      if (this.dist < 2) {
+        this.setStatus(t("flick.lureBack"));
+        this.stateName = "idle";
+        this.bobber = null;
+        this.reelHold = false;
+        this.renderAction();
+        return;
+      }
+      if (this.nibbles.length && this.biteProgress >= this.nibbles[0]) {
         this.nibbles.shift();
         this.stateName = "nibble";
         b.dip = 0.35;
+        this.vibrate(8);
         setTimeout(() => {
           if (this.bobber) this.bobber.dip = 0;
         }, 220);
       }
-      if (now >= this.biteAt) {
+      if (this.biteProgress >= this.biteNeed) {
         this.stateName = "bite";
         b.dip = 1;
-        this.biteEnd = now + 1100;
-        this.setStatus(t("fishing.bite"));
+        this.biteEnd = now + (this.flick ? 1300 : 1100);
+        this.setStatus(this.flick ? t("flick.bite") : t("fishing.bite"));
         this.app.audio.bubble(1.8);
+        this.vibrate(80);
         this.renderAction();
-        this.actionBtn.focus();
+        if (!this.flick) this.actionBtn.focus();
       }
     } else if (st === "bite") {
       if (now > this.biteEnd) {
@@ -583,7 +1109,82 @@ export class FishingPanel {
       }
     } else if (st === "reel") {
       this.updateReel(now);
+    } else if (st === "fight" && this.fight) {
+      this.updateFight(now, dt);
+      if (this.fight) this.lineOut.textContent = this.dist.toFixed(1) + " m";
     }
+    const targetSide = this.fight ? this.fight.side * (this.fight.run > 0 ? 1 : 0.4) : 0;
+    this.sideS += (targetSide - this.sideS) * clamp(dt * 2, 0, 1);
+  }
+
+  // where the bobber or lure sits on screen: far casts sit smaller and closer to the horizon
+  lurePos(now) {
+    const d01 = clamp(this.dist / MAX_CAST, 0, 1);
+    const x = 0.3 + 0.56 * d01 + (this.aim || 0) * 0.25 * d01 + this.sideS * 0.08;
+    const y = 0.94 - 0.42 * d01;
+    const scale = 1 - 0.55 * d01;
+    if (this.stateName === "flying" && this.flight) {
+      const k = clamp((now - this.flight.start) / this.flight.dur, 0, 1);
+      return { x: lerp(0.24, x, k), y: lerp(0.44, y, k) - Math.sin(k * Math.PI) * 0.22, scale: lerp(1, scale, k), flying: true };
+    }
+    return { x, y, scale };
+  }
+
+  drawCrank() {
+    const cv = this.crankCanvas;
+    if (!cv || this.rig.hidden) return;
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    const S = cv.clientWidth;
+    if (!S) return;
+    if (cv.width !== Math.round(S * dpr)) {
+      cv.width = Math.round(S * dpr);
+      cv.height = Math.round(S * dpr);
+    }
+    const ctx = cv.getContext("2d");
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, S, S);
+    const c = S / 2;
+    const R = S * 0.42;
+    const css = getComputedStyle(this.crankEl);
+    const ink = css.getPropertyValue("--ink").trim() || "#1d2a27";
+    const rule = css.getPropertyValue("--rule").trim() || "#d8d1c2";
+    const accent = css.getPropertyValue("--accent").trim() || "#1f5f4a";
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = rule;
+    ctx.beginPath();
+    ctx.arc(c, c, R, 0, TAU);
+    ctx.stroke();
+    // tick marks turn with the spool
+    ctx.strokeStyle = rgba(ink.startsWith("#") ? ink : "#1d2a27", 0.35);
+    for (let i = 0; i < 12; i++) {
+      const ang = this.crank.angle + (i / 12) * TAU;
+      ctx.beginPath();
+      ctx.moveTo(c + Math.cos(ang) * R * 0.78, c + Math.sin(ang) * R * 0.78);
+      ctx.lineTo(c + Math.cos(ang) * R * 0.9, c + Math.sin(ang) * R * 0.9);
+      ctx.stroke();
+    }
+    const hx = c + Math.cos(this.crank.angle) * R * 0.62;
+    const hy = c + Math.sin(this.crank.angle) * R * 0.62;
+    ctx.strokeStyle = accent;
+    ctx.lineWidth = 4;
+    ctx.lineCap = "round";
+    ctx.beginPath();
+    ctx.moveTo(c, c);
+    ctx.lineTo(hx, hy);
+    ctx.stroke();
+    ctx.fillStyle = accent;
+    ctx.beginPath();
+    ctx.arc(c, c, 5, 0, TAU);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(hx, hy, S * 0.09, 0, TAU);
+    ctx.fill();
+    // speed arc
+    ctx.strokeStyle = rgba(accent.startsWith("#") ? accent : "#1f5f4a", 0.5);
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(c, c, R + 3, -Math.PI / 2, -Math.PI / 2 + this.reelInput * TAU);
+    ctx.stroke();
   }
 
   draw(time) {
@@ -600,60 +1201,83 @@ export class FishingPanel {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     const reduce = this.app.reduceMotion();
     paintScene(ctx, W, H, this.spot, Date.now(), reduce ? 0 : time);
-    // rod
-    const tipX = W * 0.24;
-    const tipY = H * 0.44;
+    const st = this.stateName;
+    const tension = this.fight ? clamp(this.fight.tension, 0, 1.2) : 0;
+    // rod, bending with line tension
+    const bend = st === "reel" ? 0.04 : st === "charging" ? -0.03 : tension * 0.11;
+    const tipX = W * (0.24 + bend * 0.4);
+    const tipY = H * (0.44 + bend);
     ctx.strokeStyle = "#3b2f25";
     ctx.lineWidth = 4;
     ctx.lineCap = "round";
     ctx.beginPath();
-    const bend = this.stateName === "reel" ? 0.04 : this.stateName === "charging" ? -0.03 : 0;
     ctx.moveTo(W * 0.06, H * 0.98);
-    ctx.quadraticCurveTo(W * (0.14 + bend), H * 0.66, tipX, tipY + bend * H);
+    ctx.quadraticCurveTo(W * (0.14 + bend * 0.2), H * 0.66, tipX, tipY);
     ctx.stroke();
-    // line and bobber
     const b = this.bobber;
     if (b) {
-      const bob = Math.sin(time * 0.004) * 0.004;
-      const bx = b.x * W;
-      const by = (b.y + bob + b.dip * 0.02) * H;
-      ctx.strokeStyle = "rgba(240,240,235,0.75)";
-      ctx.lineWidth = 1;
+      const p = this.lurePos(performance.now());
+      const bob = p.flying ? 0 : Math.sin(time * 0.004) * 0.004;
+      const bx = p.x * W;
+      const by = (p.y + bob + b.dip * 0.02 * p.scale) * H;
+      const r = Math.max(2.5, 5 * p.scale);
+      ctx.strokeStyle = tension > 0.85 ? "rgba(224,116,90,0.95)" : "rgba(240,240,235,0.75)";
+      ctx.lineWidth = tension > 0.85 ? 1.6 : 1;
       ctx.beginPath();
-      ctx.moveTo(tipX, tipY + bend * H);
-      ctx.quadraticCurveTo((tipX + bx) / 2, Math.max(tipY, by) + 20, bx, by);
+      ctx.moveTo(tipX, tipY);
+      const sag = st === "fight" ? (1 - Math.min(1, tension)) * 26 : 20;
+      ctx.quadraticCurveTo((tipX + bx) / 2, Math.max(tipY, by) + sag, bx, by);
       ctx.stroke();
-      ctx.fillStyle = "#f2efe6";
-      ctx.beginPath();
-      ctx.arc(bx, by - 4, 5, Math.PI, 0);
-      ctx.fill();
-      ctx.fillStyle = this.castBait === "glowlure" ? "#e8c04a" : "#c4552f";
-      ctx.beginPath();
-      ctx.arc(bx, by - 4, 5, 0, Math.PI);
-      ctx.fill();
-      if (this.stateName === "bite" || this.stateName === "reel") {
+      if (isLure(this.castBait)) {
+        const colour = { spinner: "#d9c27a", fly: "#9a7a4a", crankbait: "#c4552f", popper: "#f2efe6", jig: "#3d6f63" }[this.castBait] || "#d9c27a";
+        if (!p.flying && this.reelInput > 0.05 && st !== "fight") {
+          ctx.strokeStyle = "rgba(255,255,255,0.45)";
+          ctx.beginPath();
+          ctx.moveTo(bx - 14 * p.scale, by - 3 * p.scale);
+          ctx.lineTo(bx, by);
+          ctx.lineTo(bx - 14 * p.scale, by + 3 * p.scale);
+          ctx.stroke();
+        }
+        ctx.fillStyle = colour;
+        ctx.beginPath();
+        ctx.ellipse(bx, by, r * 1.3, r * 0.7, 0, 0, TAU);
+        ctx.fill();
+      } else {
+        ctx.fillStyle = "#f2efe6";
+        ctx.beginPath();
+        ctx.arc(bx, by - r * 0.8, r, Math.PI, 0);
+        ctx.fill();
+        ctx.fillStyle = this.castBait === "glowlure" ? "#e8c04a" : "#c4552f";
+        ctx.beginPath();
+        ctx.arc(bx, by - r * 0.8, r, 0, Math.PI);
+        ctx.fill();
+      }
+      if (st === "bite" || st === "reel" || (st === "fight" && this.fight?.run > 0)) {
         ctx.strokeStyle = "rgba(255,255,255,0.6)";
+        ctx.lineWidth = 1;
         const k = (time % 700) / 700;
         ctx.beginPath();
-        ctx.ellipse(bx, by, 8 + k * 22, 3 + k * 7, 0, 0, TAU);
+        ctx.ellipse(bx, by, (8 + k * 22) * p.scale, (3 + k * 7) * p.scale, 0, 0, TAU);
         ctx.stroke();
       }
     }
     if (this.splash) {
       const k = (time - this.splash.t) / 900;
-      if (k < 1) {
+      if (k < 1 && k >= 0) {
         ctx.strokeStyle = `rgba(255,255,255,${0.7 * (1 - k)})`;
+        ctx.lineWidth = 1;
         ctx.beginPath();
-        ctx.ellipse(this.splash.x * W, this.splash.y * H, 6 + k * 30, 2 + k * 9, 0, 0, TAU);
+        ctx.ellipse(this.splash.x * W, this.splash.y * H, (6 + k * 30) * this.splash.s, (2 + k * 9) * this.splash.s, 0, 0, TAU);
         ctx.stroke();
-      } else this.splash = null;
+      } else if (k >= 1) this.splash = null;
     }
-    if (this.stateName === "charging") {
+    if (st === "charging") {
       const k = clamp((performance.now() - this.chargeStart) / 1200, 0, 1);
       ctx.fillStyle = "rgba(16,28,26,0.55)";
       ctx.fillRect(W * 0.3, H - 22, W * 0.4, 10);
       ctx.fillStyle = "#e8c04a";
       ctx.fillRect(W * 0.3, H - 22, W * 0.4 * k, 10);
     }
+    this.drawCrank();
   }
 }
