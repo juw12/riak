@@ -1,0 +1,51 @@
+{
+  "mode": "pair",
+  "models": [
+    "Pega-Vision",
+    "Pega-Thinking",
+    "GLM-5.3-Flash"
+  ],
+  "judges": {
+    "Pega-Vision": {
+      "picks_AB_BA": [
+        "B",
+        "A"
+      ],
+      "vote": "tie",
+      "reasons": [
+        "Both versions have the same feature depth, but VERSION 2 shows clearer first-time guidance on the tank screen and a more explicit fishing minigame legend, improving usability and polish without hurting the visual coherence.",
+        "Version 2’s desktop tank and fishing screens are clearer, more spacious, and better aligned with the care/fishing loops, giving stronger usability despite the overlapping unlock toasts. Version 1 is tidier in places, but its desktop layouts feel more cramped and less informative."
+      ]
+    },
+    "Pega-Thinking": {
+      "picks_AB_BA": [
+        "tie",
+        "tie"
+      ],
+      "vote": "tie",
+      "reasons": [
+        "The text descriptions are identical word-for-word, and the screenshots show the same app with only negligible differences (weather text 'fog' vs 'cloudy', a legend added to the reel minigame in V2, and a different journal state). Visual craft, clarity, depth of play, and polish are essentially equivalent across both versions.",
+        "Both versions share identical feature summaries and near-identical visual craft, palette, and polish. The only meaningful differences are minor: VERSION 1's desktop tank shows a 'More to do' guidance section while VERSION 2 shows 'Today's orders' and more unlocked content/notifications. These trade clarity-for-newcomers (V1) against demonstrated progression (V2), netting to a negligible overall difference."
+      ]
+    },
+    "GLM-5.3-Flash": {
+      "picks_AB_BA": [
+        "B",
+        "tie"
+      ],
+      "vote": "tie",
+      "reasons": [
+        "The packets are identical, but Version 2's screenshots show small clarity and polish gains: a legend explaining the reel minigame, a 'More to do' panel guiding new players on the tank screen, and a clean journal header whereas Version 1 has two stacked toasts obscuring it. These give Version 2 slight edges on C2 and C4 with no offsetting weaknesses.",
+        "The feature packets are word-for-word identical and the screenshots show the same coherent field-guide aesthetic, loops, and clarity; the only differences are trivial (V2's journal screenshot has transient unlock toasts briefly overlapping the header, V1's desktop tank shows a 'More to do' panel versus V2's orders/water-test panel), which net out as negligible under the rubric."
+      ]
+    }
+  },
+  "votes": {
+    "A": 0,
+    "B": 0,
+    "tie": 3
+  },
+  "quorum": 3,
+  "b_wins": false,
+  "label": "council-judged (3 judges)"
+}

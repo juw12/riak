@@ -1,0 +1,137 @@
+{
+  "mode": "score",
+  "models": [
+    "Pega-Vision",
+    "Pega-Thinking",
+    "GLM-5.3-Flash"
+  ],
+  "weights": {
+    "C1": 0.3,
+    "C2": 0.3,
+    "C3": 0.25,
+    "C4": 0.15
+  },
+  "judges": {
+    "Pega-Vision": {
+      "scores": {
+        "C1": 7.0,
+        "C2": 7.0,
+        "C3": 9.0,
+        "C4": 6.0
+      },
+      "evidence": {
+        "C1": "Tank art is pleasant and the palette is coherent, but Garden trays are plain rectangles and the fishing scene is flat.",
+        "C2": "Tools row: Feed, Care, Scape... labels are clear, but phone toasts cover the Journal tabs.",
+        "C3": "Breeding with inherited colours; aquascaping... greenhouse... reef lab... orders... focus, though breeding/reef lab are not shown in screenshots.",
+        "C4": "Unlocked: Reef lab toast overlaps the Journal tabs, and Garden has a large empty lower area."
+      },
+      "fixes": [
+        "Reposition or stack toast notifications so they never cover headers, tabs, or controls on phone screens.",
+        "Design the Garden, fishing, and journal screens with the same field-guide craft as the tank, especially tray cards, empty states, and silhouettes.",
+        "Add clearer first-time next-step guidance and tighten phone layouts where toasts and controls crowd the main view."
+      ],
+      "total": 7.35,
+      "seconds": 31.1
+    },
+    "Pega-Thinking": {
+      "scores": {
+        "C1": 7.0,
+        "C2": 8.0,
+        "C3": 9.0,
+        "C4": 7.0
+      },
+      "evidence": {
+        "C1": "Coherent palette (greens, teals, warm browns, cream) and consistent type pairing (serif 'Riak' + sans body). Tank vector art is pleasant and clearly the hero on the main screen. However, the look reads as 'clean generic cozy' rather than a distinctive field-guide aesthetic — the Garden screen with three empty trays and the flat fishing landscape feel under-designed.",
+        "C2": "Strong onboarding: 'Tap a fish to meet it. Tap the glass and watch who comes.' overlay, clear tool row with icons+labels, visible care checklist, and contextual guidance like 'Hold to cast further' and 'On the line. Keep it in the band.' Phone layout groups tools in a tidy 4x2 grid. Minor: the 'Unlocked' toast on mobile Journal covers the page header.",
+        "C3": "Multiple interlocking loops clearly exceeding a typical cozy aquarium: nitrogen-cycle care, 9-spot fishing with weather/day-night/bait odds/reel tension minigame/47 species/5 rarities/golden variants, breeding with inherited colors, aquascaping (16 plants, 8 hardscape, 3 substrates, 3 tank sizes, reef room), greenhouse with variegated sports, reef lab with named strains, journal dex with silhouettes+hints+18 milestones, focus timer with box breathing, and an orders system.",
+        "C4": "Spacing and components are consistent across screens; toasts are generally well placed. Rough edges: the 'Unlocked: Mountain stream, Mangrove inlet and 5 more' toast overlaps the Journal header on mobile, the Garden screen's three empty trays look unfinished, and the reel-minigame band on mobile is a plain rectangle without visual polish."
+      },
+      "fixes": [
+        "Fix the mobile toast overlap on the Journal screen — the 'Unlocked' notification covers the page header text and breaks the layout.",
+        "Give the Garden screen more visual content or better empty-state art so the three blank trays don't look like a half-built page.",
+        "Push the visual identity toward a more distinctive field-guide look (e.g., illustrated species cards, hand-drawn plant icons, paper-grain backgrounds) so the tank art isn't carrying the entire aesthetic."
+      ],
+      "total": 7.8,
+      "seconds": 10.8
+    },
+    "GLM-5.3-Flash": {
+      "scores": {
+        "C1": 7.5,
+        "C2": 8.0,
+        "C3": 9.0,
+        "C4": 7.0
+      },
+      "evidence": {
+        "C1": "Coherent cream/green palette with serif headings and a pleasant tank ('light rays, bubbles, varied plants'), but the fishing backdrop is flat ('Still water under lily pads' rendered as plain grey-blue bands) and the desktop Garden screen leaves a large empty region — short of 'every screen feels designed'.",
+        "C2": "Strong first-time guidance: 'Tap a fish to meet it. Tap the glass and watch who comes.', labelled tool row, 'Hold to reel. Keep the fish inside the band.', 'Plant a seedling to start growing'. Minor gaps: the phone reel band is an unlabelled dot-and-box, and 'Watch' is a vague label for a full-screen clock.",
+        "C3": "Summary claims every anchor loop: 'Breeding with inherited colours', 'reef lab (frag, cross, named strains)', 'Greenhouse trays', 'daily orders', 'Focus timer'. Screenshots confirm care, fishing minigame, garden, journal, orders and focus — but breeding, reef lab and scaping are asserted, not shown.",
+        "C4": "Consistent buttons, cards and tabs throughout, but feedback messages obstruct content: on phone the 'Unlocked: Reef lab' toast covers 'Everything you have found, bred and grown.', and toasts overlap the tank art; the phone reel's bare dot-and-rectangle gauge reads as a rough edge."
+      },
+      "fixes": [
+        "Reposition toasts so they never cover content: on phone 'Unlocked: Reef lab' hides the journal subtitle and toasts overlap the tank art — use a reserved safe area or faster dismissal.",
+        "Lift the weakest screens to the tank's standard: enrich the flat fishing backdrop and rebalance the desktop Garden layout, which leaves a large empty region below the trays.",
+        "Make the reel tension gauge self-explanatory on phone — label the safe band and fish marker instead of relying on the caption below an unlabelled dot-and-box UI."
+      ],
+      "total": 7.95,
+      "seconds": 39.1
+    }
+  },
+  "quorum": 3,
+  "council_score": 7.8,
+  "criterion_median": {
+    "C1": 7.0,
+    "C2": 8.0,
+    "C3": 9.0,
+    "C4": 7.0
+  },
+  "criterion_spread": {
+    "C1": 0.5,
+    "C2": 1.0,
+    "C3": 0.0,
+    "C4": 1.0
+  },
+  "split_criteria": [],
+  "judge_total_range": [
+    7.35,
+    7.95
+  ],
+  "fixes": [
+    {
+      "judge": "Pega-Vision",
+      "fix": "Reposition or stack toast notifications so they never cover headers, tabs, or controls on phone screens."
+    },
+    {
+      "judge": "Pega-Vision",
+      "fix": "Design the Garden, fishing, and journal screens with the same field-guide craft as the tank, especially tray cards, empty states, and silhouettes."
+    },
+    {
+      "judge": "Pega-Vision",
+      "fix": "Add clearer first-time next-step guidance and tighten phone layouts where toasts and controls crowd the main view."
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Fix the mobile toast overlap on the Journal screen — the 'Unlocked' notification covers the page header text and breaks the layout."
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Give the Garden screen more visual content or better empty-state art so the three blank trays don't look like a half-built page."
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Push the visual identity toward a more distinctive field-guide look (e.g., illustrated species cards, hand-drawn plant icons, paper-grain backgrounds) so the tank art isn't carrying the entire aesthetic."
+    },
+    {
+      "judge": "GLM-5.3-Flash",
+      "fix": "Reposition toasts so they never cover content: on phone 'Unlocked: Reef lab' hides the journal subtitle and toasts overlap the tank art — use a reserved safe area or faster dismissal."
+    },
+    {
+      "judge": "GLM-5.3-Flash",
+      "fix": "Lift the weakest screens to the tank's standard: enrich the flat fishing backdrop and rebalance the desktop Garden layout, which leaves a large empty region below the trays."
+    },
+    {
+      "judge": "GLM-5.3-Flash",
+      "fix": "Make the reel tension gauge self-explanatory on phone — label the safe band and fish marker instead of relying on the caption below an unlabelled dot-and-box UI."
+    }
+  ],
+  "label": "council-judged (3 judges)"
+}

@@ -1,0 +1,51 @@
+{
+  "mode": "pair",
+  "models": [
+    "Pega-Vision",
+    "Pega-Thinking",
+    "GLM-5.3-Flash"
+  ],
+  "judges": {
+    "Pega-Vision": {
+      "picks_AB_BA": [
+        "B",
+        "B"
+      ],
+      "vote": "B",
+      "reasons": [
+        "Both versions have the same feature depth, but VERSION 2’s screenshots show a brighter, more polished tank, clearer mobile tool grouping, less cluttered fishing odds, and better-placed feedback toasts, improving visual craft, clarity, and polish.",
+        "The feature summaries are identical, but VERSION 1’s screenshots show a brighter, more pleasant tank hero and less intrusive toasts, while VERSION 2 has darker tank views and toast overlays that obscure controls or content. This gives VERSION 1 a slight edge in visual craft, clarity, and polish."
+      ]
+    },
+    "Pega-Thinking": {
+      "picks_AB_BA": [
+        "B",
+        "B"
+      ],
+      "vote": "B",
+      "reasons": [
+        "VERSION 2 shows notably better visual craft (C1) with brighter, more vibrant tank art featuring light rays and more detailed atmospheric scenes (fog/mountains in fishing), and slightly better polish (C4) with cleaner notification placement and more vivid plant colors. Depth of play (C3) and clarity (C2) are essentially identical between versions.",
+        "Both versions share identical feature descriptions, but VERSION 1's screenshots show the tank art more clearly in bright daytime scenes (where the art is meant to be the hero), and its notifications are consistently placed at the top rather than overlapping content/navigation at the bottom as in VERSION 2. VERSION 2 demonstrates the day/night cycle working, but its darker scenes obscure the tank art and its bottom-placed notification stacks feel less polished."
+      ]
+    },
+    "GLM-5.3-Flash": {
+      "picks_AB_BA": [
+        "B",
+        "B"
+      ],
+      "vote": "B",
+      "reasons": [
+        "The feature text is identical, but Version 2's screenshots are consistently stronger: the lit tank with light rays makes the tank art the hero (versus V1's murky dark tank), toasts are consolidated and top-placed rather than three stacked messages covering content, the fishing 'Biting now' panel aggregates unknown species into one clear line instead of four redundant 'Not found yet' chips, and all eight tools are visible on the phone tank screen. These are meaningful gains on C1 visual craft, C2 clarity, and C4 polish with C3 depth equal.",
+        "The feature text is identical, but V1's screenshots present better: a lit tank where the art is the hero, a concise 'Biting now' summary instead of V2's cluttered repeated 'Not found yet' chips, and toasts that stay clear of controls, whereas V2's dark night captures obscure the tank and its stacked toasts cover the tools row and journal cards with one clipped at the viewport edge."
+      ]
+    }
+  },
+  "votes": {
+    "A": 0,
+    "B": 3,
+    "tie": 0
+  },
+  "quorum": 3,
+  "b_wins": true,
+  "label": "council-judged (3 judges)"
+}

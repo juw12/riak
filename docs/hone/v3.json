@@ -1,0 +1,137 @@
+{
+  "mode": "score",
+  "models": [
+    "Pega-Vision",
+    "Pega-Thinking",
+    "GLM-5.3-Flash"
+  ],
+  "weights": {
+    "C1": 0.3,
+    "C2": 0.3,
+    "C3": 0.25,
+    "C4": 0.15
+  },
+  "judges": {
+    "Pega-Vision": {
+      "scores": {
+        "C1": 7.0,
+        "C2": 8.0,
+        "C3": 9.0,
+        "C4": 7.0
+      },
+      "evidence": {
+        "C1": "Tank art is hero with 'Tap a fish to meet it...' overlay, but Garden and fishing screens are simpler and less art-directed.",
+        "C2": "Clear 'Cast' and 'Test the water' actions, but 'Residents', 'Watch', and 'Share' are ambiguous on phone.",
+        "C3": "Summary lists care, fishing, breeding, scaping, greenhouse, reef genetics, orders, journal, and focus loops.",
+        "C4": "Toast placement differs (top-right desktop, top-center phone) and Garden has large empty space."
+      },
+      "fixes": [
+        "Elevate Garden and fishing scenes to the tank's art level with richer composition and purposeful empty states.",
+        "Clarify or regroup ambiguous tools (Residents, Watch, Share) and add stronger first-time next-step cues on phone.",
+        "Standardize toast/feedback placement and tighten spacing/empty areas for pixel-tidy consistency."
+      ],
+      "total": 7.8,
+      "seconds": 33.6
+    },
+    "Pega-Thinking": {
+      "scores": {
+        "C1": 7.0,
+        "C2": 8.0,
+        "C3": 9.0,
+        "C4": 7.0
+      },
+      "evidence": {
+        "C1": "Coherent cream/green/teal palette and consistent serif+sans typography across screens; tank art is pleasant but fish are small and simple, and the overall look reads as a clean modern web app rather than a distinctive field-guide aesthetic.",
+        "C2": "Clear onboarding hint 'Tap a fish to meet it. Tap the glass and watch who comes.', 'More to do' panel with next steps, well-grouped tools row, and phone layout is uncrowded with bottom nav; garden empty trays lack strong guidance.",
+        "C3": "Feature summary lists care (nitrogen cycle), fishing minigame (47 species, 5 rarities, golden variants), breeding with inherited colours, aquascaping (16 plants, 8 hardscape, 3 substrates, 3 tank sizes), greenhouse with variegated sports, reef lab genetics, journal with 18 milestones, focus timer, and offline catch-up - clearly exceeds a typical cozy aquarium.",
+        "C4": "Consistent spacing, components, and well-placed toast notifications ('My first tank is ready', 'Unlocked: Mountain stream...'); however desktop Garden and Focus screens show large empty regions below content, reducing density."
+      },
+      "fixes": [
+        "Tighten desktop layouts for Garden and Focus screens - the lower halves are largely empty; add secondary content, recent activity, or compact stats to fill the space without crowding.",
+        "Push the visual identity toward a more distinctive field-guide look - add subtle paper textures, hand-drawn plant/hardscape details, or illustrated species cards so the tank art feels like the hero rather than a clean SaaS illustration.",
+        "Enrich the tank art itself - fish are small and simple silhouettes; larger, more detailed fish with visible fins/patterns and more layered foreground plants would make the aquarium the visual centerpiece on both desktop and phone."
+      ],
+      "total": 7.8,
+      "seconds": 14.4
+    },
+    "GLM-5.3-Flash": {
+      "scores": {
+        "C1": 7.5,
+        "C2": 8.5,
+        "C3": 9.0,
+        "C4": 8.0
+      },
+      "evidence": {
+        "C1": "Coherent muted green/cream palette with serif headings; tank scene is layered and pleasant ('animated vector aquarium; fish school, sleep at night'). But Garden desktop leaves a large empty band below the trays, the fishing scene is flat shapes, and care sheet is plain — short of 'every screen feels designed'.",
+        "C2": "Strong guidance everywhere: 'Tap a fish to meet it. Tap the glass and watch who comes.', 'More to do' cards, reel legend 'Hold to reel. Keep the fish inside the band.', bait odds 'Cherry shrimp 16%'. Only nit: on 390px the hint box and toast cover much of the small tank.",
+        "C3": "Summary claims all anchor loops (care, fishing minigame, breeding, scaping, greenhouse, reef genetics, orders, journal, focus) with interlocks (trimming 'gives cuttings to replant, sell or deliver'; focus 'earns a shell'). Screenshots confirm nitrogen readings, trays, dex '3 of 47', focus timer — but breeding/scaping/orders loops are unseen, so full 'clearly exceed' not demonstrated.",
+        "C4": "Consistent buttons, cards, icon style; care values right-aligned with aligned 'fine' states. Rough edge: toast 'My first tank is ready' overlaps the tank image on 390px, and the Garden unlock toast sits over the header zone."
+      },
+      "fixes": [
+        "On 390px, stop overlays from covering the tank: auto-dismiss the tap hint after first interaction and reposition toasts (e.g. below the header) so the tank art stays the hero and nothing feels cramped.",
+        "Rebalance the desktop Garden screen — the area below the four trays is empty dead space; surface reef lab, daily orders or a larger inventory panel there.",
+        "Make the hidden loops visible: surface daily orders and breeding/reef-lab status in the Tank side column or Garden tab so the interlocking loops (orders, strains, breeding) are discoverable and their depth is demonstrable, not just claimed."
+      ],
+      "total": 8.25,
+      "seconds": 36.9
+    }
+  },
+  "quorum": 3,
+  "council_score": 7.8,
+  "criterion_median": {
+    "C1": 7.0,
+    "C2": 8.0,
+    "C3": 9.0,
+    "C4": 7.0
+  },
+  "criterion_spread": {
+    "C1": 0.5,
+    "C2": 0.5,
+    "C3": 0.0,
+    "C4": 1.0
+  },
+  "split_criteria": [],
+  "judge_total_range": [
+    7.8,
+    8.25
+  ],
+  "fixes": [
+    {
+      "judge": "Pega-Vision",
+      "fix": "Elevate Garden and fishing scenes to the tank's art level with richer composition and purposeful empty states."
+    },
+    {
+      "judge": "Pega-Vision",
+      "fix": "Clarify or regroup ambiguous tools (Residents, Watch, Share) and add stronger first-time next-step cues on phone."
+    },
+    {
+      "judge": "Pega-Vision",
+      "fix": "Standardize toast/feedback placement and tighten spacing/empty areas for pixel-tidy consistency."
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Tighten desktop layouts for Garden and Focus screens - the lower halves are largely empty; add secondary content, recent activity, or compact stats to fill the space without crowding."
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Push the visual identity toward a more distinctive field-guide look - add subtle paper textures, hand-drawn plant/hardscape details, or illustrated species cards so the tank art feels like the hero rather than a clean SaaS illustration."
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Enrich the tank art itself - fish are small and simple silhouettes; larger, more detailed fish with visible fins/patterns and more layered foreground plants would make the aquarium the visual centerpiece on both desktop and phone."
+    },
+    {
+      "judge": "GLM-5.3-Flash",
+      "fix": "On 390px, stop overlays from covering the tank: auto-dismiss the tap hint after first interaction and reposition toasts (e.g. below the header) so the tank art stays the hero and nothing feels cramped."
+    },
+    {
+      "judge": "GLM-5.3-Flash",
+      "fix": "Rebalance the desktop Garden screen — the area below the four trays is empty dead space; surface reef lab, daily orders or a larger inventory panel there."
+    },
+    {
+      "judge": "GLM-5.3-Flash",
+      "fix": "Make the hidden loops visible: surface daily orders and breeding/reef-lab status in the Tank side column or Garden tab so the interlocking loops (orders, strains, breeding) are discoverable and their depth is demonstrable, not just claimed."
+    }
+  ],
+  "label": "council-judged (3 judges)"
+}

@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Riak unit tests</title>
+  <style>
+    body { font: 14px/1.5 system-ui, sans-serif; margin: 24px; color: #1d2b2a; }
+    .pass { color: #1f6b4a; }
+    .fail { color: #a23a22; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <h1>Riak unit tests</h1>
+  <ol id="out"></ol>
+  <script type="module">
+    import * as sim from "../js/sim.js";
+    import { rng, hexToHue, BANNED_HUE } from "../js/util.js";
+    import { packTank, unpackTank } from "../js/share.js";
+    import { STRINGS } from "../js/i18n.js";
+    import { FISH, PLANTS, SPOTS } from "../js/data.js";
+
+    const results = [];
+    const out = document.getElementById("out");
+
+    function test(name, fn) {
+      let ok = false;
+      let detail = "";
+      try {
+        const r = fn();
+        ok = r === true || r === undefined;
+        if (r !== true && r !== undefined) detail = JSON.stringify(r);
+      } catch (e) {
+        detail = String(e && e.stack || e);
+      }
+      results.push({ name, ok, detail });
+      const li = document.createElement("li");
+      li.className = ok ? "pass" : "fail";
+      li.textContent = (ok ? "PASS " : "FAIL ") + name + (detail ? " - " + detail : "");
+      out.appendChild(li);
+    }
+
+    function assert(cond, msg) {
+      if (!cond) throw new Error(msg || "assertion failed");
+    }
+
+    const HOUR = sim.HOUR;
+    const T0 = Date.UTC(2026, 10, 7, 9, 0, 0);
+
+    function freshWorld(seedValue) {
+      const state = sim.newState();
+      sim.seedStarterTank(state, "guppy");
+      state.lastTick = T0;
+      return { state, r: rng(seedValue) };
+    }
+
+    test("seeded rng is deterministic", () => {
+      const a = rng(42);
+      const b = rng(42);
+      for (let i = 0; i < 50; i++) assert(a() === b(), "diverged at " + i);
+      const c = rng(43);
+      assert(rng(42)() !== c(), "different seeds should differ");
+    });
+
+    test("same seed -> same 24 h world", () => {
+      const runs = [1, 2].map(() => {
+        const { state, r } = freshWorld(7);
+        for (let i = 1; i <= 144; i++) sim.tickWorld(state, 10 * 60000, T0 + i * 10 * 60000, r);
+        const t = state.tanks[0];
+        return JSON.stringify({ w: t.w, n: state.fish.length, plants: t.plants.map((p) => p.g) });
+      });
+      assert(runs[0] === runs[1], "worlds diverged");
+    });
+
+    test("nitrogen cycle turns ammonia into nitrate", () => {
+      const { state } = freshWorld(3);
+      const tank = state.tanks[0];
+      tank.plants = [];
+      tank.w.amm = 2;
+      tank.w.no2 = 0;
+      const no3Before = tank.w.no3;
+      for (let i = 1; i <= 24; i++) sim.tickTank(state, tank, HOUR, T0 + i * HOUR);
+      assert(tank.w.amm < 0.5, "ammonia stayed high: " + tank.w.amm);
+      assert(tank.w.no3 > no3Before, "nitrate did not rise");
+    });
+
+    test("plants pull nitrate down", () => {
+      const a = freshWorld(5).state;
+      const b = freshWorld(5).state;
+      const ta = a.tanks[0];
+      const tb = b.tanks[0];
+      ta.w.no3 = 30;
+      tb.w.no3 = 30;
+      tb.plants = [];
+      for (let i = 1; i <= 12; i++) {
+        sim.tickTank(a, ta, HOUR, T0 + i * HOUR);
+        sim.tickTank(b, tb, HOUR, T0 + i * HOUR);
+      }
+      assert(ta.plants.length > 0, "starter has no plants");
+      assert(ta.w.no3 < tb.w.no3, "planted " + ta.w.no3 + " vs bare " + tb.w.no3);
+    });
+
+    test("water quality is 0-100 and worse when dirty", () => {
+      const clean = sim.waterQuality({ amm: 0, no2: 0, no3: 5, bact: 1, algae: 0, glass: 0, temp: 25 });
+      const dirty = sim.waterQuality({ amm: 3, no2: 2, no3: 80, bact: 0.3, algae: 0.6, glass: 0.8, temp: 25 });
+      const q = (v) => (typeof v === "object" ? v.score ?? v.q ?? v.value : v);
+      assert(q(clean) > q(dirty), "clean " + q(clean) + " dirty " + q(dirty));
+    });
+
+    test("happy adult pair breeds in a roomy tank", () => {
+      const { state } = freshWorld(11);
+      const tank = state.tanks[0];
+      tank.size = "grand";
+      const fish = sim.tankFish(state, tank.id);
+      const sp = fish[0].sp;
+      const pair = fish.filter((f) => f.sp === sp).slice(0, 2);
+      if (pair.length < 2) {
+        const extra = sim.newFish(sp, { tank: tank.id, r: rng(1) });
+        state.fish.push(extra);
+        pair.push(extra);
+      }
+      pair[0].sex = "f";
+      pair[1].sex = "m";
+      for (const f of pair) {
+        f.adult = true;
+        f.mood = 95;
+        f.bred = 0;
+      }
+      const before = state.fish.length;
+      const born = sim.tryBreed(state, tank, 100 * HOUR, T0, () => 0.01);
+      assert(born.length > 0 && state.fish.length > before, "no fry");
+      assert(born.every((b) => b.parents && b.parents.length === 2), "fry missing parents");
+    });
+
+    test("offline catch-up is capped and reports a summary", () => {
+      const { state } = freshWorld(9);
+      state.lastTick = T0 - 30 * 24 * HOUR;
+      const summary = sim.catchUp(state, T0, rng(9));
+      assert(summary.ms <= sim.MAX_OFFLINE, "gap not capped");
+      assert(summary.after && Object.keys(summary.after).length === state.tanks.length, "missing after");
+    });
+
+    test("share link round-trips a tank", () => {
+      const { state } = freshWorld(4);
+      const tank = state.tanks[0];
+      const packed = packTank(state, tank, "Juwen");
+      const json = JSON.parse(JSON.stringify(packed));
+      const visit = unpackTank(json);
+      const tankOut = visit.tank || visit;
+      assert(tankOut.plants.length === tank.plants.length, "plants lost");
+      assert(tankOut.ground.length === 25, "ground length");
+      const fishOut = visit.fish || [];
+      assert(fishOut.length === sim.tankFish(state, tank.id).length, "fish lost");
+    });
+
+    test("bad share payload is rejected", () => {
+      let threw = false;
+      try {
+        unpackTank({ v: 9 });
+      } catch (e) {
+        threw = true;
+      }
+      assert(threw, "accepted garbage");
+    });
+
+    test("coral genes cross into a named strain", () => {
+      const r = rng(21);
+      const a = sim.randomGenes(r);
+      const b = sim.randomGenes(r);
+      const child = sim.crossGenes(a, b, r);
+      assert(typeof sim.strainKey(child) === "string", "no strain key");
+      assert(sim.strainName(child).length > 0, "no strain name");
+    });
+
+    test("levels grow monotonically", () => {
+      let last = -1;
+      for (let lv = 1; lv <= 20; lv++) {
+        const xp = sim.xpForLevel(lv);
+        assert(xp > last, "xp not increasing at " + lv);
+        assert(sim.levelFromXp(xp) >= lv, "levelFromXp mismatch at " + lv);
+        last = xp;
+      }
+    });
+
+    test("every spot can roll a catch at noon and midnight", () => {
+      for (const spot of SPOTS) {
+        for (const hour of [12, 0]) {
+          const ts = Date.UTC(2026, 10, 7, hour, 0, 0);
+          const c = sim.rollCatch(spot.id, ts, null, rng(hour + 1));
+          assert(c, "no catch at " + spot.id + " " + hour);
+        }
+      }
+    });
+
+    test("migrate keeps a current save intact", () => {
+      const { state } = freshWorld(2);
+      const copy = sim.migrate(JSON.parse(JSON.stringify(state)));
+      assert(copy.fish.length === state.fish.length, "fish lost on migrate");
+      assert(copy.tanks.length === state.tanks.length, "tanks lost on migrate");
+    });
+
+    test("no species colour falls in the banned purple band", () => {
+      const bad = [];
+      for (const list of [FISH, PLANTS]) {
+        for (const item of list) {
+          for (const c of item.colors || []) {
+            const { h, s } = hexToHue(c);
+            if (s >= 0.12 && h >= BANNED_HUE[0] && h <= BANNED_HUE[1]) bad.push(item.id + " " + c);
+          }
+        }
+      }
+      assert(bad.length === 0, bad.join(", "));
+    });
+
+    test("rolled fish colours avoid purple", () => {
+      const r = rng(77);
+      const bad = [];
+      for (const sp of FISH) {
+        for (let i = 0; i < 5; i++) {
+          for (const c of sim.rollColors(sp, r)) {
+            const { h, s } = hexToHue(c);
+            if (s >= 0.12 && h >= BANNED_HUE[0] && h <= BANNED_HUE[1]) bad.push(sp.id + " " + c);
+          }
+        }
+      }
+      assert(bad.length === 0, bad.slice(0, 5).join(", "));
+    });
+
+    test("English and Bahasa Indonesia have the same keys", () => {
+      const en = Object.keys(STRINGS.en).sort();
+      const id = Object.keys(STRINGS.id).sort();
+      const missing = en.filter((k) => !(k in STRINGS.id));
+      const extra = id.filter((k) => !(k in STRINGS.en));
+      assert(missing.length === 0 && extra.length === 0, { missing, extra });
+    });
+
+    window.__results = results;
+    window.__done = true;
+  </script>
+</body>
+</html>

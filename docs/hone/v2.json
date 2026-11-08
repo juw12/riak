@@ -1,0 +1,137 @@
+{
+  "mode": "score",
+  "models": [
+    "Pega-Vision",
+    "Pega-Thinking",
+    "GLM-5.3-Flash"
+  ],
+  "weights": {
+    "C1": 0.3,
+    "C2": 0.3,
+    "C3": 0.25,
+    "C4": 0.15
+  },
+  "judges": {
+    "Pega-Vision": {
+      "scores": {
+        "C1": 7.0,
+        "C2": 8.0,
+        "C3": 9.0,
+        "C4": 7.0
+      },
+      "evidence": {
+        "C1": "The tank art is pleasant and the cream/green palette is coherent, but Garden and Journal look sparse and generic.",
+        "C2": "Labelled tools, checklist and Cast button make main actions findable, but the phone toast overlaps status text.",
+        "C3": "Care, fishing, breeding, scaping, greenhouse, reef genetics, orders, journal and focus are all present.",
+        "C4": "Components are mostly consistent, but toast placement, Garden empty space and generic journal silhouettes show rough edges."
+      },
+      "fixes": [
+        "Reposition or stack toasts on 390px so they never cover tank status or checklist text.",
+        "Give Garden, Journal, Fishing and Focus the same designed art treatment as the tank, especially empty trays and journal silhouettes.",
+        "Add clearer next-step guidance and richer empty states on Garden/Journal/Focus so first-time users know what to do outside the tank."
+      ],
+      "total": 7.8,
+      "seconds": 26.3
+    },
+    "Pega-Thinking": {
+      "scores": {
+        "C1": 7.0,
+        "C2": 7.0,
+        "C3": 9.0,
+        "C4": 7.0
+      },
+      "evidence": {
+        "C1": "Coherent green/teal/beige palette and consistent serif+sans typography; tank art is pleasant but fish are simple vector shapes and the 'field-guide' aesthetic is only hinted at, not distinctive.",
+        "C2": "Tools row clearly labelled (Feed/Care/Scape/Residents/Shop/Photo/Watch/Share), care sheet well-organised, fishing instructions like 'Hold to cast further' are clear; however on phone the 'My first tank is doing well' status section is clipped/overlapped by the toast and bottom nav.",
+        "C3": "Multiple interlocking loops: nitrogen-cycle care, 9-spot fishing with weather/day-night and reel minigame (47 species, 5 rarities, golden variants), breeding with inherited colours, aquascaping (16 plants, 8 hardscape, 3 substrates, 3 tank sizes), greenhouse with variegated sports, reef lab with named strains, journal dex with silhouettes, focus timer with box breathing, daily orders, offline catch-up.",
+        "C4": "Consistent dark-green accent, uniform cards/buttons/tabs across screens; rough edges include the phone status section being cut off behind the 'My first tank is ready' toast and the garden trays showing large empty placeholder areas that look unfinished."
+      },
+      "fixes": [
+        "Fix the 390 px tank layout so the 'My first tank is doing well' status panel is not clipped/overlapped by the toast and bottom navigation.",
+        "Give the empty garden trays a more designed empty state (subtle illustration, soil texture, or hint text) instead of large blank rectangles.",
+        "Strengthen the tank art toward a distinctive field-guide look — more detailed fish silhouettes, labelled plant species, or a subtle vignette — so the aquarium reads as the hero rather than a generic vector scene."
+      ],
+      "total": 7.5,
+      "seconds": 9.5
+    },
+    "GLM-5.3-Flash": {
+      "scores": {
+        "C1": 7.0,
+        "C2": 8.0,
+        "C3": 9.0,
+        "C4": 7.0
+      },
+      "evidence": {
+        "C1": "Coherent cream/green palette with serif headings; tank art with light rays, layered plants and driftwood is the hero. But not every screen feels designed: the fishing scene is flat (plain sky, flat hills, bare rod) and the Garden screen is mostly empty below the four trays.",
+        "C2": "Strong next-step cues: 'Tap a fish to meet it. Tap the glass and watch who comes.', labelled tool row (Feed...Share), reel legend 'Fish / Your line, keep the fish inside / Catch progress', bait odds 'Cherry shrimp 16%'. Docked one point: on the phone the toast hides the water-quality status line, and Garden's next step after 'Plant' is less guided.",
+        "C3": "Summary claims all anchor loops (nitrogen-cycle care, reel minigame, breeding with inherited colours, scaping, greenhouse, reef lab strains, orders, journal, focus) and screenshots confirm interlocks: 'Trimming gives cuttings to replant, sell or deliver', orders like 'Deliver 3 Water lettuce cuttings'. Breeding and reef genetics appear only in the summary, never on screen, so 'clearly exceed' is not fully demonstrated.",
+        "C4": "Consistent cards, buttons and tabs across screens; disabled 'Deliver' states shown. Rough edge: the 'My first tank is ready' toast overlaps and obscures 'Water quality 99 of 100. Every fish is content' on the phone, and sits across the nav/content boundary on desktop."
+      },
+      "fixes": [
+        "Reposition toasts so they never cover content: on the phone the 'My first tank is ready' toast hides the water-quality status line; use a reserved non-overlapping slot or shorter auto-dismiss.",
+        "Raise the fishing scene and Garden screen to the tank's craft level: richer fishing art (sky/hills/water are flat) and a composed Garden layout instead of the large empty area below the trays.",
+        "Surface the deep loops in the UI itself - breeding, reef lab and scaping have no visible entry point or teaser in any screenshot, so the interlocking depth exists only in the summary text."
+      ],
+      "total": 7.8,
+      "seconds": 50.9
+    }
+  },
+  "quorum": 3,
+  "council_score": 7.8,
+  "criterion_median": {
+    "C1": 7.0,
+    "C2": 8.0,
+    "C3": 9.0,
+    "C4": 7.0
+  },
+  "criterion_spread": {
+    "C1": 0.0,
+    "C2": 1.0,
+    "C3": 0.0,
+    "C4": 0.0
+  },
+  "split_criteria": [],
+  "judge_total_range": [
+    7.5,
+    7.8
+  ],
+  "fixes": [
+    {
+      "judge": "Pega-Vision",
+      "fix": "Reposition or stack toasts on 390px so they never cover tank status or checklist text."
+    },
+    {
+      "judge": "Pega-Vision",
+      "fix": "Give Garden, Journal, Fishing and Focus the same designed art treatment as the tank, especially empty trays and journal silhouettes."
+    },
+    {
+      "judge": "Pega-Vision",
+      "fix": "Add clearer next-step guidance and richer empty states on Garden/Journal/Focus so first-time users know what to do outside the tank."
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Fix the 390 px tank layout so the 'My first tank is doing well' status panel is not clipped/overlapped by the toast and bottom navigation."
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Give the empty garden trays a more designed empty state (subtle illustration, soil texture, or hint text) instead of large blank rectangles."
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Strengthen the tank art toward a distinctive field-guide look — more detailed fish silhouettes, labelled plant species, or a subtle vignette — so the aquarium reads as the hero rather than a generic vector scene."
+    },
+    {
+      "judge": "GLM-5.3-Flash",
+      "fix": "Reposition toasts so they never cover content: on the phone the 'My first tank is ready' toast hides the water-quality status line; use a reserved non-overlapping slot or shorter auto-dismiss."
+    },
+    {
+      "judge": "GLM-5.3-Flash",
+      "fix": "Raise the fishing scene and Garden screen to the tank's craft level: richer fishing art (sky/hills/water are flat) and a composed Garden layout instead of the large empty area below the trays."
+    },
+    {
+      "judge": "GLM-5.3-Flash",
+      "fix": "Surface the deep loops in the UI itself - breeding, reef lab and scaping have no visible entry point or teaser in any screenshot, so the interlocking depth exists only in the summary text."
+    }
+  ],
+  "label": "council-judged (3 judges)"
+}

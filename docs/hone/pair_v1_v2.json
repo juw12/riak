@@ -1,0 +1,51 @@
+{
+  "mode": "pair",
+  "models": [
+    "Pega-Vision",
+    "Pega-Thinking",
+    "GLM-5.3-Flash"
+  ],
+  "judges": {
+    "Pega-Vision": {
+      "picks_AB_BA": [
+        "B",
+        "B"
+      ],
+      "vote": "B",
+      "reasons": [
+        "The feature summaries are identical, but VERSION 2’s screenshots show clearer reel-minigame affordances and fewer intrusive toasts, giving slightly better clarity and polish despite one minor toast overlap.",
+        "Both versions have the same feature depth, but VERSION 1 is more consistently polished on mobile; VERSION 2’s larger fishing scene is nice, yet its overlapping unlock toasts on the mobile journal obscure key controls and hurt clarity and polish."
+      ]
+    },
+    "Pega-Thinking": {
+      "picks_AB_BA": [
+        "tie",
+        "tie"
+      ],
+      "vote": "tie",
+      "reasons": [
+        "Both versions have identical text descriptions and essentially the same screenshots showing the same app with only negligible state differences (weather, reel minigame legend). Visual craft, clarity, depth, and polish are indistinguishable between the two.",
+        "Both versions contain identical feature descriptions and visually indistinguishable screenshots showing the same tank, care sheet, fishing, garden, journal, and focus screens with the same palette, layout, and components."
+      ]
+    },
+    "GLM-5.3-Flash": {
+      "picks_AB_BA": [
+        "B",
+        "tie"
+      ],
+      "vote": "tie",
+      "reasons": [
+        "The packets and overall visual design are essentially identical, but Version 2 shows a clearer reel-minigame UI (labelled legend for fish/band/progress) and a clean Journal screen, whereas Version 1's Journal is obscured by stacked toasts and its reel has unlabelled controls; Version 2's only flaw (a toast briefly covering the tank status line) is minor by comparison.",
+        "Both versions present the same feature set, palette, layouts, and screens; the only observable differences are transient toast placements (V1's toast covers the water-quality status line on the mobile tank, while V2's toasts cover the Journal heading), which offset each other and are negligible under the rubric."
+      ]
+    }
+  },
+  "votes": {
+    "A": 0,
+    "B": 1,
+    "tie": 2
+  },
+  "quorum": 3,
+  "b_wins": false,
+  "label": "council-judged (3 judges)"
+}

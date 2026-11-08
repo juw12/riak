@@ -1,0 +1,137 @@
+{
+  "mode": "score",
+  "models": [
+    "Pega-Vision",
+    "Pega-Thinking",
+    "GLM-5.3-Flash"
+  ],
+  "weights": {
+    "C1": 0.3,
+    "C2": 0.3,
+    "C3": 0.25,
+    "C4": 0.15
+  },
+  "judges": {
+    "Pega-Vision": {
+      "scores": {
+        "C1": 7.0,
+        "C2": 6.0,
+        "C3": 9.0,
+        "C4": 6.0
+      },
+      "evidence": {
+        "C1": "Tank art is pleasant and the palette/type are coherent, but Garden and Journal look more utilitarian than distinctive field-guide.",
+        "C2": "Phone tank tools show only Feed, Care, Scape, Residents with no visible scroll affordance, and the toast overlaps controls.",
+        "C3": "Feature summary lists care, fishing minigame, breeding, scaping, greenhouse, reef genetics, orders, journal, and focus loops.",
+        "C4": "Toasts stack over content on Garden, Journal, and Focus, and Garden desktop has large empty space."
+      },
+      "fixes": [
+        "Fix mobile tool overflow and toast placement so controls/content are never covered, with a visible scroll or wrap affordance.",
+        "Elevate non-tank screens with distinctive field-guide art and card styling so Garden/Journal feel as designed as the tank.",
+        "Add clearer first-time guidance and grouping on small screens, especially visible next-step cues and non-cramped tool controls."
+      ],
+      "total": 7.05,
+      "seconds": 11.0
+    },
+    "Pega-Thinking": {
+      "scores": {
+        "C1": 6.0,
+        "C2": 7.0,
+        "C3": 9.0,
+        "C4": 6.0
+      },
+      "evidence": {
+        "C1": "Coherent cream/dark-green palette and consistent serif/sans pairing give a calm field-guide feel, but the tank art is flat and small ('tiny fish silhouettes' in the tank view) and never feels like the hero; the dark 'Unlocked:' toasts clash with the otherwise muted palette.",
+        "C2": "Main actions are findable and labelled (Feed/Care/Scape/Residents row, clear care checklist, bait cards with bite odds, 'Hold to reel' instruction). However, on the 390 px tank view the tools row is visibly cut off after Residents, suggesting cramped mobile layout.",
+        "C3": "Multiple interlocking loops clearly exceed a typical cozy aquarium: nitrogen-cycle care, 9-spot fishing with weather/day-night and reel-tension minigame, breeding with inherited colours, 16-plant/8-hardscape scaping, greenhouse with variegated sports, reef-lab strain crossing, journal dex with silhouettes, focus timer with box breathing, daily orders and streak.",
+        "C4": "Spacing and components are consistent across screens, but the dark 'Unlocked: Glacier lake / Open ocean / Greenhouse / Reef lab' toasts are large, opaque, and overlap content on Garden, Journal and Focus; the phone tools row also appears to overflow the viewport."
+      },
+      "fixes": [
+        "Shrink and restyle the 'Unlocked:' toasts (or move them to a non-overlapping corner) so they stop dominating screens like Garden, Journal and Focus.",
+        "Fix the 390 px Tank layout so the full tools row (Feed, Care, Scape, Residents, Shop, Photo, Watch, Share) fits without being clipped behind the bottom nav.",
+        "Enrich the tank art so the fish and plants read as the hero of the screen rather than tiny silhouettes against a flat background."
+      ],
+      "total": 7.05,
+      "seconds": 9.1
+    },
+    "GLM-5.3-Flash": {
+      "scores": {
+        "C1": 7.0,
+        "C2": 7.5,
+        "C3": 9.5,
+        "C4": 6.5
+      },
+      "evidence": {
+        "C1": "Coherent cream/deep-green palette with serif display type and pleasant layered tank art (driftwood, plants, bubbles); but the Garden desktop leaves the lower half empty and 'Unlocked: Glacier lake / Open ocean / Greenhouse' toasts are heavy dark slabs, so not every screen feels designed.",
+        "C2": "Strong next-step hints: 'Tap a fish to meet it. Tap the glass and watch who comes.', 'Hold to reel. Keep the fish inside the band.', 'Plant a seedling to start growing.'; but on the 390px tank the 'My first tank is ready' toast sits over the Shop/Photo/Watch/Share tool row, and 'Biting now' repeats 'Not found yet 24%' four times.",
+        "C3": "All anchor loops present and interlocking: 'nitrogen cycle simulation', 'reel tension minigame' with '47 species, 5 rarities, golden variants', 'Breeding with inherited colours', scaping, greenhouse cuttings ('Trimming gives cuttings to replant, sell or deliver'), 'reef lab (frag, cross, named strains)', orders, journal, focus — clearly beyond a typical cozy aquarium app.",
+        "C4": "Spacing, buttons and cards are consistent, but feedback is obtrusive and badly placed: three stacked 'Unlocked:' slabs cover journal cards on phone, and a toast overlaps the phone tool row — directly against 'feedback messages unobtrusive and well placed'."
+      },
+      "fixes": [
+        "Rework the toast system: smaller, corner-anchored, capped/consolidated stack so 'Unlocked:' messages never cover the phone tools row or journal cards.",
+        "Redesign the Garden desktop layout to use the empty lower half (larger or additional trays, repositioned inventory) so the screen feels designed.",
+        "Declutter the Fishing 'Biting now' panel by grouping repeated 'Not found yet' odds chips into one summary line."
+      ],
+      "total": 7.7,
+      "seconds": 34.5
+    }
+  },
+  "quorum": 3,
+  "council_score": 7.35,
+  "criterion_median": {
+    "C1": 7.0,
+    "C2": 7.0,
+    "C3": 9.0,
+    "C4": 6.0
+  },
+  "criterion_spread": {
+    "C1": 1.0,
+    "C2": 1.5,
+    "C3": 0.5,
+    "C4": 0.5
+  },
+  "split_criteria": [],
+  "judge_total_range": [
+    7.05,
+    7.7
+  ],
+  "fixes": [
+    {
+      "judge": "Pega-Vision",
+      "fix": "Fix mobile tool overflow and toast placement so controls/content are never covered, with a visible scroll or wrap affordance."
+    },
+    {
+      "judge": "Pega-Vision",
+      "fix": "Elevate non-tank screens with distinctive field-guide art and card styling so Garden/Journal feel as designed as the tank."
+    },
+    {
+      "judge": "Pega-Vision",
+      "fix": "Add clearer first-time guidance and grouping on small screens, especially visible next-step cues and non-cramped tool controls."
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Shrink and restyle the 'Unlocked:' toasts (or move them to a non-overlapping corner) so they stop dominating screens like Garden, Journal and Focus."
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Fix the 390 px Tank layout so the full tools row (Feed, Care, Scape, Residents, Shop, Photo, Watch, Share) fits without being clipped behind the bottom nav."
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Enrich the tank art so the fish and plants read as the hero of the screen rather than tiny silhouettes against a flat background."
+    },
+    {
+      "judge": "GLM-5.3-Flash",
+      "fix": "Rework the toast system: smaller, corner-anchored, capped/consolidated stack so 'Unlocked:' messages never cover the phone tools row or journal cards."
+    },
+    {
+      "judge": "GLM-5.3-Flash",
+      "fix": "Redesign the Garden desktop layout to use the empty lower half (larger or additional trays, repositioned inventory) so the screen feels designed."
+    },
+    {
+      "judge": "GLM-5.3-Flash",
+      "fix": "Declutter the Fishing 'Biting now' panel by grouping repeated 'Not found yet' odds chips into one summary line."
+    }
+  ],
+  "label": "council-judged (3 judges)"
+}

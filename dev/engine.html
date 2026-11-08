@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Engine test</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #e9e5dc; }
+  canvas { display: block; width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script type="module">
+  import { newState, seedStarterTank, newFish, newCoral, randomGenes } from "../js/sim.js";
+  import { TankView } from "../js/tank.js";
+  const state = newState();
+  seedStarterTank(state, "neon");
+  const t = state.tanks[0];
+  for (const sp of ["betta", "cory", "cory", "cory", "angel", "discus", "nerite", "kuhli", "goldfish"]) state.fish.push(newFish(sp, { tank: t.id }));
+  t.plants.push({ id: "pl1", sp: "lettuce", x: 0.3, g: 1, v: 0 }, { id: "pl2", sp: "marimo", x: 0.58, g: 1, v: 0 }, { id: "pl3", sp: "montecarlo", x: 0.2, g: 1, v: 1 }, { id: "pl4", sp: "javamoss", x: 0.72, g: 1, v: 0 });
+  t.corals.push(Object.assign(newCoral(randomGenes()), { x: 0.5, g: 1 }));
+  t.w.glass = Number(new URLSearchParams(location.search).get("glass") || 0.1);
+  const view = new TankView(document.getElementById("c"), { source: () => ({ tank: t, fish: state.fish }), onEat: () => {}, onEvent: () => {}, reduceMotion: () => false, now: () => { const h = new URLSearchParams(location.search).get('hour'); if (!h) return Date.now(); const d = new Date(); d.setHours(+h, 0, 0, 0); return d.getTime(); } });
+  view.start();
+  window.view = view;
+</script>
+</body>
+</html>

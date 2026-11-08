@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Riak: Cozy Aquarium</title>
+<meta name="description" content="A free, offline aquarium you care for. Planted tanks with a real nitrogen cycle, fish with personalities, fishing in nine places, a greenhouse, a coral lab and a focus timer.">
+<meta name="theme-color" content="#f5f1e8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141a18" media="(prefers-color-scheme: dark)">
+<meta property="og:title" content="Riak: Cozy Aquarium">
+<meta property="og:description" content="Keep a living planted tank in your browser. Free, offline, no ads, no account.">
+<meta property="og:image" content="https://juw12.github.io/riak/icons/og.png">
+<meta property="og:type" content="website">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="fonts/fonts.css">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="top">
+  <div class="brand">
+    <h1 class="brand-name">Riak</h1>
+    <span class="brand-tag" data-i18n="app.tagline">A cozy aquarium you care for</span>
+  </div>
+  <div class="top-right">
+    <button type="button" class="chip level-chip" id="levelChip" aria-describedby="levelBar">
+      <span id="levelText">Level 1</span>
+      <span class="level-bar" id="levelBar"><i></i></span>
+    </button>
+    <span class="chip shells" id="shellChip"><span id="shellText">0</span></span>
+    <button type="button" class="btn icon ghost" id="settingsBtn" aria-label="Settings"></button>
+  </div>
+</header>
+<nav class="tabs" id="tabs" aria-label="Sections"></nav>
+<div class="visit-bar" id="visitBar" hidden></div>
+<main id="main" tabindex="-1">
+  <section class="panel" id="panel-tank" data-panel="tank"></section>
+  <section class="panel" id="panel-fishing" data-panel="fishing" hidden></section>
+  <section class="panel" id="panel-garden" data-panel="garden" hidden></section>
+  <section class="panel" id="panel-journal" data-panel="journal" hidden></section>
+  <section class="panel" id="panel-focus" data-panel="focus" hidden></section>
+</main>
+<noscript><p class="noscript">Riak needs JavaScript to run the aquarium.</p></noscript>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
