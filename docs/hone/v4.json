@@ -1,0 +1,137 @@
+{
+  "mode": "score",
+  "models": [
+    "Pega-Vision",
+    "Pega-Thinking",
+    "GLM-5.3-Flash"
+  ],
+  "weights": {
+    "C1": 0.3,
+    "C2": 0.3,
+    "C3": 0.25,
+    "C4": 0.15
+  },
+  "judges": {
+    "Pega-Vision": {
+      "scores": {
+        "C1": 7.0,
+        "C2": 7.0,
+        "C3": 9.0,
+        "C4": 7.0
+      },
+      "evidence": {
+        "C1": "Coherent cream/green palette and glass-box tank, but garden and journal screens feel plainer than the tank.",
+        "C2": "Labelled tools like Feed, Care, Scape are findable, but phone fishing fight shows bottom nav overlapping text.",
+        "C3": "Summary lists care, fishing, breeding, scaping, greenhouse, reef genetics, orders, journal, and focus loops.",
+        "C4": "Consistent cards and pills, but an unlabeled empty button appears beside Phone motion and some toasts crowd the edge."
+      },
+      "fixes": [
+        "Fix phone safe-area and scroll padding so bottom nav never covers fishing or care text and controls.",
+        "Raise visual distinctiveness by enlarging and detailing fish/tank art and giving garden and journal the same field-guide treatment.",
+        "Make interlocking loops visible with next-step cues, such as trim to cuttings to order, fishing quest progress, and label or remove the empty fishing control."
+      ],
+      "total": 7.5,
+      "seconds": 35.6
+    },
+    "Pega-Thinking": {
+      "scores": {
+        "C1": 8.0,
+        "C2": 8.0,
+        "C3": 9.0,
+        "C4": 8.0
+      },
+      "evidence": {
+        "C1": "Tank art is genuinely distinctive with perspective side panes, receding gravel floor, depth haze, fish floor shadows, lid rim and stand; warm cream palette with green accents is coherent; fishing scene has nice atmospheric depth (moon, haze, ridge); journal silhouettes have field-guide charm. Garden trays feel notably emptier/less designed than other screens.",
+        "C2": "Strong onboarding: 'Tap a fish to meet it. Tap the glass and watch who comes.' hint, 'More to do' card with three clear next steps, well-labeled tools row (Feed, Care, Scape, Residents, Shop, Photo, Watch, Share). Phone layout wraps tools to 2x4 grid cleanly. Fishing instructions ('Flick up on the water to cast') and tension/drag controls are explicit.",
+        "C3": "Explicitly lists care (nitrogen cycle sim), fishing minigame (flick cast, strike, reel tension, drag, 5 baits, 5 lures, tournaments, 12 quests, 47 species, 5 rarities), breeding with inherited colours, aquascaping (16 plants, 8 hardscape, 3 substrates, 3 tank sizes, reef room), greenhouse (cuttings, variegated sports), reef lab (frag, cross, named strains), journal (dex, milestones), focus timer, offline catch-up. Matches the rubric's 10-description almost verbatim.",
+        "C4": "Consistent pill buttons, floating nav, card shadows and spacing across desktop and phone views. Feedback messages like 'It is running. Let it take line' are unobtrusive and well placed. Minor: phone fishing view shows bottom nav overlapping the 'Weather changes every three hours' caption; garden tray cards are visually sparse compared to other screens."
+      },
+      "fixes": [
+        "Increase visual density and designed feel of the Garden screen — trays look empty next to the richly detailed tank and fishing scenes; add tray illustrations, growth stages, or a small scene preview per tray.",
+        "Resolve phone fishing overlap where the bottom nav covers the weather/dawn caption ('Weather changes every three hours. Dawn and dusk...') — add bottom padding to the scroll area or dock the nav above content.",
+        "Push the visual identity further toward a 'field-guide' look — add subtle paper-grain or botanical-illustration touches (e.g., specimen labels, hand-drawn dividers, Latin names) to the Journal and Care screens to match the tank art's hero quality."
+      ],
+      "total": 8.25,
+      "seconds": 38.2
+    },
+    "GLM-5.3-Flash": {
+      "scores": {
+        "C1": 7.5,
+        "C2": 8.0,
+        "C3": 9.5,
+        "C4": 7.5
+      },
+      "evidence": {
+        "C1": "Coherent cream/green palette with serif display type; tank rendered with 'perspective side panes, receding gravel floor, depth haze, fish floor shadows' and moonlit fishing scene. Falls short of 'every screen feels designed': Garden desktop leaves a large empty cream area below the four trays, and fish art stays very simple.",
+        "C2": "Strong next-step cues: 'Tap a fish to meet it. Tap the glass and watch who comes.', 'Flick up on the water to cast', 'Pick a length and start when you are ready.', 'Plant a seedling to start growing.' Controls grouped and labelled on phone. Ding: the empty unlabelled pill beside 'Phone motion' in fishing Controls is ambiguous.",
+        "C3": "All anchor loops present and interlocked: nitrogen-cycle care, flick/reel fishing with '9 spots... tournaments... 47 species, 5 rarities', breeding with inherited colours, scaping, greenhouse, reef lab strains, daily orders, journal, focus. Linkage shown ('Trimming gives cuttings to replant, sell or deliver'); orders loop only surfaces as a side-column mention, so not a full 10.",
+        "C4": "Consistent pills, cards and toasts ('My first tank is ready', 'Unlocked: Mountain stream, Mangrove inlet and 5 more') with matching amber accent. Rough edges: unlabelled empty toggle next to 'Phone motion', and the fishing Cast button stretches nearly full-width unlike every other button."
+      },
+      "fixes": [
+        "Redesign the Garden desktop layout: trays end mid-page leaving a large dead area — bring in inventory, orders or a reef-lab preview so the screen feels composed (biggest C1 gain at w=0.30).",
+        "Label or properly style the empty pill beside 'Phone motion' in the fishing Controls card — it reads as a broken control and costs both C2 and C4.",
+        "Normalise primary-button sizing (full-width Cast vs pill buttons elsewhere) and verify toasts never sit under the header/theme controls on desktop."
+      ],
+      "total": 8.15,
+      "seconds": 59.8
+    }
+  },
+  "quorum": 3,
+  "council_score": 8.03,
+  "criterion_median": {
+    "C1": 7.5,
+    "C2": 8.0,
+    "C3": 9.0,
+    "C4": 7.5
+  },
+  "criterion_spread": {
+    "C1": 1.0,
+    "C2": 1.0,
+    "C3": 0.5,
+    "C4": 1.0
+  },
+  "split_criteria": [],
+  "judge_total_range": [
+    7.5,
+    8.25
+  ],
+  "fixes": [
+    {
+      "judge": "Pega-Vision",
+      "fix": "Fix phone safe-area and scroll padding so bottom nav never covers fishing or care text and controls."
+    },
+    {
+      "judge": "Pega-Vision",
+      "fix": "Raise visual distinctiveness by enlarging and detailing fish/tank art and giving garden and journal the same field-guide treatment."
+    },
+    {
+      "judge": "Pega-Vision",
+      "fix": "Make interlocking loops visible with next-step cues, such as trim to cuttings to order, fishing quest progress, and label or remove the empty fishing control."
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Increase visual density and designed feel of the Garden screen — trays look empty next to the richly detailed tank and fishing scenes; add tray illustrations, growth stages, or a small scene preview per tray."
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Resolve phone fishing overlap where the bottom nav covers the weather/dawn caption ('Weather changes every three hours. Dawn and dusk...') — add bottom padding to the scroll area or dock the nav above content."
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Push the visual identity further toward a 'field-guide' look — add subtle paper-grain or botanical-illustration touches (e.g., specimen labels, hand-drawn dividers, Latin names) to the Journal and Care screens to match the tank art's hero quality."
+    },
+    {
+      "judge": "GLM-5.3-Flash",
+      "fix": "Redesign the Garden desktop layout: trays end mid-page leaving a large dead area — bring in inventory, orders or a reef-lab preview so the screen feels composed (biggest C1 gain at w=0.30)."
+    },
+    {
+      "judge": "GLM-5.3-Flash",
+      "fix": "Label or properly style the empty pill beside 'Phone motion' in the fishing Controls card — it reads as a broken control and costs both C2 and C4."
+    },
+    {
+      "judge": "GLM-5.3-Flash",
+      "fix": "Normalise primary-button sizing (full-width Cast vs pill buttons elsewhere) and verify toasts never sit under the header/theme controls on desktop."
+    }
+  ],
+  "label": "council-judged (3 judges)"
+}

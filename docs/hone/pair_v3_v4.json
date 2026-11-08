@@ -1,0 +1,51 @@
+{
+  "mode": "pair",
+  "models": [
+    "Pega-Vision",
+    "Pega-Thinking",
+    "GLM-5.3-Flash"
+  ],
+  "judges": {
+    "Pega-Vision": {
+      "picks_AB_BA": [
+        "B",
+        "B"
+      ],
+      "vote": "B",
+      "reasons": [
+        "Both versions have the same feature depth, but Version 2’s screenshots show a more distinctive glass-tank hero, more consistent card/pill styling, and clearer fishing controls, giving stronger visual craft and polish. Version 1 looks flatter and more generic by comparison.",
+        "Both versions have the same feature depth, but VERSION 1’s screenshots show a more cohesive, polished visual system with clearer component styling and more understandable fishing controls. VERSION 2 feels flatter and less consistent, especially in the fishing UI and card/button treatments."
+      ]
+    },
+    "Pega-Thinking": {
+      "picks_AB_BA": [
+        "B",
+        "B"
+      ],
+      "vote": "B",
+      "reasons": [
+        "VERSION 2 shows more consistent visual polish with rounded card containers throughout (tank tools, care sheet sections, journal entries), a more atmospheric fishing scene, and a more detailed fishing fight screen with visible line tension, fish strength, and drag controls. This gives it a slight edge on C1 (visual craft) and C4 (polish/consistency) while C2 and C3 are essentially equivalent.",
+        "Both versions share identical feature descriptions and similar overall layouts, but VERSION 1 shows slightly stronger visual craft and polish: the night fishing scene with moon and atmospheric haze feels more cozy and field-guide-like, and the mobile fishing-fight screen includes a distinctive clock dial and richer UI (line tension, fish strength, drag settings) that feels more designed. VERSION 2's day fishing scene and simpler progress-bar UI are cleaner but less atmospheric and distinctive."
+      ]
+    },
+    "GLM-5.3-Flash": {
+      "picks_AB_BA": [
+        "B",
+        "tie"
+      ],
+      "vote": "tie",
+      "reasons": [
+        "The feature packets are identical, but Version 2's screenshots show stronger visual craft and clarity: the tank is rendered as a proper glass box with lid and stand (making tank art the hero), the floating pill nav matches the stated look, and the fishing fight screen visibly surfaces the reel dial, line tension vs fish strength bars, and drag selector described in the spec, whereas Version 1 shows a flatter tank and a sparser band-only minigame.",
+        "The written packets are word-for-word identical and the screenshots show the same app with only incidental state differences (day vs night fishing, toast placement, active-chip styling, reel-dial vs band fight UI), with V1 slightly richer in the fight screen and V2 slightly cleaner in tank presentation, netting no meaningful rubric advantage for either."
+      ]
+    }
+  },
+  "votes": {
+    "A": 0,
+    "B": 2,
+    "tie": 1
+  },
+  "quorum": 3,
+  "b_wins": true,
+  "label": "council-judged (3 judges)"
+}

@@ -1,0 +1,51 @@
+{
+  "mode": "pair",
+  "models": [
+    "Pega-Vision",
+    "Pega-Thinking",
+    "GLM-5.3-Flash"
+  ],
+  "judges": {
+    "Pega-Vision": {
+      "picks_AB_BA": [
+        "A",
+        "A"
+      ],
+      "vote": "A",
+      "reasons": [
+        "Both versions have the same feature depth, but Version 1’s screenshots show a brighter, clearer tank and less intrusive feedback, while Version 2’s darker tank and overlapping toast reduce visual appeal and polish despite slightly richer journal/garden details.",
+        "Version 2 has a brighter, clearer tank hero and less intrusive notifications, improving visual craft and polish while keeping the same feature depth. Version 1’s murky tank and overlapping toast make it feel less clean and user-friendly."
+      ]
+    },
+    "Pega-Thinking": {
+      "picks_AB_BA": [
+        "B",
+        "A"
+      ],
+      "vote": "tie",
+      "reasons": [
+        "VERSION 2 shows more refined detail in the journal (scientific names like 'Paracheirodon innesi' and numbered entries) which better matches the rubric's 'field-guide look' criterion, and the garden screen reveals more depth (seed shelf, greenhouse works explanation). While VERSION 1 has a slightly brighter tank presentation, VERSION 2's contextual state info ('Lights are off. The fish are resting.') and more catalog-like polish give it a small edge overall.",
+        "The text descriptions are identical, but the screenshots reveal a meaningful difference in visual craft: VERSION 2's tank is brighter with clearly visible fish (orange/red fish visible) and more vivid plants, while VERSION 1's tank is dim and gloomy with fish barely visible as tiny silhouettes. For a cozy aquarium where the tank art should be the hero, VERSION 2's more vibrant, readable presentation scores notably higher on C1 Visual craft, which carries the highest weight (0.30)."
+      ]
+    },
+    "GLM-5.3-Flash": {
+      "picks_AB_BA": [
+        "A",
+        "A"
+      ],
+      "vote": "A",
+      "reasons": [
+        "The feature text is identical, so the screenshots decide it: V1 shows a bright, clear tank with light rays that makes the tank art the hero on desktop, mobile and focus screens, while V2's tank screens are dark and murky with toasts overlapping the tank frame and garden seed shelf. V2's numbered field-guide journal and fuller garden screen are nice gains, but they don't offset the weaker hero visuals and less well-placed feedback messages.",
+        "The text packets are identical, so depth ties, but Version 2's screenshots show a bright, legible tank with visible fish, plants and light rays (tank art as the hero) plus cleaner moonlit fishing scenes, scoring clearly higher on visual craft and first-glance clarity. Version 1's dark, murky tank and rain-obscured fishing shots undercut the cozy, pleasant look, despite slightly fuller garden/journal screens in its favor."
+      ]
+    }
+  },
+  "votes": {
+    "A": 2,
+    "B": 0,
+    "tie": 1
+  },
+  "quorum": 3,
+  "b_wins": false,
+  "label": "council-judged (3 judges)"
+}

@@ -1,0 +1,137 @@
+{
+  "mode": "score",
+  "models": [
+    "Pega-Vision",
+    "Pega-Thinking",
+    "GLM-5.3-Flash"
+  ],
+  "weights": {
+    "C1": 0.3,
+    "C2": 0.3,
+    "C3": 0.25,
+    "C4": 0.15
+  },
+  "judges": {
+    "Pega-Vision": {
+      "scores": {
+        "C1": 7.5,
+        "C2": 7.5,
+        "C3": 9.5,
+        "C4": 7.5
+      },
+      "evidence": {
+        "C1": "The tank is drawn as a glass box with depth haze and shadows, and the cream/green palette is coherent, but fishing and garden screens feel less distinctive than the tank.",
+        "C2": "Main actions are findable, such as Feed, Care, Cast, and Test the water, but the fishing screen mixes 'Flick up on the water to cast' with a Cast button, which can confuse first-time players.",
+        "C3": "The feature summary includes care, fishing, breeding, scaping, greenhouse, reef genetics, orders, journal, and focus, clearly exceeding a typical cozy aquarium app.",
+        "C4": "Components are mostly consistent, but toasts overlap content, such as the desktop tools row and the garden seed shelf."
+      },
+      "fixes": [
+        "Move all toast notifications to a fixed safe area with clear spacing so they never overlap tools, cards, or seed shelf items.",
+        "Clarify the fishing flow by unifying the flick gesture and Cast button, and add brief state-specific guidance during casting, striking, and reeling.",
+        "Raise the visual distinctiveness of fishing, garden, and journal screens to match the tank, especially scene art, plant illustrations, and empty states."
+      ],
+      "total": 8.0,
+      "seconds": 12.2
+    },
+    "Pega-Thinking": {
+      "scores": {
+        "C1": 7.0,
+        "C2": 8.0,
+        "C3": 9.0,
+        "C4": 7.0
+      },
+      "evidence": {
+        "C1": "Coherent warm cream/green palette, tank has nice glass-box perspective with depth haze and receding gravel, fishing scene has atmospheric rain/night work. However fish art is simple vector shapes rather than distinctive field-guide illustrations.",
+        "C2": "Clear tools row (Feed, Care, Scape, Residents, Shop, Photo, Watch, Share), 'More to do' guides new players, Care sheet well-organized with water test/maintenance/heater sections, Journal has clear tabs and filters, phone layout wraps tools to 2 rows with bottom nav.",
+        "C3": "Multiple interlocking loops: nitrogen cycle care, 9-spot fishing with flick/strike/reel/tension/drag, breeding with inherited colors, aquascaping (16 plants, 8 hardscape, 3 substrates, 3 tank sizes), greenhouse with variegated sports, reef lab with named strains, 47 species/5 rarities, 18 milestones, focus timer, daily orders, streaks.",
+        "C4": "Consistent pill buttons, card-based layout, and cream/green palette across screens. Minor rough edge: 'My first tank is ready' toast overlaps the tank on phone view. States (selected nav, tabs) are consistent."
+      },
+      "fixes": [
+        "Make the fish art more distinctive and detailed — current vector shapes are too simple to be the hero of an aquarium app and the journal silhouettes are generic gray blobs.",
+        "Add more visual interest to the tank scene — it feels sparse with only a few small fish; more schooling behavior, varied sizes, or richer plant/hardscape composition would elevate the hero screen.",
+        "Fix the 'My first tank is ready' toast positioning on phone so it doesn't overlap the tank artwork, and ensure feedback toasts are consistently placed across viewports."
+      ],
+      "total": 7.8,
+      "seconds": 9.8
+    },
+    "GLM-5.3-Flash": {
+      "scores": {
+        "C1": 7.0,
+        "C2": 8.0,
+        "C3": 9.0,
+        "C4": 7.0
+      },
+      "evidence": {
+        "C1": "Coherent cream/green palette with serif display type and field-guide touches (journal silhouettes, 'Paracheirodon innesi'); but the tank hero reads murky with tiny sparse fish and garden trays are bare grids, so not every screen feels designed.",
+        "C2": "Strong guidance everywhere: 'Tap a fish to meet it. Tap the glass and watch who comes.', 'More to do' suggestions, 4-step 'How the greenhouse works', 'Flick up on the water to cast'; minor friction from unexplained 'Stocking 0.5 of 2.2' and jargon-y 'Scape'.",
+        "C3": "All anchor loops present and interlocking: 'nitrogen cycle simulation', reel/tension fight with drag, 'tournaments against CPU anglers', 'Breeding with inherited colours', greenhouse cuttings-to-orders, 'reef lab (frag, cross, named strains)', 18 milestones, focus timer; only breadth-within-loop depth keeps it from 10.",
+        "C4": "Components and spacing are consistent across screens (pill nav, cards, buttons), but feedback placement is rough: the 'Unlocked: Mountain stream, Mangrove inlet and 5 more' toast covers seed-shelf plant names and 'My first tank is ready' straddles the tank card edge."
+      },
+      "fixes": [
+        "Make the tank the hero: brighten the default state with more/larger fish and richer plant layering so the tank screen looks lively rather than dark and sparse.",
+        "Move toasts to a dedicated non-overlapping area (e.g., under the header) so 'Unlocked...' and 'My first tank is ready' never cover cards, plant names, or tool rows.",
+        "Clarify cryptic labels: gloss 'Stocking 0.5 of 2.2' (e.g., 'of 2.2 fish capacity') and add a one-line hint for 'Scape'; consider slightly richer tray art in the greenhouse."
+      ],
+      "total": 7.8,
+      "seconds": 36.2
+    }
+  },
+  "quorum": 3,
+  "council_score": 7.8,
+  "criterion_median": {
+    "C1": 7.0,
+    "C2": 8.0,
+    "C3": 9.0,
+    "C4": 7.0
+  },
+  "criterion_spread": {
+    "C1": 0.5,
+    "C2": 0.5,
+    "C3": 0.5,
+    "C4": 0.5
+  },
+  "split_criteria": [],
+  "judge_total_range": [
+    7.8,
+    8.0
+  ],
+  "fixes": [
+    {
+      "judge": "Pega-Vision",
+      "fix": "Move all toast notifications to a fixed safe area with clear spacing so they never overlap tools, cards, or seed shelf items."
+    },
+    {
+      "judge": "Pega-Vision",
+      "fix": "Clarify the fishing flow by unifying the flick gesture and Cast button, and add brief state-specific guidance during casting, striking, and reeling."
+    },
+    {
+      "judge": "Pega-Vision",
+      "fix": "Raise the visual distinctiveness of fishing, garden, and journal screens to match the tank, especially scene art, plant illustrations, and empty states."
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Make the fish art more distinctive and detailed — current vector shapes are too simple to be the hero of an aquarium app and the journal silhouettes are generic gray blobs."
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Add more visual interest to the tank scene — it feels sparse with only a few small fish; more schooling behavior, varied sizes, or richer plant/hardscape composition would elevate the hero screen."
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Fix the 'My first tank is ready' toast positioning on phone so it doesn't overlap the tank artwork, and ensure feedback toasts are consistently placed across viewports."
+    },
+    {
+      "judge": "GLM-5.3-Flash",
+      "fix": "Make the tank the hero: brighten the default state with more/larger fish and richer plant layering so the tank screen looks lively rather than dark and sparse."
+    },
+    {
+      "judge": "GLM-5.3-Flash",
+      "fix": "Move toasts to a dedicated non-overlapping area (e.g., under the header) so 'Unlocked...' and 'My first tank is ready' never cover cards, plant names, or tool rows."
+    },
+    {
+      "judge": "GLM-5.3-Flash",
+      "fix": "Clarify cryptic labels: gloss 'Stocking 0.5 of 2.2' (e.g., 'of 2.2 fish capacity') and add a one-line hint for 'Scape'; consider slightly richer tray art in the greenhouse."
+    }
+  ],
+  "label": "council-judged (3 judges)"
+}

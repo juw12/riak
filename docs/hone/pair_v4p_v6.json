@@ -1,0 +1,51 @@
+{
+  "mode": "pair",
+  "models": [
+    "Pega-Vision",
+    "Pega-Thinking",
+    "GLM-5.3-Flash"
+  ],
+  "judges": {
+    "Pega-Vision": {
+      "picks_AB_BA": [
+        "B",
+        "B"
+      ],
+      "vote": "B",
+      "reasons": [
+        "The feature summaries are identical, but VERSION 2’s screenshots show stronger field-guide craft and clearer guidance, especially in the journal and garden screens. VERSION 1 looks cleaner in places but feels more generic and less designed.",
+        "Both versions have the same feature depth, but Version 1 feels slightly more polished and usable: its phone tank stats are less cramped, the journal has clearer field-guide numbering, and the garden/fishing screens avoid the cut-off or crowded text seen in Version 2."
+      ]
+    },
+    "Pega-Thinking": {
+      "picks_AB_BA": [
+        "tie",
+        "tie"
+      ],
+      "vote": "tie",
+      "reasons": [
+        "Both versions share identical text descriptions and very similar visual quality. VERSION 2 shows marginally more content in the garden (seed shelf with houseplants) and journal (numbering, scientific names), while VERSION 1 has slightly cleaner phone notification placement. These differences are negligible against the rubric criteria.",
+        "Both versions have identical text descriptions (word-for-word) and visually indistinguishable screenshots showing the same screens, features, and design. No meaningful difference exists between them."
+      ]
+    },
+    "GLM-5.3-Flash": {
+      "picks_AB_BA": [
+        "B",
+        "B"
+      ],
+      "vote": "B",
+      "reasons": [
+        "The text packets are identical, but V2's screenshots show concrete gains: a numbered field-guide journal with scientific names, a fuller garden screen (soil shelf, houseplants, garden orders, labelled quick actions), and clearer fishing affordances ('or press Cast', labelled shake-to-hook), which better hit the rubric's field-guide look, clarity, and depth anchors. V2's only regression is a transient toast clipping the top of the tank screens, which is minor next to V1's sparser garden and plainer journal.",
+        "The feature summaries are identical, but VERSION 2's screenshots show small regressions: the garden page is missing the greenhouse-actions and seed-shelf sections (large blank area), the fishing panel has an unlabeled empty toggle where 'Phone motion' was, and journal cards lost their 'No. XX' dex numbering. These give VERSION 1 a slight edge on polish (C4) and clarity (C2) with depth otherwise equal."
+      ]
+    }
+  },
+  "votes": {
+    "A": 0,
+    "B": 2,
+    "tie": 1
+  },
+  "quorum": 3,
+  "b_wins": true,
+  "label": "council-judged (3 judges)"
+}

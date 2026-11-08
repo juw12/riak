@@ -14,6 +14,23 @@ import threading
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+PIN_HOUR = int(os.environ.get("RIAK_SMOKE_HOUR", "14"))
+CLOCK_PIN = """(() => {
+  const RealDate = Date;
+  const target = new RealDate();
+  target.setHours(__HOUR__, 0, 0, 0);
+  const offset = target.getTime() - RealDate.now();
+  class PinnedDate extends RealDate {
+    constructor(...args) {
+      if (args.length === 0) super(RealDate.now() + offset);
+      else super(...args);
+    }
+    static now() {
+      return RealDate.now() + offset;
+    }
+  }
+  window.Date = PinnedDate;
+})();"""
 
 
 def serve():
@@ -46,6 +63,9 @@ def main():
         for size in args.sizes.split(","):
             w, h = (int(v) for v in size.split("x"))
             ctx = browser.new_context(viewport={"width": w, "height": h}, color_scheme="dark" if args.dark else "light")
+            # Pin the local time of day so screenshots do not depend on when the test runs
+            # (tank lights, fishing day phase and weather all follow the clock).
+            ctx.add_init_script(CLOCK_PIN.replace("__HOUR__", str(PIN_HOUR)))
             page = ctx.new_page()
             page.on("console", lambda m: errors.append(f"{size} console.{m.type}: {m.text}") if m.type in ("error", "warning") else None)
             page.on("pageerror", lambda e: errors.append(f"{size} pageerror: {e}"))

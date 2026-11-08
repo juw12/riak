@@ -1,0 +1,51 @@
+{
+  "mode": "pair",
+  "models": [
+    "Pega-Vision",
+    "Pega-Thinking",
+    "GLM-5.3-Flash"
+  ],
+  "judges": {
+    "Pega-Vision": {
+      "picks_AB_BA": [
+        "tie",
+        "tie"
+      ],
+      "vote": "tie",
+      "reasons": [
+        "The feature summaries are identical, and the screenshots differ only in minor transient states such as fish positions and fishing tension, with no meaningful difference in visual craft, clarity, depth, or polish.",
+        "The feature summaries are identical, and the screenshots show only minor state differences rather than meaningful changes in visual craft, clarity, depth, or polish."
+      ]
+    },
+    "Pega-Thinking": {
+      "picks_AB_BA": [
+        "tie",
+        "tie"
+      ],
+      "vote": "tie",
+      "reasons": [
+        "Both versions have identical text descriptions and visually indistinguishable screenshots; the only difference is a minor variation in the captured fishing-fight state (line length and prompt text), which does not meaningfully affect any rubric criterion.",
+        "Both versions have identical text descriptions and visually indistinguishable screenshots showing the same warm cream palette, glass-box tank art, layered cards, and consistent component design. The only differences are minor (different fishing fight game states, slightly more garden content visible), which are negligible."
+      ]
+    },
+    "GLM-5.3-Flash": {
+      "picks_AB_BA": [
+        "tie",
+        "tie"
+      ],
+      "vote": "tie",
+      "reasons": [
+        "The two packets are textually identical and the screenshots show the same screens, palette, and layout; the only differences are trivial state variations (fishing toast text/tension fill, minor journal card accents, seed-shelf micro-labels, fish positions) that do not move any soft criterion.",
+        "The two packets are textually identical and the screenshots differ only in trivial state variations (fish positions in the tank and a different fishing-fight toast/line-out reading), with no difference in layout, palette, features, or polish. Every rubric criterion scores the same for both versions."
+      ]
+    }
+  },
+  "votes": {
+    "A": 0,
+    "B": 0,
+    "tie": 3
+  },
+  "quorum": 3,
+  "b_wins": false,
+  "label": "council-judged (3 judges)"
+}

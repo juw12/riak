@@ -1,0 +1,137 @@
+{
+  "mode": "score",
+  "models": [
+    "Pega-Vision",
+    "Pega-Thinking",
+    "GLM-5.3-Flash"
+  ],
+  "weights": {
+    "C1": 0.3,
+    "C2": 0.3,
+    "C3": 0.25,
+    "C4": 0.15
+  },
+  "judges": {
+    "Pega-Vision": {
+      "scores": {
+        "C1": 8.0,
+        "C2": 8.0,
+        "C3": 9.0,
+        "C4": 7.0
+      },
+      "evidence": {
+        "C1": "warm cream page with a soft top glow, floating white cards; tank is hero but fish/plants are simple and some screens feel utilitarian",
+        "C2": "main actions are labelled and findable, but fishing fight and phone layouts feel cramped",
+        "C3": "care, fishing, breeding, scaping, greenhouse, reef genetics, orders, journal, and focus are all present and interlocking",
+        "C4": "consistent cards and pill buttons, but cut-off focus/garden panels and tight phone controls show rough edges"
+      },
+      "fixes": [
+        "Fix mobile safe-area and bottom-nav overlap, especially in the fishing fight and tank tool areas, so no controls or status are hidden at 390 px.",
+        "Raise visual distinctiveness of the tank and secondary screens with richer fish/plant art and more consistent field-guide illustration.",
+        "Tighten feedback and next-step clarity by repositioning toasts, simplifying fishing fight controls, and reducing text-heavy care/garden states."
+      ],
+      "total": 8.1,
+      "seconds": 15.3
+    },
+    "Pega-Thinking": {
+      "scores": {
+        "C1": 8.0,
+        "C2": 8.0,
+        "C3": 9.0,
+        "C4": 8.0
+      },
+      "evidence": {
+        "C1": "Coherent cream/green palette, tank drawn as glass box with perspective panes, receding gravel, depth haze, fish floor shadows, lid rim and stand; fishing scenes have haze, ridge and sun/moon glint. Tank art is clearly the hero on Tank and Focus screens. Falls short of a truly distinctive 'field-guide' look — fish are small and stylistically simple.",
+        "C2": "Clear onboarding ('Tap a fish to meet it. Tap the glass and watch who comes.'), 'More to do' cards (Go fishing, Greenhouse and reef lab, Field journal) guide next steps, tools row labelled (Feed, Care, Scape, Residents, Shop, Photo, Watch, Share), bottom nav on phone, fishing controls grouped (Flick/Classic, Phone motion/Vibration, Bait list). Phone tank view is not cramped.",
+        "C3": "Many interlocking loops: nitrogen-cycle care, 9-spot fishing with flick cast + reel tension + drag + 5 baits/5 lures + tournaments + 12 quests, breeding with inherited colours, aquascaping (16 plants, 8 hardscape, 3 substrates, 3 tank sizes, reef room), greenhouse with variegated sports, reef lab with named strains, journal dex with 47 species/5 rarities/18 milestones, focus timer with box breathing, offline catch-up. Clearly exceeds a typical cozy aquarium.",
+        "C4": "Consistent pill buttons, floating nav, card shadows and cream background across all screens; active nav state highlighted (Tank/Fishing/Garden/Journal/Focus); unobtrusive toasts ('My first tank is ready', 'Unlocked: Mountain stream, Mangrove inlet and 5 more'); aligned grids in Garden trays and Journal cards. Minor: desktop tank has large empty water area; journal 'Not found yet' silhouettes are plain."
+      },
+      "fixes": [
+        "Make the fish more visually distinctive and detailed (silhouettes, scale patterns, size variation) so the tank reads as a field-guide illustration rather than small generic shapes — this is the single biggest lift to C1.",
+        "Fill the desktop tank's empty water column with more visual interest (mid-water plants, a few larger feature fish, particulate drift, subtle current lines) so the hero art feels richer and less sparse.",
+        "Upgrade the Journal 'Not found yet' cards with more evocative silhouettes, rarity-tinted backgrounds or partial reveal hints so the collection loop feels more rewarding to browse on both desktop and phone."
+      ],
+      "total": 8.25,
+      "seconds": 13.1
+    },
+    "GLM-5.3-Flash": {
+      "scores": {
+        "C1": 7.0,
+        "C2": 8.0,
+        "C3": 9.0,
+        "C4": 7.0
+      },
+      "evidence": {
+        "C1": "Coherent cream/green palette with serif headings and a pleasant tank ('depth haze, fish floor shadows, lid rim, stand'); but fish are tiny simple shapes and the desktop fishing scene floats in large empty cream margins, so it reads coherent rather than distinctive.",
+        "C2": "Strong next-step cues: 'Tap a fish to meet it. Tap the glass and watch who comes.', 'Flick up on the water, or press Cast', and the garden's 4-step 'How the greenhouse works' strip; labelled tool row. Held back by the text-heavy care sheet and the phone toast obscuring header pills.",
+        "C3": "Summary claims the full loop set (care, fishing minigame, breeding, scaping, greenhouse, reef genetics, orders, journal, focus); interlock is visible ('Trimming gives cuttings to replant, sell or deliver', order 'Deliver 2 Java fern cuttings +36 shells'). Breeding, scaping and reef lab are asserted in text only, not shown.",
+        "C4": "Consistent pills, cards and nav across all screens; desktop toasts sit unobtrusively. Rough edge: on 390px the 'My first tank is ready' toast overlaps/hides the Level and shell pills, and the fishing desktop layout is unbalanced."
+      },
+      "fixes": [
+        "Fix the 390px header: the 'My first tank is ready' toast covers the Level and shell pills — give toasts a reserved row below the header so status feedback never obscures controls.",
+        "Make the tank art the hero and the look distinctive: larger and more varied fish, richer plant/depth layers, so the tank reads as a crafted centerpiece rather than flat vector filler.",
+        "Rebalance the desktop fishing screen: reduce the empty cream margins around the small scene, align the side column with it, and de-duplicate the cast instruction (hint overlay vs Cast button vs Controls card)."
+      ],
+      "total": 7.8,
+      "seconds": 38.9
+    }
+  },
+  "quorum": 3,
+  "council_score": 8.1,
+  "criterion_median": {
+    "C1": 8.0,
+    "C2": 8.0,
+    "C3": 9.0,
+    "C4": 7.0
+  },
+  "criterion_spread": {
+    "C1": 1.0,
+    "C2": 0.0,
+    "C3": 0.0,
+    "C4": 1.0
+  },
+  "split_criteria": [],
+  "judge_total_range": [
+    7.8,
+    8.25
+  ],
+  "fixes": [
+    {
+      "judge": "Pega-Vision",
+      "fix": "Fix mobile safe-area and bottom-nav overlap, especially in the fishing fight and tank tool areas, so no controls or status are hidden at 390 px."
+    },
+    {
+      "judge": "Pega-Vision",
+      "fix": "Raise visual distinctiveness of the tank and secondary screens with richer fish/plant art and more consistent field-guide illustration."
+    },
+    {
+      "judge": "Pega-Vision",
+      "fix": "Tighten feedback and next-step clarity by repositioning toasts, simplifying fishing fight controls, and reducing text-heavy care/garden states."
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Make the fish more visually distinctive and detailed (silhouettes, scale patterns, size variation) so the tank reads as a field-guide illustration rather than small generic shapes — this is the single biggest lift to C1."
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Fill the desktop tank's empty water column with more visual interest (mid-water plants, a few larger feature fish, particulate drift, subtle current lines) so the hero art feels richer and less sparse."
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Upgrade the Journal 'Not found yet' cards with more evocative silhouettes, rarity-tinted backgrounds or partial reveal hints so the collection loop feels more rewarding to browse on both desktop and phone."
+    },
+    {
+      "judge": "GLM-5.3-Flash",
+      "fix": "Fix the 390px header: the 'My first tank is ready' toast covers the Level and shell pills — give toasts a reserved row below the header so status feedback never obscures controls."
+    },
+    {
+      "judge": "GLM-5.3-Flash",
+      "fix": "Make the tank art the hero and the look distinctive: larger and more varied fish, richer plant/depth layers, so the tank reads as a crafted centerpiece rather than flat vector filler."
+    },
+    {
+      "judge": "GLM-5.3-Flash",
+      "fix": "Rebalance the desktop fishing screen: reduce the empty cream margins around the small scene, align the side column with it, and de-duplicate the cast instruction (hint overlay vs Cast button vs Controls card)."
+    }
+  ],
+  "label": "council-judged (3 judges)"
+}

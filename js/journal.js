@@ -77,14 +77,16 @@ export class JournalPanel {
     ]);
     root.append(filters);
     const grid = el("div", { class: "dex" });
-    for (const sp of FISH) {
-      if (this.filter !== "all" && sp.water !== this.filter) continue;
+    FISH.forEach((sp, index) => {
+      if (this.filter !== "all" && sp.water !== this.filter) return;
       const j = s.journal.fish[sp.id];
       const known = j && j.count > 0;
       const cv = el("canvas", { "aria-hidden": "true" });
       const item = el("button", { type: "button", class: "dex-item" + (known ? "" : " unknown"), "aria-label": known ? speciesName(sp.id) : t("journal.unknown") }, [
+        el("span", { class: "dex-no num", text: t("journal.no", { n: String(index + 1).padStart(2, "0") }) }),
         cv,
         el("div", { class: "dex-name", text: known ? speciesName(sp.id) : t("journal.unknown") }),
+        known ? el("div", { class: "dex-sci", text: sp.sci }) : null,
         el("div", { class: "dex-sub" }, [el("span", { class: "rar-" + sp.rar, text: t("rar." + sp.rar) }), known && j.golden ? el("span", { class: "rar-5", text: t("fish.card.golden") }) : el("span", { text: known ? "x" + j.count : "" })]),
       ]);
       item.addEventListener("click", () => this.openFish(sp));
@@ -94,7 +96,7 @@ export class JournalPanel {
         prep(cv);
         fishThumb(cv, fakeFish, { silhouette: !known });
       });
-    }
+    });
     root.append(grid);
   }
 
@@ -107,7 +109,7 @@ export class JournalPanel {
     const body = el("div", {}, [
       el("div", { class: "fish-hero" }, [cv, el("div", {}, [
         el("h3", { text: known ? speciesName(sp.id) : t("journal.unknown") }),
-        known ? el("div", { class: "muted", text: sp.sci }) : null,
+        known ? el("div", { class: "dex-sci", text: sp.sci }) : null,
         el("div", { class: "row" }, [el("span", { class: "tag rar-" + sp.rar, text: t("rar." + sp.rar) }), el("span", { class: "tag muted", text: t("water." + sp.water) })]),
       ])]),
     ]);

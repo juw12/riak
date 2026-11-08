@@ -1,0 +1,137 @@
+{
+  "mode": "score",
+  "models": [
+    "Pega-Vision",
+    "Pega-Thinking",
+    "GLM-5.3-Flash"
+  ],
+  "weights": {
+    "C1": 0.3,
+    "C2": 0.3,
+    "C3": 0.25,
+    "C4": 0.15
+  },
+  "judges": {
+    "Pega-Vision": {
+      "scores": {
+        "C1": 7.0,
+        "C2": 7.0,
+        "C3": 9.0,
+        "C4": 7.0
+      },
+      "evidence": {
+        "C1": "'warm cream page ... floating white cards' is coherent, but tank art is pleasant rather than distinctive.",
+        "C2": "'Tools row: Feed, Care, Scape, Residents, Shop, Photo, Watch, Share' is clear but crowded.",
+        "C3": "'care, fishing minigame, breeding, scaping, greenhouse, reef genetics, orders, journal, focus' gives many loops.",
+        "C4": "'0 plants are ready to trim.' and clipped bottom cards show rough edges."
+      },
+      "fixes": [
+        "Reduce tank-screen crowding: group secondary tools (Watch, Share, Photo) and make the next action unmistakable on phone.",
+        "Elevate the tank art into a true field-guide hero: larger fish, richer plant silhouettes, clearer depth and labels.",
+        "Polish feedback and edge states: reposition toasts so they never cover navigation, fix clipped cards/controls, and clean wording like 0 plants."
+      ],
+      "total": 7.5,
+      "seconds": 20.5
+    },
+    "Pega-Thinking": {
+      "scores": {
+        "C1": 8.0,
+        "C2": 8.0,
+        "C3": 9.0,
+        "C4": 8.0
+      },
+      "evidence": {
+        "C1": "Coherent warm cream + sage palette, glass-box tank with perspective panes and depth haze reads as a designed field-guide look; fish art is charming but simple vector shapes keep it short of 'hero' tier.",
+        "C2": "Clear tools row with icons+labels, 'More to do' sidebar guides new players, 'Tap a fish to meet it' tooltip, phone wraps tools to 2x4 grid cleanly; nav and cards consistent across screens.",
+        "C3": "Strongly interlocking loops: nitrogen-cycle care, flick-cast fishing with tension/drag, breeding with inherited colors, aquascaping (16 plants/8 hardscape), greenhouse with variegated sports, reef lab with named strains, journal dex, focus timer, daily orders, offline catch-up.",
+        "C4": "Consistent pill buttons, floating nav, layered card shadows, aligned grids in journal/garden; 'Unlocked: Mountain stream...' toast and 'My first tank is ready' pill are well-placed; minor: desktop sidebar feels slightly disconnected from the tank card."
+      },
+      "fixes": [
+        "Elevate the tank art: give fish more distinctive silhouettes, fin detail, and species-specific coloring so the aquarium reads as the visual hero rather than pleasant background.",
+        "Tighten the desktop tank layout: integrate the 'More to do' / water status sidebar visually with the tank card (shared container or tighter gutter) so the right column doesn't feel like a separate page.",
+        "Improve phone tank balance: the tank card competes with the 2x4 tools grid below; consider a collapsible tools drawer or larger tank viewport so the aquarium remains the focus on 390 px."
+      ],
+      "total": 8.25,
+      "seconds": 10.1
+    },
+    "GLM-5.3-Flash": {
+      "scores": {
+        "C1": 7.0,
+        "C2": 8.0,
+        "C3": 9.0,
+        "C4": 7.0
+      },
+      "evidence": {
+        "C1": "Coherent warm cream + deep green palette with serif headings ('warm cream page with a soft top glow, floating white cards'); tank is pleasant and the hero ('perspective side panes, receding gravel floor, depth haze, fish floor shadows'). But not every screen is designed to that level: the fishing scene is flat two-tone hills and plain water with a bare bent-line rod, and garden trays are sparse grids — short of the 'distinctive calm field-guide look' on every screen.",
+        "C2": "Strong next-step guidance everywhere: 'Tap a fish to meet it. Tap the glass and watch who comes.', 'Flick up on the water, or press Cast', numbered 'How the greenhouse works' steps, 'Pick a length and start when you are ready.', plus 'More to do' suggestions and a care checklist. Controls grouped and labelled, phone layouts not cramped. Held back by 'Watch' (full-screen clock) vs the separate 'Focus' tab ambiguity, and the phone toast hides the level/shell pills.",
+        "C3": "All anchor loops present and interlocking via shells/orders/journal: nitrogen-cycle care, fishing minigame ('crank an on-screen reel and play line tension', 'tournaments against CPU anglers', '47 species, 5 rarities'), 'Breeding with inherited colours', scaping with '16 plants, 8 hardscape... second tank and reef room', greenhouse with 'variegated sports', 'reef lab (frag, cross, named strains)', orders, journal milestones, focus timer. Not a 10: breeding/reef-genetics depth isn't demonstrated in any screenshot, so 'clearly exceed' rests on the summary alone.",
+        "C4": "Consistent pills, cards, chips and nav across all screens. Rough edges hit the 'feedback messages unobtrusive and well placed' bar: on the phone tank screenshot the 'My first tank is ready' toast sits over the level/shell pills, the garden toast is long and crowds the nav, and the tank hint wraps to three lines covering the lower tank on phone."
+      },
+      "fixes": [
+        "Lift the fishing and garden scenes to the tank's art quality — flat hills, plain water and a bare line-rod on the fishing screen, and sparse tray art, break the 'every screen feels designed' field-guide bar (C1, highest weight).",
+        "Fix toast placement and lifetime: toasts must never cover the level/shell pills on phone or crowd the nav on desktop; make them smaller, auto-dismissing, and anchored clear of the header (C4/C2).",
+        "Disambiguate the duplicated clock features — rename or subtitle the 'Watch' tool (e.g. 'Ambient clock') so it isn't confused with the Focus tab, and keep the on-tank hint from obscuring the fish on small screens (C2)."
+      ],
+      "total": 7.8,
+      "seconds": 34.0
+    }
+  },
+  "quorum": 3,
+  "council_score": 7.8,
+  "criterion_median": {
+    "C1": 7.0,
+    "C2": 8.0,
+    "C3": 9.0,
+    "C4": 7.0
+  },
+  "criterion_spread": {
+    "C1": 1.0,
+    "C2": 1.0,
+    "C3": 0.0,
+    "C4": 1.0
+  },
+  "split_criteria": [],
+  "judge_total_range": [
+    7.5,
+    8.25
+  ],
+  "fixes": [
+    {
+      "judge": "Pega-Vision",
+      "fix": "Reduce tank-screen crowding: group secondary tools (Watch, Share, Photo) and make the next action unmistakable on phone."
+    },
+    {
+      "judge": "Pega-Vision",
+      "fix": "Elevate the tank art into a true field-guide hero: larger fish, richer plant silhouettes, clearer depth and labels."
+    },
+    {
+      "judge": "Pega-Vision",
+      "fix": "Polish feedback and edge states: reposition toasts so they never cover navigation, fix clipped cards/controls, and clean wording like 0 plants."
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Elevate the tank art: give fish more distinctive silhouettes, fin detail, and species-specific coloring so the aquarium reads as the visual hero rather than pleasant background."
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Tighten the desktop tank layout: integrate the 'More to do' / water status sidebar visually with the tank card (shared container or tighter gutter) so the right column doesn't feel like a separate page."
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Improve phone tank balance: the tank card competes with the 2x4 tools grid below; consider a collapsible tools drawer or larger tank viewport so the aquarium remains the focus on 390 px."
+    },
+    {
+      "judge": "GLM-5.3-Flash",
+      "fix": "Lift the fishing and garden scenes to the tank's art quality — flat hills, plain water and a bare line-rod on the fishing screen, and sparse tray art, break the 'every screen feels designed' field-guide bar (C1, highest weight)."
+    },
+    {
+      "judge": "GLM-5.3-Flash",
+      "fix": "Fix toast placement and lifetime: toasts must never cover the level/shell pills on phone or crowd the nav on desktop; make them smaller, auto-dismissing, and anchored clear of the header (C4/C2)."
+    },
+    {
+      "judge": "GLM-5.3-Flash",
+      "fix": "Disambiguate the duplicated clock features — rename or subtitle the 'Watch' tool (e.g. 'Ambient clock') so it isn't confused with the Focus tab, and keep the on-tank hint from obscuring the fish on small screens (C2)."
+    }
+  ],
+  "label": "council-judged (3 judges)"
+}

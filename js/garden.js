@@ -57,6 +57,15 @@ function drawHouseplant(ctx, hp, x, base, size, grown, variegated, time) {
   }
 }
 
+// Cost, grow time and outcome for one seedling, shared by the chooser and the seed shelf.
+function seedInfo(kind, it) {
+  const cost = core.seedlingCost(kind === "plant" ? "plant" : "house", it.id);
+  const mins = kind === "house" ? it.growMin : Math.round(Math.max(10, 20 + 60 * (1 - (it.rate || 0.02) * 10)));
+  const name = kind === "house" ? t("house." + it.id) : t("plant." + it.id);
+  const outcome = kind === "house" ? t("garden.worth", { n: it.value }) : t("garden.yield");
+  return { cost, mins, name, outcome };
+}
+
 export class GardenPanel {
   constructor(root, app) {
     this.root = root;
@@ -126,7 +135,14 @@ export class GardenPanel {
     });
     const inv = el("div", { class: "inv-section" });
     this.fillInventory(inv, s);
-    root.append(el("div", { class: "two-col" }, [el("div", {}, [trays, el("p", { class: "explain", style: { marginTop: "10px" }, text: t("garden.waterHint") })]), inv]));
+    const left = el("div", { class: "garden-main" }, [
+      trays,
+      el("p", { class: "explain", text: t("garden.waterHint") }),
+      this.loopStrip(),
+      this.seedShelf(s),
+    ]);
+    const side = el("div", { class: "garden-side" }, [inv, this.gardenOrders()]);
+    root.append(el("div", { class: "two-col" }, [left, side]));
     requestAnimationFrame(() => {
       for (const ref of this.trayRefs) this.updateTray(ref, Date.now(), true);
     });
@@ -137,9 +153,26 @@ export class GardenPanel {
     const p = crop ? cropProgress(crop, now) : 0;
     const state = !crop ? "empty" : p >= 1 ? "ready" : crop.water > 0 ? "watered" : "growing";
     const { ctx, W, H } = setupCanvas(ref.cv);
-    // soil
+    // greenhouse glazing bars behind the tray
+    ctx.save();
+    ctx.strokeStyle = "rgba(90, 110, 96, 0.10)";
+    ctx.lineWidth = 1;
+    for (let gx = W / 6; gx < W; gx += W / 6) {
+      ctx.beginPath();
+      ctx.moveTo(gx, 0);
+      ctx.lineTo(gx, H - 14);
+      ctx.stroke();
+    }
+    ctx.beginPath();
+    ctx.moveTo(0, H * 0.34);
+    ctx.lineTo(W, H * 0.34);
+    ctx.stroke();
+    ctx.restore();
+    // soil with a lit top edge
     ctx.fillStyle = "#5a4636";
     ctx.fillRect(0, H - 14, W, 14);
+    ctx.fillStyle = "rgba(255, 240, 220, 0.16)";
+    ctx.fillRect(0, H - 14, W, 2);
     if (!crop) {
       // a dashed sprout outline shows where the seedling will go
       const cx = W / 2;
@@ -196,6 +229,82 @@ export class GardenPanel {
     } }));
   }
 
+  // The greenhouse loop in four steps, so the link to Scape and orders is visible.
+  loopStrip() {
+    const steps = ["garden.loop1", "garden.loop2", "garden.loop3", "garden.loop4"];
+    return el("section", { class: "garden-loop", "aria-label": t("garden.loopTitle") }, [
+      el("h3", { text: t("garden.loopTitle") }),
+      el("ol", {}, steps.map((key, i) => el("li", {}, [el("span", { class: "step-no num", text: String(i + 1) }), el("span", { text: t(key) })]))),
+    ]);
+  }
+
+  // Seed shelf: every seedling you can grow now, drawn fully grown, with a one-tap Plant into the next empty tray.
+  seedShelf(s) {
+    const shelf = el("div", { class: "seed-shelf" });
+    const freeTray = s.greenhouse.trays.find((tr) => !tr.crop);
+    const aquatic = PLANTS.filter((p) => s.journal.plants[p.id] || p.rar <= 1).map((it) => ({ kind: "plant", it }));
+    const house = HOUSEPLANTS.map((it) => ({ kind: "house", it }));
+    const items = [...house, ...aquatic].slice(0, 8);
+    for (const { kind, it } of items) {
+      const { cost, mins, name, outcome } = seedInfo(kind, it);
+      const cv = el("canvas", { "aria-hidden": "true" });
+      const canAfford = s.shells >= cost;
+      const plantBtn = button(t("garden.plant") + " · " + cost, {
+        kind: freeTray && canAfford ? "primary small" : "quiet small",
+        disabled: !freeTray || !canAfford,
+        title: !freeTray ? t("garden.noTray") : "",
+        onclick: () => {
+          if (freeTray && core.plantTray(freeTray, kind === "plant" ? "plant" : "house", it.id)) {
+            toast(t("garden.planted", { what: name }), "good");
+            this.render();
+          }
+        },
+      });
+      shelf.append(el("div", { class: "seed" }, [
+        cv,
+        el("b", { text: name }),
+        el("span", { class: "muted", text: t("garden.time", { t: formatDuration(mins * 60000, t) }) + " · " + outcome }),
+        plantBtn,
+      ]));
+      requestAnimationFrame(() => {
+        const { ctx, W, H } = setupCanvas(cv);
+        if (kind === "house") drawHouseplant(ctx, it, W / 2, H - 6, H * 0.95, 1, false, 0);
+        else drawPlant(ctx, { id: "shelf-" + it.id, sp: it.id, g: 1, v: 0, x: 0.5 }, W / 2, H - 6, H * 1.25, 0, {});
+      });
+    }
+    return el("section", { class: "seed-section" }, [
+      el("div", { class: "section-head" }, [
+        el("h3", { text: t("garden.shelf") }),
+        el("span", { class: "muted", text: freeTray ? t("garden.shelfLead") : t("garden.noTray") }),
+      ]),
+      shelf,
+    ]);
+  }
+
+  // Today's plant and houseplant orders, delivered straight from the greenhouse.
+  gardenOrders() {
+    const box = el("section", { class: "inv-section garden-orders" }, [el("h3", { text: t("garden.orders") })]);
+    const list = core.orders().filter((o) => o.kind !== "fish");
+    if (!list.length) box.append(el("p", { class: "muted", text: t("garden.noOrders") }));
+    for (const o of list) {
+      const what = o.kind === "cutting" ? t("plant." + o.sp) : t("house." + o.sp);
+      const can = core.canDeliver(o);
+      box.append(el("div", { class: "order" + (o.done ? " done" : "") }, [
+        el("div", {}, [el("div", { text: t("orders." + o.kind, { what, n: o.qty }) }), el("div", { class: "reward", text: t("orders.reward", { n: o.reward }) })]),
+        o.done
+          ? el("span", { class: "tag muted", text: t("orders.done") })
+          : button(t("orders.deliver"), { kind: can ? "primary small" : "quiet small", disabled: !can, title: can ? "" : t("orders.missing"), onclick: () => {
+            if (core.deliver(o)) {
+              toast(t("orders.reward", { n: o.reward }), "good");
+              this.render();
+            }
+          } }),
+      ]));
+    }
+    box.append(el("p", { class: "explain", text: t("garden.ordersHint") }));
+    return box;
+  }
+
   fillInventory(box, s) {
     box.innerHTML = "";
     box.append(el("h3", { text: t("garden.inventory") }));
@@ -237,10 +346,8 @@ export class GardenPanel {
       const items = tab === "aquatic" ? PLANTS.filter((p) => s.journal.plants[p.id] || p.rar <= 1) : HOUSEPLANTS;
       for (const it of items) {
         const kind = tab === "aquatic" ? "plant" : "house";
-        const cost = core.seedlingCost(kind === "plant" ? "plant" : "house", it.id);
-        const mins = kind === "house" ? it.growMin : Math.round(Math.max(10, 20 + 60 * (1 - (it.rate || 0.02) * 10)));
-        const name = kind === "house" ? t("house." + it.id) : t("plant." + it.id);
-        const sub = [t("garden.cost", { n: cost }), t("garden.time", { t: formatDuration(mins * 60000, t) }), kind === "house" ? t("garden.worth", { n: it.value }) : t("garden.yield")].join(" · ");
+        const { cost, mins, name, outcome } = seedInfo(kind, it);
+        const sub = [t("garden.cost", { n: cost }), t("garden.time", { t: formatDuration(mins * 60000, t) }), outcome].join(" · ");
         list.append(el("div", { class: "list-row", style: { gridTemplateColumns: "minmax(0,1fr) auto" } }, [
           el("div", {}, [el("div", { class: "title", text: name }), el("div", { class: "sub", text: sub })]),
           button(t("garden.plant"), { kind: s.shells >= cost ? "primary small" : "quiet small", disabled: s.shells < cost, onclick: () => {
