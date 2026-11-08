@@ -61,6 +61,26 @@ export function paintScene(ctx, W, H, spot, ts, time, extra = {}) {
   ctx.lineTo(W, horizon);
   ctx.closePath();
   ctx.fill();
+  if (peaks) {
+    const nearRidge = mix(far, mix(spot.near, NIGHT_SKY, (1 - day) * 0.75), 0.45);
+    ctx.fillStyle = nearRidge;
+    ctx.beginPath();
+    ctx.moveTo(0, horizon);
+    const rr = rng(hashString(spot.id + "ridge"));
+    for (let i = 0; i <= 16; i++) {
+      const x = (i / 16) * W;
+      ctx.lineTo(x, horizon - (0.015 + rr() * 0.05) * H);
+    }
+    ctx.lineTo(W, horizon);
+    ctx.closePath();
+    ctx.fill();
+  }
+  // haze where land meets sky
+  const haze = ctx.createLinearGradient(0, horizon - H * 0.12, 0, horizon);
+  haze.addColorStop(0, rgba(sky, 0));
+  haze.addColorStop(1, rgba(mix(sky, "#ffffff", 0.3 * day), 0.45));
+  ctx.fillStyle = haze;
+  ctx.fillRect(0, horizon - H * 0.12, W, H * 0.12);
 
   // water
   const w1 = mix(mix(spot.water1, NIGHT_SKY, 1 - day * 0.8), sky, 0.15);
@@ -70,15 +90,37 @@ export function paintScene(ctx, W, H, spot, ts, time, extra = {}) {
   wg.addColorStop(1, w2);
   ctx.fillStyle = wg;
   ctx.fillRect(0, horizon, W, H - horizon);
-  // shimmer lines
+  // horizon mist on the water, fading toward the viewer
+  const mist = ctx.createLinearGradient(0, horizon, 0, horizon + (H - horizon) * 0.35);
+  mist.addColorStop(0, rgba(mix(sky, "#ffffff", 0.2), 0.35));
+  mist.addColorStop(1, rgba(sky, 0));
+  ctx.fillStyle = mist;
+  ctx.fillRect(0, horizon, W, (H - horizon) * 0.35);
+  // sun or moon glint column
+  if (weather !== "fog" && weather !== "rain") {
+    const glint = ctx.createLinearGradient(0, horizon, 0, H);
+    glint.addColorStop(0, rgba(isDay ? "#fff3c8" : "#eef2f0", isDay ? 0.32 * day : 0.16));
+    glint.addColorStop(1, rgba("#ffffff", 0));
+    ctx.fillStyle = glint;
+    ctx.beginPath();
+    ctx.moveTo(bx - W * 0.012, horizon);
+    ctx.lineTo(bx + W * 0.012, horizon);
+    ctx.lineTo(bx + W * 0.07, H);
+    ctx.lineTo(bx - W * 0.07, H);
+    ctx.closePath();
+    ctx.fill();
+  }
+  // shimmer lines in perspective
   ctx.strokeStyle = rgba("#ffffff", 0.12 + 0.1 * day);
-  ctx.lineWidth = 1;
-  for (let i = 0; i < 14; i++) {
-    const y = horizon + 6 + ((i * 37) % 100) / 100 * (H - horizon) * 0.7;
-    const x = ((i * 113 + time * 0.012 * (1 + (i % 3))) % (W + 80)) - 40;
+  for (let i = 0; i < 18; i++) {
+    const d = (((i * 37) % 100) / 100) ** 1.8;
+    const y = horizon + 4 + d * (H - horizon) * 0.8;
+    const scale = 0.4 + d * 1.8;
+    const x = ((i * 113 + time * 0.012 * (1 + (i % 3)) * scale) % (W + 80)) - 40;
+    ctx.lineWidth = Math.max(0.8, scale * 0.9);
     ctx.beginPath();
     ctx.moveTo(x, y);
-    ctx.lineTo(x + 18 + (i % 4) * 8, y);
+    ctx.lineTo(x + (14 + (i % 4) * 8) * scale, y);
     ctx.stroke();
   }
   // lamps for the harbour
@@ -98,7 +140,15 @@ export function paintScene(ctx, W, H, spot, ts, time, extra = {}) {
 
   // near bank (bottom-left) with reeds
   const near = mix(spot.near, NIGHT_SKY, (1 - day) * 0.75);
-  ctx.fillStyle = near;
+  const bankShadow = ctx.createRadialGradient(W * 0.14, H, H * 0.1, W * 0.14, H, W * 0.42);
+  bankShadow.addColorStop(0, "rgba(0,0,0,0.22)");
+  bankShadow.addColorStop(1, "rgba(0,0,0,0)");
+  ctx.fillStyle = bankShadow;
+  ctx.fillRect(0, H * 0.55, W * 0.6, H * 0.45);
+  const bankFill = ctx.createLinearGradient(0, H * 0.7, 0, H);
+  bankFill.addColorStop(0, mix(near, "#ffffff", 0.12 * day));
+  bankFill.addColorStop(1, mix(near, "#000000", 0.25));
+  ctx.fillStyle = bankFill;
   ctx.beginPath();
   ctx.moveTo(0, H);
   ctx.lineTo(0, H * 0.72);
@@ -144,6 +194,11 @@ export function paintScene(ctx, W, H, spot, ts, time, extra = {}) {
     ctx.fillStyle = rgba("#e8ecea", 0.35);
     ctx.fillRect(0, 0, W, H);
   }
+  const vignette = ctx.createRadialGradient(W / 2, H * 0.45, Math.min(W, H) * 0.4, W / 2, H * 0.5, Math.hypot(W, H) * 0.62);
+  vignette.addColorStop(0, "rgba(0,0,0,0)");
+  vignette.addColorStop(1, "rgba(0,0,0,0.2)");
+  ctx.fillStyle = vignette;
+  ctx.fillRect(0, 0, W, H);
 }
 
 // "sunny" reads oddly at night, so clear skies after dark are called clear.

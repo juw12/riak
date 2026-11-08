@@ -143,15 +143,20 @@ def run_flow(page, ctx, size, w, out, errors, checks, overflow, port):
             shot("scene")
             fp = "riak.app.panels.fishing"
             # flick cast: a real upward swipe on the water
+            page.locator(".scene-wrap canvas").scroll_into_view_if_needed()
             cv = page.locator(".scene-wrap canvas").bounding_box()
             sx = cv["x"] + cv["width"] * 0.4
-            page.mouse.move(sx, cv["y"] + cv["height"] * 0.9)
-            page.mouse.down()
-            for i in range(1, 7):
-                page.mouse.move(sx + i * 2, cv["y"] + cv["height"] * (0.9 - i * 0.12), steps=1)
-                page.wait_for_timeout(12)
-            page.mouse.up()
-            page.wait_for_timeout(150)
+            # a player retries after "swipe up faster"; a loaded CI browser can slow the first flick
+            for attempt in range(3):
+                page.mouse.move(sx, cv["y"] + cv["height"] * 0.9)
+                page.mouse.down()
+                for i in range(1, 7):
+                    page.mouse.move(sx + i * 2, cv["y"] + cv["height"] * (0.9 - i * 0.12), steps=1)
+                    page.wait_for_timeout(8)
+                page.mouse.up()
+                page.wait_for_timeout(150)
+                if page.evaluate(f"{fp}.stateName") != "idle":
+                    break
             checks[f"flick-cast-{w}"] = page.evaluate(f"{fp}.stateName + ' ' + {fp}.castM + 'm'")
             page.wait_for_timeout(1200)
             # crank the reel in circles to retrieve

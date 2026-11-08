@@ -630,6 +630,34 @@ export class TankView {
     ctx.fillStyle = vg;
     ctx.fillRect(0, 0, W, H);
 
+    // box interior in one-point perspective: the side panes recede toward a smaller back wall
+    const inset = W * 0.045;
+    const backTop = SURFACE * H + H * 0.02;
+    const backBottom = H * 0.8;
+    const sidePane = (x0, x1) => {
+      const sg = ctx.createLinearGradient(x0, 0, x1, 0);
+      sg.addColorStop(0, "rgba(0,24,28,0.22)");
+      sg.addColorStop(1, "rgba(0,24,28,0.04)");
+      ctx.fillStyle = sg;
+      ctx.beginPath();
+      ctx.moveTo(x0, 0);
+      ctx.lineTo(x1, backTop);
+      ctx.lineTo(x1, backBottom);
+      ctx.lineTo(x0, H);
+      ctx.closePath();
+      ctx.fill();
+    };
+    sidePane(0, inset);
+    sidePane(W, W - inset);
+    ctx.strokeStyle = "rgba(255,255,255,0.10)";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(inset, backTop);
+    ctx.lineTo(inset, backBottom);
+    ctx.moveTo(W - inset, backTop);
+    ctx.lineTo(W - inset, backBottom);
+    ctx.stroke();
+
     // light rays
     if (lit) {
       ctx.save();
@@ -720,6 +748,52 @@ export class TankView {
       ctx.stroke();
     };
 
+    // the substrate's top surface, seen receding toward the back glass
+    const floorDepth = H * 0.075;
+    const drawFloor = () => {
+      ctx.beginPath();
+      ctx.moveTo(0, H);
+      pts.forEach(([x, y], i) => {
+        const pull = Math.abs(x / W - 0.5) * 2;
+        ctx.lineTo(x + (W / 2 - x) * 0.06 * pull, y - floorDepth);
+      });
+      ctx.lineTo(W, H);
+      ctx.closePath();
+      const fg = ctx.createLinearGradient(0, H * 0.62, 0, H);
+      fg.addColorStop(0, mix(sub.color2, mid, 0.45));
+      fg.addColorStop(1, sub.color2);
+      ctx.fillStyle = fg;
+      ctx.fill();
+      ctx.save();
+      ctx.clip();
+      const r = rng(hashString(tank.id + "floor"));
+      ctx.fillStyle = rgba(sub.grain, 0.3);
+      for (let i = 0; i < 120; i++) {
+        const gx = r() * W;
+        const gy = this.groundAt(tank, gx / W) * H - r() * floorDepth;
+        ctx.fillRect(gx, gy, 1.2, 1.2);
+      }
+      ctx.restore();
+    };
+    // soft shadows on the floor; deeper fish cast theirs further back
+    const drawShadows = () => {
+      if (!lit) return;
+      ctx.save();
+      for (const { f, s } of sorted) {
+        const gx = s.x * W;
+        const floorY = this.groundAt(tank, s.x) * H - floorDepth * (1 - s.z) * 0.9;
+        const height = clamp((floorY - s.y * H) / H, 0, 1);
+        const L = this.fishLen(f) * (0.82 + s.z * 0.18);
+        const alpha = 0.22 * (1 - height) * (0.6 + s.z * 0.4);
+        if (alpha <= 0.01) continue;
+        ctx.fillStyle = `rgba(10,30,28,${alpha.toFixed(3)})`;
+        ctx.beginPath();
+        ctx.ellipse(gx, floorY, L * (0.32 + height * 0.25), L * 0.07, 0, 0, TAU);
+        ctx.fill();
+      }
+      ctx.restore();
+    };
+
     for (const o of sorted) if (o.s.z < 0.3) drawOne(o);
     // back plants
     const selected = this.scape.selected?.ref;
@@ -728,7 +802,12 @@ export class TankView {
       if (!sp || !BACK_KINDS.has(sp.kind)) continue;
       drawPlant(ctx, p, p.x * W, this.groundAt(tank, p.x) * H, H, reduce ? 0 : t, { algae, highlight: selected === p ? "#ffffff" : this.mode === "trim" && p.g > 1.05 ? "rgba(255,255,255,0.7)" : null });
     }
+    // depth haze: everything drawn so far sits deeper in the water
+    ctx.fillStyle = rgba(mid, 0.2);
+    ctx.fillRect(0, 0, W, H);
+    drawFloor();
     drawGround();
+    drawShadows();
     for (const h of tank.hard) {
       drawHardscape(ctx, h, h.x * W, this.groundAt(tank, h.x) * H, H, { algae, highlight: selected === h ? "#ffffff" : null });
     }
@@ -829,6 +908,45 @@ export class TankView {
     refl.addColorStop(0.7, "rgba(255,255,255,0)");
     refl.addColorStop(1, "rgba(255,255,255,0.05)");
     ctx.fillStyle = refl;
+    ctx.fillRect(0, 0, W, H);
+    // diagonal streak on the front pane
+    ctx.save();
+    ctx.globalCompositeOperation = "lighter";
+    const streak = ctx.createLinearGradient(W * 0.62, 0, W * 0.78, H);
+    streak.addColorStop(0, "rgba(255,255,255,0)");
+    streak.addColorStop(0.5, "rgba(255,255,255,0.07)");
+    streak.addColorStop(1, "rgba(255,255,255,0)");
+    ctx.fillStyle = streak;
+    ctx.beginPath();
+    ctx.moveTo(W * 0.66, 0);
+    ctx.lineTo(W * 0.72, 0);
+    ctx.lineTo(W * 0.56, H);
+    ctx.lineTo(W * 0.5, H);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+    // pane edges catch the light: thin bright verticals with a darker inner line
+    const edge = Math.max(3, W * 0.006);
+    for (const x of [0, W - edge]) {
+      const eg = ctx.createLinearGradient(x, 0, x + edge, 0);
+      eg.addColorStop(0, x === 0 ? "rgba(255,255,255,0.32)" : "rgba(0,20,24,0.25)");
+      eg.addColorStop(1, x === 0 ? "rgba(0,20,24,0.25)" : "rgba(255,255,255,0.32)");
+      ctx.fillStyle = eg;
+      ctx.fillRect(x, 0, edge, H);
+    }
+    // lid rim across the top
+    const rimH = Math.max(4, H * 0.022);
+    const rim = ctx.createLinearGradient(0, 0, 0, rimH);
+    rim.addColorStop(0, "#26302d");
+    rim.addColorStop(0.7, "#3a4642");
+    rim.addColorStop(1, "rgba(255,255,255,0.35)");
+    ctx.fillStyle = rim;
+    ctx.fillRect(0, 0, W, rimH);
+    // inner shadow toward the frame so the water reads as a volume
+    const iv = ctx.createRadialGradient(W / 2, H / 2, Math.min(W, H) * 0.45, W / 2, H / 2, Math.hypot(W, H) * 0.62);
+    iv.addColorStop(0, "rgba(0,0,0,0)");
+    iv.addColorStop(1, "rgba(0,16,20,0.22)");
+    ctx.fillStyle = iv;
     ctx.fillRect(0, 0, W, H);
 
     // edit overlays

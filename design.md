@@ -7,11 +7,12 @@ The app reads like a naturalist's notebook with a living plate in it: warm paper
 
 | token | light | dark | use |
 |---|---|---|---|
-| `--paper` | `#f5f1e8` | `#141a18` | page background |
-| `--card` | `#fffdf8` | `#1b2320` | plates, sheets |
+| `--paper` | `#f5f0e7` | `#141a18` | page background |
+| `--card` | `#ffffff` | `#1b2320` | floating cards, plates, sheets |
+| `--surface-2` | `#f1ece2` | `#222c28` | tool tiles, inset tracks, inputs |
 | `--ink` | `#1d2a27` | `#ece6d8` | body text |
 | `--muted` | `#56625e` | `#a9b3ad` | secondary text |
-| `--rule` | `#d8d1c2` | `#2f3a36` | hairlines |
+| `--rule` | `#e5ddcf` | `#2f3a36` | hairlines |
 | `--accent` | `#1f5f4a` | `#6fbf9c` | primary action, active nav |
 | `--accent-ink` | `#ffffff` | `#0e1513` | text on accent |
 | `--accent-soft` | `#e3ece4` | `#20322b` | selected rows, chips |
@@ -31,14 +32,16 @@ No purple anywhere (hues 235 to 335 are banned in data, coral genes and fish col
 ## Space, shape, motion
 
 - 4 px base grid; gaps 8 / 12 / 16 / 24.
-- Radius 4 px on controls, 2 px on the plate frame, 12 px on bottom sheets (top corners only).
+- Radius (v1.2 depth pass, after Jeda): 18 px cards (`--r`), 26 px plate and sheets (`--r-lg`), 12 to 16 px tiles, full pill for buttons, chips, nav and segmented controls.
+- Elevation: warm layered shadows `--shadow-1` (chips, rows), `--shadow-2` (cards), `--shadow-3` (plate, sheets, floating nav); hover lifts 1 to 3 px; press sinks 1 px. Inset tracks (`--surface-2` plus an inner shadow) for meters, segmented controls and inputs.
+- Background: warm radial glow at the top of the page over `--paper`.
 - Every tap target at least 44 x 44 px.
 - Motion: 160 to 220 ms ease-out for sheets and toasts. The tank is the only continuous motion; it slows and dims in focus mode and respects `prefers-reduced-motion` and the in-app setting.
 
 ## Layout
 
-- Desktop (> 900 px): top bar, left plate (tank) with a caption row and tool row, right notes column (readings, needs, today's care, orders). Nav is a hairline tab row under the brand.
-- Phone: tank on top (4:5), tool row, notes stack below; nav moves to a fixed bottom bar that reserves its own height (`padding-bottom` on main) so nothing hides behind it.
+- Desktop (> 900 px): top bar, floating pill nav centred under it, left plate (tank) with a caption row and tile tool row, right column of floating note cards (status, to do, water test, today's care).
+- Phone: tank on top, tile tool row, note cards below; nav is a floating rounded bar inset 12 px from the edges that reserves its own height (`padding-bottom` on main) so nothing hides behind it. Sheets rise from the bottom with a grab handle.
 
 ## Voice
 
@@ -46,8 +49,8 @@ Plain, warm, specific. Tell the keeper what is happening and what to do: "Nitrat
 
 ## Signature element
 
-The living vector tank: procedurally drawn fish with personalities, a real nitrogen cycle, light schedule and day/night that follows the clock.
+The living vector tank: procedurally drawn fish with personalities, a real nitrogen cycle, light schedule and day/night that follows the clock. Since v1.2 it is drawn as a glass box: side panes in one-point perspective, a receding substrate floor, depth haze over far fish and back plants, soft floor shadows under each fish (deeper fish cast theirs further back), a dark lid rim, lit pane edges, a front-glass streak and a stand under the frame. The fishing scenes use atmospheric perspective: a nearer ridge, horizon haze and mist, perspective shimmer, a sun or moon glint column and a lit bank shading the water.
 
 ## Banned defaults
 
-Purple or violet, emoji, gradient hero blobs, glassmorphism cards, Inter-only type, centred marketing hero inside the app, pill buttons everywhere, drop shadows heavier than 0 1px 2px.
+Purple or violet, emoji, gradient hero blobs, glassmorphism cards (blur is limited to the sheet backdrop and the phone nav, never over the animated canvases), Inter-only type, centred marketing hero inside the app, hard or coloured drop shadows, neon glows.
