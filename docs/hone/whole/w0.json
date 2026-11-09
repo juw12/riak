@@ -1,0 +1,137 @@
+{
+  "mode": "score",
+  "models": [
+    "Pega-Vision",
+    "Pega-Thinking",
+    "GLM-5.3-Flash"
+  ],
+  "weights": {
+    "C1": 0.3,
+    "C2": 0.3,
+    "C3": 0.25,
+    "C4": 0.15
+  },
+  "judges": {
+    "Pega-Vision": {
+      "scores": {
+        "C1": 9.0,
+        "C2": 8.0,
+        "C3": 10.0,
+        "C4": 9.0
+      },
+      "evidence": {
+        "C1": "Journal uses 'No. 01' numbering and dotted ledger lines; tank art features depth haze and distinct species silhouettes.",
+        "C2": "'More to do' card clearly guides next steps, but mobile fishing screen crowds the viewport with 'Controls' and 'Bait' cards.",
+        "C3": "Interlocking loops include nitrogen cycle, fishing minigame, greenhouse cuttings, reef lab genetics, and focus timer.",
+        "C4": "Consistent pill buttons and layered shadows across screens; 'Care' modal tiles are neatly aligned."
+      },
+      "fixes": [
+        "Maximize the fishing gameplay viewport on mobile by collapsing the 'Controls' and 'Bait' cards into accordions or overlays, as they currently reduce the visible water area.",
+        "Group secondary tank actions (Shop, Photo, Watch, Share) into a 'More' menu or horizontal scroll row on mobile to reduce button density in the thumb zone.",
+        "Make the primary maintenance action (e.g., 'Change 40% of water') sticky or prominent at the top of the Care modal so it isn't pushed below the fold on smaller screens."
+      ],
+      "total": 8.95,
+      "seconds": 44.9
+    },
+    "Pega-Thinking": {
+      "scores": {
+        "C1": 9.0,
+        "C2": 9.0,
+        "C3": 10.0,
+        "C4": 8.0
+      },
+      "evidence": {
+        "C1": "Distinctive field-guide aesthetic with 'numbered plates I and II', 'No. 1' order entries, dotted ledger lines; tank drawn as glass box with perspective side panes, receding gravel floor, depth haze, back-glass planting silhouettes, fish floor shadows, lid rim, stand; stones and driftwood carry contact shadows, top-light highlight, core shadow, moss cap; koi pond has rim stones, lanterns, bamboo fountain, drifting maple/ginkgo leaves",
+        "C2": "'More to do' section explicitly guides first-time players with 'Go fishing', 'Greenhouse and reef lab', 'Field journal'; tools row clearly labelled (Feed, Care, Scape, Residents, Shop, Photo, Watch, Share); fishing scene shows 'Flick up on the water, or press Cast' with Flick/Classic toggle; phone layout shows tools in clean 2x4 grid with nothing cramped",
+        "C3": "Interlocking loops clearly exceed typical cozy aquarium: nitrogen cycle care, 9-spot fishing with flick/reel/tension/drag mechanics, breeding with inherited colours, aquascaping (16 plants, 8 hardscape, 3 substrates, 3 tank sizes, reef room), greenhouse trays with variegated sports, reef lab with named strains from form/two colours/pattern, journal dex with silhouettes and hints, focus timer with box breathing, separate koi pond with generative sound mix",
+        "C4": "Consistent pill buttons, floating white cards with layered shadows, warm cream palette with dark green accents maintained across all screens; feedback messages well-placed ('Tap a fish to meet it, or tap the glass', 'Line is slack. Reel.'); however some spacing in the desktop tank side column feels slightly loose and the koi pond's top-down style, while cohesive, breaks slightly from the field-guide motif"
+      },
+      "fixes": [
+        "Refine fish art — while the tank environment is richly detailed (glass box perspective, depth haze, shadows), the fish themselves read as small and simple in both desktop and phone views; making each of the 47 species more visually distinctive would strengthen the 'tank art is the hero' goal",
+        "Tighten spacing and visual hierarchy in the desktop tank side column — the 'More to do', 'Water test', and 'Today's care' cards have generous gaps that make the right column feel less dense than the tank; grouping related items more tightly would improve scanability",
+        "Add more environmental detail to fishing spots — the lily pond scenery is pleasant but flatter than the main tank's layered glass-box art; matching the fishing scenes' depth (haze, foreground/midground/background layers) would unify the visual craft across screens"
+      ],
+      "total": 9.1,
+      "seconds": 30.2
+    },
+    "GLM-5.3-Flash": {
+      "scores": {
+        "C1": 8.0,
+        "C2": 8.0,
+        "C3": 9.0,
+        "C4": 8.0
+      },
+      "evidence": {
+        "C1": "Coherent cream/green palette and serif/sans pairing; tank rendered with 'perspective side panes, receding gravel floor, depth haze' plus visible light rays, distinct tetra forms and contact shadows; koi pond and field-guide journal plates ('No. 01', dotted ledger lines) are distinctive. Held from 9-10: fishing scenes are visibly flatter (plain gradient water, simple hill silhouettes, sparse pads) than the tank/pond art, so not 'every screen feels designed'.",
+        "C2": "Strong next-step guidance: 'Tap a fish to meet it, or tap the glass.', 'Flick up on the water, or press Cast', 'Line is slack. Reel', 'Try Lily pond · fresh', 'Pick a length and start when you are ready.'; phone tools are a labelled 2x4 grid, nothing cramped. Held from 9-10: tank desktop stacks competing prompts - 'Test the water' appears in both the Water test card and Today's care checklist while 'More to do' adds three more calls to action.",
+        "C3": "Every anchor loop present: nitrogen-cycle care, fishing minigame (tension vs strength, drag, 9 spots, tournaments, 47 species), breeding with inherited colours, scaping, greenhouse with variegated sports, reef lab strains, orders, journal, focus; loops interlock via 'arrow links to the next step of each loop (harvest a tray, trim plants in the tank, plant cuttings with Scape)'. Held from 10: depth of breeding/tournament/reef loops is asserted in the summary, not demonstrated - screenshots show early game (journal 3 of 47, Level 1/6).",
+        "C4": "Consistent pill buttons, white cards, tiles and nav across all nine screenshots; feedback is unobtrusive and well placed ('Line is slack. Reel' pill over scene, quiet pond controls that fade). Held from 9-10: Garden hub is dense with many simultaneous modules, and journal card No. 03 carries a green top edge the sibling cards lack - a state whose meaning is not evident."
+      },
+      "fixes": [
+        "Raise the fishing scenes' art to the tank/koi-pond standard - richer water and shore composition instead of flat hills and plain gradient water (biggest C1 lever, w=0.30).",
+        "De-duplicate the Tank screen's prompts: merge the Water test card's 'Test the water' with the care checklist entry and trim 'More to do' so the next step reads as one clear action (biggest C2 lever, w=0.30).",
+        "Make the deeper loops visible in-product - breeding inheritance previews, tournament standings, reef strain lineage - and tighten the Garden hub's grouping/spacing so asserted depth and tidiness are demonstrable (C3/C4)."
+      ],
+      "total": 8.25,
+      "seconds": 74.9
+    }
+  },
+  "quorum": 3,
+  "council_score": 8.8,
+  "criterion_median": {
+    "C1": 9.0,
+    "C2": 8.0,
+    "C3": 10.0,
+    "C4": 8.0
+  },
+  "criterion_spread": {
+    "C1": 1.0,
+    "C2": 1.0,
+    "C3": 1.0,
+    "C4": 1.0
+  },
+  "split_criteria": [],
+  "judge_total_range": [
+    8.25,
+    9.1
+  ],
+  "fixes": [
+    {
+      "judge": "Pega-Vision",
+      "fix": "Maximize the fishing gameplay viewport on mobile by collapsing the 'Controls' and 'Bait' cards into accordions or overlays, as they currently reduce the visible water area."
+    },
+    {
+      "judge": "Pega-Vision",
+      "fix": "Group secondary tank actions (Shop, Photo, Watch, Share) into a 'More' menu or horizontal scroll row on mobile to reduce button density in the thumb zone."
+    },
+    {
+      "judge": "Pega-Vision",
+      "fix": "Make the primary maintenance action (e.g., 'Change 40% of water') sticky or prominent at the top of the Care modal so it isn't pushed below the fold on smaller screens."
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Refine fish art — while the tank environment is richly detailed (glass box perspective, depth haze, shadows), the fish themselves read as small and simple in both desktop and phone views; making each of the 47 species more visually distinctive would strengthen the 'tank art is the hero' goal"
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Tighten spacing and visual hierarchy in the desktop tank side column — the 'More to do', 'Water test', and 'Today's care' cards have generous gaps that make the right column feel less dense than the tank; grouping related items more tightly would improve scanability"
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Add more environmental detail to fishing spots — the lily pond scenery is pleasant but flatter than the main tank's layered glass-box art; matching the fishing scenes' depth (haze, foreground/midground/background layers) would unify the visual craft across screens"
+    },
+    {
+      "judge": "GLM-5.3-Flash",
+      "fix": "Raise the fishing scenes' art to the tank/koi-pond standard - richer water and shore composition instead of flat hills and plain gradient water (biggest C1 lever, w=0.30)."
+    },
+    {
+      "judge": "GLM-5.3-Flash",
+      "fix": "De-duplicate the Tank screen's prompts: merge the Water test card's 'Test the water' with the care checklist entry and trim 'More to do' so the next step reads as one clear action (biggest C2 lever, w=0.30)."
+    },
+    {
+      "judge": "GLM-5.3-Flash",
+      "fix": "Make the deeper loops visible in-product - breeding inheritance previews, tournament standings, reef strain lineage - and tighten the Garden hub's grouping/spacing so asserted depth and tidiness are demonstrable (C3/C4)."
+    }
+  ],
+  "label": "council-judged (3 judges)"
+}

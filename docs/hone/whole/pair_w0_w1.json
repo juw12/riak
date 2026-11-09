@@ -1,0 +1,51 @@
+{
+  "mode": "pair",
+  "models": [
+    "Pega-Vision",
+    "Pega-Thinking",
+    "GLM-5.3-Flash"
+  ],
+  "judges": {
+    "Pega-Vision": {
+      "picks_AB_BA": [
+        "A",
+        "A"
+      ],
+      "vote": "A",
+      "reasons": [
+        "Version 1 provides a more comprehensive review packet by including a screenshot of the fishing 'fight' mechanic (tension meter, drag settings) on mobile, whereas Version 2 redundantly shows the 'casting' screen again; this allows Version 1 to better demonstrate the 'Depth of play' (C3) criterion.",
+        "Version 2 provides visual evidence of the fishing 'fight' mechanic (tension meter, drag settings) on mobile, validating the depth of play described in the text, while Version 1 only shows the casting screen."
+      ]
+    },
+    "Pega-Thinking": {
+      "picks_AB_BA": [
+        "tie",
+        "tie"
+      ],
+      "vote": "tie",
+      "reasons": [
+        "The text descriptions are identical, and the screenshots show the same screens with only negligible differences (slight fish position variations, different fishing state captured on phone). Both versions demonstrate the same visual craft, clarity, depth of play, and polish against the rubric criteria.",
+        "Both versions share identical text descriptions and nearly identical screenshots showing the same coherent visual design, clear navigation, and deep feature set. The only meaningful difference is VERSION 2's phone screenshot captures the fishing fight screen (line tension, fish strength, drag) while VERSION 1 captures the cast screen, but this is a minor variation in which moment was captured rather than a substantive quality difference."
+      ]
+    },
+    "GLM-5.3-Flash": {
+      "picks_AB_BA": [
+        "tie",
+        "tie"
+      ],
+      "vote": "tie",
+      "reasons": [
+        "The feature summaries are word-for-word identical and the screenshot sets show the same app with only trivial differences (fish positions, animation frames); the sole substantive swap—V1 showing the fishing fight UI versus V2 showing the pre-cast weather/controls state—does not meaningfully shift any rubric criterion.",
+        "The two packets are textually identical and the screenshots differ only in trivial states (V2 shows the fishing-fight panel where V1 shows the cast prompt, plus slightly different fish/koi positions), so scores on visual craft, clarity, depth, and polish are effectively the same."
+      ]
+    }
+  },
+  "votes": {
+    "A": 1,
+    "B": 0,
+    "tie": 2
+  },
+  "quorum": 3,
+  "b_wins": false,
+  "label": "council-judged (3 judges)"
+}

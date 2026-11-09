@@ -1,0 +1,137 @@
+{
+  "mode": "score",
+  "models": [
+    "Pega-Vision",
+    "Pega-Thinking",
+    "GLM-5.3-Flash"
+  ],
+  "weights": {
+    "C1": 0.3,
+    "C2": 0.3,
+    "C3": 0.25,
+    "C4": 0.15
+  },
+  "judges": {
+    "Pega-Vision": {
+      "scores": {
+        "C1": 10.0,
+        "C2": 8.0,
+        "C3": 10.0,
+        "C4": 9.0
+      },
+      "evidence": {
+        "C1": "Distinctive calm field-guide look achieved via numbered journal plates, warm cream palette, and consistent card styling; tank art uses depth haze and shadows effectively.",
+        "C2": "'More to do' card guides new players well, but mobile fishing screen crowds tension meters, drag settings, and reel buttons; care screen has 7 metric cards potentially cramped on 390px.",
+        "C3": "Interlocking loops exceed typical apps: nitrogen cycle simulation, breeding genetics, greenhouse variegation, reef fragging, and focus timer integration.",
+        "C4": "Consistent pill buttons, layered shadows, and typography across desktop/mobile; Koi pond controls fade cleanly but risk discoverability issues."
+      },
+      "fixes": [
+        "Simplify the mobile fishing UI during the first catch (hide advanced drag/tension stats) to prevent the controls from feeling cramped or overwhelming on small screens.",
+        "Group the 7 water/maintenance metrics on the mobile 'Care' screen into collapsible sections or a summary view to reduce scroll depth and visual density.",
+        "Add a subtle 'tap to wake' visual cue (e.g., a faint pulse) on the Koi pond screen when controls have faded, ensuring users know how to reveal the hidden menu."
+      ],
+      "total": 9.25,
+      "seconds": 30.6
+    },
+    "Pega-Thinking": {
+      "scores": {
+        "C1": 8.0,
+        "C2": 9.0,
+        "C3": 10.0,
+        "C4": 9.0
+      },
+      "evidence": {
+        "C1": "Distinctive field-guide aesthetic with numbered plates, dotted ledger lines, and glass-box tank with perspective; however the fish themselves render as simple geometric shapes ('fish are drawn larger' but appear flat) and the tank art, while pleasant, doesn't fully live up to 'tank art is the hero' on every screen.",
+        "C2": "Clear tools row (Feed/Care/Scape/Residents/Shop/Photo/Watch/Share), explicit 'More to do' cards ('Go fishing', 'Greenhouse and reef lab', 'Field journal') guide next steps, fishing controls labelled (Flick/Classic, Light/Medium/Heavy drag), phone layout groups actions cleanly without cramping.",
+        "C3": "Many interlocking loops clearly exceeding a typical cozy aquarium: nitrogen-cycle care, flick-cast/strike/reel fishing with tournaments and 47 species, breeding with inherited colours, aquascaping (16 plants, 8 hardscape, 3 substrates, 3 tank sizes, reef room), greenhouse with variegated sports, reef lab with named strains, journal dex with silhouettes, focus timer with box breathing, and a separate koi pond with generative sound mix.",
+        "C4": "Consistent warm-cream palette, pill buttons, floating nav, and card shadows across all screens; feedback messages unobtrusive ('Tap a fish to meet it, or tap the glass', 'Line is slack. Reel.'); spacing and component sizing align well between 1440 and 390 px."
+      },
+      "fixes": [
+        "Increase fish art detail and species distinctiveness in the tank view — current fish read as simple shapes despite the claim of 47 unique body forms; this is the gap between 'pleasant' and 'tank art is the hero'.",
+        "On the 390 px tank view the fish are small and the tank dominates; lift small species and scale fish up so the inhabitants are clearly the subject on phone, matching the desktop intent.",
+        "Tighten the desktop 'More to do' / side column — the cards sit as a separate stack beside the tank rather than feeling integrated; align them visually with the tank frame so the field-guide layout reads as one composed page."
+      ],
+      "total": 8.95,
+      "seconds": 12.2
+    },
+    "GLM-5.3-Flash": {
+      "scores": {
+        "C1": 8.0,
+        "C2": 9.0,
+        "C3": 9.0,
+        "C4": 8.0
+      },
+      "evidence": {
+        "C1": "Distinctive field-guide styling lands ('No. 01' entries, dotted ledger lines, italic binomials) and 'the tank is drawn as a glass box' with light rays, fish shadows and per-species body forms; but the fishing overworld is flat colour-band hills with a plain sun disc, and koi read as simple tapered shapes — not every screen feels designed to the tank's level.",
+        "C2": "Next-step guidance is pervasive: 'Tap a fish to meet it, or tap the glass.', 'Flick up on the water, or press Cast', journal hints 'Try Lily pond · fresh', 'Pick a length and start when you are ready.', greenhouse steps 1-4. Nits: shell counter and Level bar are unexplained, 'Scape'/'Watch' are jargon labels for a first-timer.",
+        "C3": "All anchor loops present with specifics: nitrogen cycle care, flick/reel/drag fishing ('47 species, 5 rarities', '12 quests', tournaments), breeding with 'inherited colours', scaping, greenhouse 'variegated sports', reef strains, orders, journal, focus; interlocked via trimming→cuttings→trays and arrow links. Orders/focus loops look thin and breeding/reef depth rests on the summary alone.",
+        "C4": "Consistent pills, cards, status dots ('fine') and states ('Not found yet', 'Not tested today'); feedback toasts are unobtrusive. Rough edges: grey lantern squares on the pond read as unstyled UI boxes, the oversized Cast pill breaks the button scale, toast placement varies (top on fishing, bottom on tank)."
+      },
+      "fixes": [
+        "Redraw the fishing overworld scenery (layered, textured hills; modelled sun/sky) so every spot matches the tank's craft level — the weakest screen in an otherwise designed set.",
+        "Clarify the chrome for first-time players: label or tooltip the shell currency and Level progress bar, and rename or gloss 'Scape' and 'Watch'.",
+        "Tidy the koi pond: give koi more fin/form definition and restyle the grey lantern squares so they read as scenery, not unstyled buttons; unify toast placement across scenes."
+      ],
+      "total": 8.55,
+      "seconds": 58.7
+    }
+  },
+  "quorum": 3,
+  "council_score": 8.95,
+  "criterion_median": {
+    "C1": 8.0,
+    "C2": 9.0,
+    "C3": 10.0,
+    "C4": 9.0
+  },
+  "criterion_spread": {
+    "C1": 2.0,
+    "C2": 1.0,
+    "C3": 1.0,
+    "C4": 1.0
+  },
+  "split_criteria": [],
+  "judge_total_range": [
+    8.55,
+    9.25
+  ],
+  "fixes": [
+    {
+      "judge": "Pega-Vision",
+      "fix": "Simplify the mobile fishing UI during the first catch (hide advanced drag/tension stats) to prevent the controls from feeling cramped or overwhelming on small screens."
+    },
+    {
+      "judge": "Pega-Vision",
+      "fix": "Group the 7 water/maintenance metrics on the mobile 'Care' screen into collapsible sections or a summary view to reduce scroll depth and visual density."
+    },
+    {
+      "judge": "Pega-Vision",
+      "fix": "Add a subtle 'tap to wake' visual cue (e.g., a faint pulse) on the Koi pond screen when controls have faded, ensuring users know how to reveal the hidden menu."
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Increase fish art detail and species distinctiveness in the tank view — current fish read as simple shapes despite the claim of 47 unique body forms; this is the gap between 'pleasant' and 'tank art is the hero'."
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "On the 390 px tank view the fish are small and the tank dominates; lift small species and scale fish up so the inhabitants are clearly the subject on phone, matching the desktop intent."
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Tighten the desktop 'More to do' / side column — the cards sit as a separate stack beside the tank rather than feeling integrated; align them visually with the tank frame so the field-guide layout reads as one composed page."
+    },
+    {
+      "judge": "GLM-5.3-Flash",
+      "fix": "Redraw the fishing overworld scenery (layered, textured hills; modelled sun/sky) so every spot matches the tank's craft level — the weakest screen in an otherwise designed set."
+    },
+    {
+      "judge": "GLM-5.3-Flash",
+      "fix": "Clarify the chrome for first-time players: label or tooltip the shell currency and Level progress bar, and rename or gloss 'Scape' and 'Watch'."
+    },
+    {
+      "judge": "GLM-5.3-Flash",
+      "fix": "Tidy the koi pond: give koi more fin/form definition and restyle the grey lantern squares so they read as scenery, not unstyled buttons; unify toast placement across scenes."
+    }
+  ],
+  "label": "council-judged (3 judges)"
+}
