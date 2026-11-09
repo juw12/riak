@@ -8,6 +8,48 @@ const SURFACE = 0.07;
 const BACK_KINDS = new Set(["stem", "sword", "grass"]);
 const GRID = { w: 48, h: 30 };
 
+// A tileable caustic net: bright Voronoi cell edges, built once and reused as a drifting pattern.
+let causticCanvas = null;
+function causticTexture() {
+  if (causticCanvas) return causticCanvas;
+  const S = 192;
+  const canvas = document.createElement("canvas");
+  canvas.width = S;
+  canvas.height = S;
+  const g = canvas.getContext("2d");
+  const img = g.createImageData(S, S);
+  const r = rng(7331);
+  const seeds = [];
+  for (let i = 0; i < 22; i++) seeds.push([r() * S, r() * S]);
+  for (let y = 0; y < S; y++) {
+    for (let x = 0; x < S; x++) {
+      let d1 = Infinity;
+      let d2 = Infinity;
+      for (const [sx, sy] of seeds) {
+        let dx = Math.abs(x - sx);
+        let dy = Math.abs(y - sy);
+        if (dx > S / 2) dx = S - dx;
+        if (dy > S / 2) dy = S - dy;
+        const d = dx * dx + dy * dy;
+        if (d < d1) {
+          d2 = d1;
+          d1 = d;
+        } else if (d < d2) d2 = d;
+      }
+      const edge = Math.sqrt(d2) - Math.sqrt(d1);
+      const v = Math.max(0, 1 - edge / 5);
+      const o = (y * S + x) * 4;
+      img.data[o] = 255;
+      img.data[o + 1] = 252;
+      img.data[o + 2] = 224;
+      img.data[o + 3] = Math.round(v * v * 255);
+    }
+  }
+  g.putImageData(img, 0, 0);
+  causticCanvas = canvas;
+  return canvas;
+}
+
 export class TankView {
   constructor(canvas, hooks) {
     this.canvas = canvas;
@@ -771,6 +813,20 @@ export class TankView {
         const gy = this.groundAt(tank, gx / W) * H + r() * H * 0.4;
         ctx.fillRect(gx, gy, 1.6, 1.6);
       }
+      for (let i = 0; i < 18; i++) {
+        const sx = r() * W;
+        const top = this.groundAt(tank, sx / W) * H;
+        const sy = top + (H - top) * (0.25 + r() * 0.7);
+        const sr = 3 + r() * 7;
+        ctx.fillStyle = rgba(shade(sub.color, 0.15 + r() * 0.2), 0.55);
+        ctx.beginPath();
+        ctx.ellipse(sx, sy, sr * 1.4, sr, r() * 0.6, 0, TAU);
+        ctx.fill();
+        ctx.fillStyle = "rgba(255,255,255,0.12)";
+        ctx.beginPath();
+        ctx.ellipse(sx - sr * 0.4, sy - sr * 0.35, sr * 0.6, sr * 0.3, 0, 0, TAU);
+        ctx.fill();
+      }
       // caustic shimmer on the ground surface
       if (lit && !reduce) {
         ctx.globalCompositeOperation = "lighter";
@@ -817,7 +873,95 @@ export class TankView {
         const gy = this.groundAt(tank, gx / W) * H - r() * floorDepth;
         ctx.fillRect(gx, gy, 1.2, 1.2);
       }
+      if (lit) {
+        const pattern = ctx.createPattern(causticTexture(), "repeat");
+        ctx.globalCompositeOperation = "lighter";
+        const drift = reduce ? 0 : t * 0.006;
+        for (const [k, a] of [[1, 0.2], [-0.7, 0.12]]) {
+          pattern.setTransform(new DOMMatrix().translate(drift * k, H * 0.6).scale(W / 520, (W / 520) * 0.32));
+          ctx.fillStyle = pattern;
+          ctx.globalAlpha = a;
+          ctx.fillRect(0, H * 0.55, W, H * 0.45);
+        }
+        ctx.globalAlpha = 1;
+        ctx.globalCompositeOperation = "source-over";
+      }
       ctx.restore();
+    };
+    // fine growth on the substrate: a low carpet of grass blades and moss cushions (freshwater),
+    // sand ripples and shell grit (reef), plus scattered pebbles; seeded per tank so it never jumps
+    const drawCarpet = () => {
+      const r = rng(hashString(tank.id + "carpet"));
+      const sway = reduce ? 0 : t * 0.0011;
+      // pebbles first, the carpet grows around them
+      for (let i = 0; i < 34; i++) {
+        const px = r() * W;
+        const depth = r();
+        const py = this.groundAt(tank, px / W) * H - floorDepth * depth * 0.85;
+        const pr = (2.2 + r() * 4.2) * (1 - depth * 0.45) * (W / 900 + 0.4);
+        const tone = r();
+        ctx.fillStyle = tone < 0.4 ? "#8d8577" : tone < 0.75 ? "#a39a89" : "#6f6a60";
+        ctx.beginPath();
+        ctx.ellipse(px, py, pr * 1.3, pr * 0.72, 0, 0, TAU);
+        ctx.fill();
+        ctx.fillStyle = "rgba(255,255,255,0.28)";
+        ctx.beginPath();
+        ctx.ellipse(px - pr * 0.35, py - pr * 0.28, pr * 0.5, pr * 0.22, -0.2, 0, TAU);
+        ctx.fill();
+      }
+      if (salt) {
+        ctx.strokeStyle = "rgba(255,250,235,0.22)";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        for (let i = 0; i < 26; i++) {
+          const px = r() * W;
+          const py = this.groundAt(tank, px / W) * H - floorDepth * r() * 0.85;
+          const w = W * (0.02 + r() * 0.03);
+          ctx.moveTo(px - w, py);
+          ctx.quadraticCurveTo(px, py - 2.5, px + w, py);
+        }
+        ctx.stroke();
+        return;
+      }
+      const tones = ["#4f7d3c", "#6a9a45", "#86b357"];
+      const scale = Math.max(0.7, H / 420);
+      for (let tone = 0; tone < tones.length; tone++) {
+        ctx.fillStyle = tones[tone];
+        ctx.beginPath();
+        const clumps = 30;
+        for (let c = 0; c < clumps; c++) {
+          const cx = r() * W;
+          const depth = r();
+          const base = this.groundAt(tank, cx / W) * H - floorDepth * depth * 0.9;
+          const near = 1 - depth * 0.5;
+          const blades = 5 + Math.floor(r() * 5);
+          for (let b = 0; b < blades; b++) {
+            const bx = cx + (r() - 0.5) * 16 * scale;
+            const h = (5 + r() * 9) * scale * near * (1 - tone * 0.18);
+            const lean = (r() - 0.5) * 5 * scale + Math.sin(sway + cx * 0.02) * 1.6 * scale;
+            const w = 1.1 * scale * near;
+            ctx.moveTo(bx - w, base);
+            ctx.quadraticCurveTo(bx + lean * 0.4, base - h * 0.6, bx + lean, base - h);
+            ctx.quadraticCurveTo(bx + lean * 0.4 + w, base - h * 0.5, bx + w, base);
+          }
+        }
+        ctx.fill();
+      }
+      // moss cushions
+      for (let i = 0; i < 9; i++) {
+        const cx = r() * W;
+        const depth = r();
+        const base = this.groundAt(tank, cx / W) * H - floorDepth * depth * 0.8;
+        const rw = (10 + r() * 16) * scale * (1 - depth * 0.4);
+        const g = ctx.createRadialGradient(cx - rw * 0.3, base - rw * 0.35, 1, cx, base, rw);
+        g.addColorStop(0, "#9cc463");
+        g.addColorStop(0.6, "#5f8f3c");
+        g.addColorStop(1, "rgba(52,90,40,0.85)");
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.ellipse(cx, base, rw, rw * 0.42, 0, Math.PI, TAU);
+        ctx.fill();
+      }
     };
     // soft shadows on the floor; deeper fish cast theirs further back
     const drawShadows = () => {
@@ -852,6 +996,7 @@ export class TankView {
     drawFloor();
     drawGround();
     drawShadows();
+    drawCarpet();
     for (const h of tank.hard) {
       drawHardscape(ctx, h, h.x * W, this.groundAt(tank, h.x) * H, H, { algae, highlight: selected === h ? "#ffffff" : null });
     }
@@ -885,6 +1030,25 @@ export class TankView {
     for (const p of tank.plants) {
       const sp = plantById[p.sp];
       if (sp && sp.kind === "floater") drawPlant(ctx, p, p.x * W, SURFACE * H, H, reduce ? 0 : t, { surfaceY: SURFACE * H, highlight: selected === p ? "#ffffff" : null });
+    }
+    // light dancing just under the surface
+    if (lit) {
+      const pattern = ctx.createPattern(causticTexture(), "repeat");
+      const drift = reduce ? 0 : t * 0.004;
+      pattern.setTransform(new DOMMatrix().translate(-drift, SURFACE * H).scale(W / 700, (W / 700) * 0.22));
+      const band = ctx.createLinearGradient(0, SURFACE * H, 0, SURFACE * H + H * 0.1);
+      ctx.save();
+      ctx.globalCompositeOperation = "lighter";
+      ctx.globalAlpha = 0.16;
+      ctx.fillStyle = pattern;
+      ctx.beginPath();
+      ctx.rect(0, SURFACE * H, W, H * 0.08);
+      ctx.fill();
+      ctx.restore();
+      band.addColorStop(0, "rgba(255,255,240,0.10)");
+      band.addColorStop(1, "rgba(255,255,240,0)");
+      ctx.fillStyle = band;
+      ctx.fillRect(0, SURFACE * H, W, H * 0.1);
     }
     // surface and air gap
     ctx.fillStyle = "rgba(240,246,244,0.55)";

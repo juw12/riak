@@ -860,13 +860,20 @@ export class PondPanel {
       const w = clamp((e - 0.62) * 3.2, 0, 1);
       desired = k.heading + wrapAngle(desired - k.heading) * (1 - w) + wrapAngle(home - k.heading) * w;
     }
-    // give each other room
+    // give each other room: steer away from close neighbours, and never sit on top of one
     for (const o of this.koi) {
       if (o === k) continue;
       const d = dist(k.x, k.y, o.x, o.y);
-      if (d < L * 0.55 && d > 0.01) {
+      const room = L * (pellet ? 0.75 : 0.9);
+      if (d < room && d > 0.01) {
         const away = Math.atan2(k.y - o.y, k.x - o.x);
-        desired += wrapAngle(away - desired) * 0.12;
+        const push = 1 - d / room;
+        desired += wrapAngle(away - desired) * (0.1 + push * 0.35);
+        if (d < L * 0.42) {
+          const shove = (L * 0.42 - d) * Math.min(1, dt * 3);
+          k.x += Math.cos(away) * shove * 0.5;
+          k.y += Math.sin(away) * shove * 0.5;
+        }
       }
     }
 

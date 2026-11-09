@@ -1,0 +1,51 @@
+{
+  "mode": "pair",
+  "models": [
+    "Pega-Vision",
+    "Pega-Thinking",
+    "GLM-5.3-Flash"
+  ],
+  "judges": {
+    "Pega-Vision": {
+      "picks_AB_BA": [
+        "B",
+        "tie"
+      ],
+      "vote": "tie",
+      "reasons": [
+        "Version 2 corrects a UI inconsistency in the Care modal where the filter bacteria progress bar visually mismatched the 85% text value in Version 1, demonstrating superior polish and consistent states.",
+        "The text descriptions are character-for-character identical, and the screenshots differ only in trivial application state values (e.g., fishing line distance, journal progress count) without indicating any difference in design quality, features, or implementation."
+      ]
+    },
+    "Pega-Thinking": {
+      "picks_AB_BA": [
+        "tie",
+        "tie"
+      ],
+      "vote": "tie",
+      "reasons": [
+        "The text descriptions are identical and the screenshots show only negligible differences (minor fish/plant positions, line-out distance 8.7m vs 7.4m, fish count 3 vs 2 of 47). Visual craft, clarity, depth of play, and polish are indistinguishable between the two versions.",
+        "Both versions contain identical text descriptions and essentially identical screenshots across all screens (tank, care, fishing, garden, journal, focus, koi pond), so there is no meaningful difference to judge against the rubric."
+      ]
+    },
+    "GLM-5.3-Flash": {
+      "picks_AB_BA": [
+        "tie",
+        "tie"
+      ],
+      "vote": "tie",
+      "reasons": [
+        "The feature packets are word-for-word identical, and the screenshots show the same screens, palette, typography and layout, differing only in simulation state (fish positions and koi clustering, line-out 8.7 m vs 7.4 m, journal 3/47 vs 2/47, order text, one water-test tile width) with no meaningful craft, clarity, depth or polish advantage either way.",
+        "Both packets contain identical text and screenshots of the same app; the only differences are incidental simulation state (fish/koi positions, line-out 7.4 vs 8.7 m, journal 2 vs 3 of 47, one progress-bar fill), which do not meaningfully change visual craft, clarity, depth, or polish under the rubric."
+      ]
+    }
+  },
+  "votes": {
+    "A": 0,
+    "B": 0,
+    "tie": 3
+  },
+  "quorum": 3,
+  "b_wins": false,
+  "label": "council-judged (3 judges)"
+}

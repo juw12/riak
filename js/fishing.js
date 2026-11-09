@@ -46,8 +46,35 @@ export function paintScene(ctx, W, H, spot, ts, time, extra = {}) {
     }
   }
 
+  // soft cloud banks drifting slowly; more and greyer in poor weather
+  {
+    const rc = rng(hashString(spot.id + "clouds"));
+    const banks = weather === "clear" ? 3 : 6;
+    const cloudTone = mix(mix("#ffffff", "#9aa3a6", grey * 1.6), NIGHT_SKY, (1 - day) * 0.8);
+    for (let b = 0; b < banks; b++) {
+      const cy = horizon * (0.18 + rc() * 0.5);
+      const span = W * (0.12 + rc() * 0.16);
+      const cx = ((rc() * (W + span * 2) + time * 0.004 * (0.6 + rc())) % (W + span * 2)) - span;
+      const puffs = 5 + Math.floor(rc() * 4);
+      ctx.fillStyle = rgba(cloudTone, 0.16 + 0.22 * day * (0.6 + grey));
+      ctx.beginPath();
+      for (let p = 0; p < puffs; p++) {
+        const px = cx + (p / (puffs - 1) - 0.5) * span;
+        const pr = span * (0.12 + rc() * 0.1) * (1 - Math.abs(p / (puffs - 1) - 0.5));
+        ctx.moveTo(px + pr * 1.6, cy);
+        ctx.ellipse(px, cy, pr * 1.6, pr, 0, 0, TAU);
+      }
+      ctx.fill();
+      // flat, slightly darker underside
+      ctx.fillStyle = rgba(mix(cloudTone, sky, 0.5), 0.12 * day);
+      ctx.fillRect(cx - span * 0.45, cy + span * 0.02, span * 0.9, span * 0.05);
+    }
+  }
+
   // far hills
   const far = mix(mix(spot.far, NIGHT_SKY, 1 - day * 0.85), sky, 0.25 + grey);
+  const farPts = [];
+  let ridgePts = [];
   ctx.fillStyle = far;
   ctx.beginPath();
   ctx.moveTo(0, horizon);
@@ -57,6 +84,7 @@ export function paintScene(ctx, W, H, spot, ts, time, extra = {}) {
     const x = (i / 10) * W;
     const y = horizon - (peaks ? (0.05 + r() * 0.14) * H : 0.005 * H);
     ctx.lineTo(x, y);
+    farPts.push([x, y]);
   }
   ctx.lineTo(W, horizon);
   ctx.closePath();
@@ -69,10 +97,27 @@ export function paintScene(ctx, W, H, spot, ts, time, extra = {}) {
     const rr = rng(hashString(spot.id + "ridge"));
     for (let i = 0; i <= 16; i++) {
       const x = (i / 16) * W;
-      ctx.lineTo(x, horizon - (0.015 + rr() * 0.05) * H);
+      const y = horizon - (0.015 + rr() * 0.05) * H;
+      ctx.lineTo(x, y);
+      ridgePts.push([x, y]);
     }
     ctx.lineTo(W, horizon);
     ctx.closePath();
+    ctx.fill();
+    // a treeline of rounded crowns along the near ridge
+    const crowns = mix(nearRidge, "#000000", 0.12);
+    ctx.fillStyle = crowns;
+    ctx.beginPath();
+    const rt = rng(hashString(spot.id + "trees"));
+    for (let i = 0; i < 60; i++) {
+      const x = rt() * W;
+      const seg = Math.min(15, Math.floor((x / W) * 16));
+      const f = (x / W) * 16 - seg;
+      const y = ridgePts[seg][1] * (1 - f) + ridgePts[seg + 1][1] * f;
+      const tr = H * (0.008 + rt() * 0.014);
+      ctx.moveTo(x + tr, y + tr * 0.4);
+      ctx.ellipse(x, y + tr * 0.4, tr, tr * 1.25, 0, 0, TAU);
+    }
     ctx.fill();
   }
   // haze where land meets sky
@@ -90,6 +135,57 @@ export function paintScene(ctx, W, H, spot, ts, time, extra = {}) {
   wg.addColorStop(1, w2);
   ctx.fillStyle = wg;
   ctx.fillRect(0, horizon, W, H - horizon);
+  // the hills mirrored in still water, squashed and faded
+  if (farPts.length) {
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(0, horizon, W, (H - horizon) * 0.4);
+    ctx.clip();
+    const reflect = (pts, color, alpha) => {
+      ctx.fillStyle = rgba(color, alpha);
+      ctx.beginPath();
+      ctx.moveTo(0, horizon);
+      for (const [x, y] of pts) ctx.lineTo(x, horizon + (horizon - y) * 0.7);
+      ctx.lineTo(W, horizon);
+      ctx.closePath();
+      ctx.fill();
+    };
+    reflect(farPts, far, weather === "rain" ? 0.12 : 0.3);
+    if (ridgePts.length) reflect(ridgePts, mix(spot.near, NIGHT_SKY, (1 - day) * 0.75), 0.22);
+    ctx.restore();
+  }
+  // wave texture: short ripple dashes, dense and fine near the horizon, longer near the viewer
+  {
+    const rw = rng(hashString(spot.id + "waves"));
+    const drift = time * 0.01;
+    for (const [tone, alpha] of [["#ffffff", 0.1 + 0.08 * day], ["#0b2a2c", 0.1]]) {
+      ctx.strokeStyle = rgba(tone, alpha);
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      for (let i = 0; i < 110; i++) {
+        const d = rw() ** 1.6;
+        const y = horizon + 3 + d * (H - horizon) * 0.95;
+        const len = (6 + rw() * 14) * (0.35 + d * 2.2);
+        const x = ((rw() * (W + 60) + drift * (0.3 + d)) % (W + 60)) - 30;
+        ctx.moveTo(x, y);
+        ctx.quadraticCurveTo(x + len * 0.5, y - 1.2 * (0.5 + d), x + len, y);
+      }
+      ctx.stroke();
+    }
+  }
+  // glitter on the light path
+  if (weather !== "fog" && weather !== "rain" && day > 0.2) {
+    const rg = rng(hashString(spot.id + "glitter") + Math.floor(time / 300));
+    ctx.fillStyle = rgba("#fffbe6", 0.75 * day);
+    for (let i = 0; i < 40; i++) {
+      const d = rg() ** 1.4;
+      const y = horizon + 2 + d * (H - horizon) * 0.9;
+      const spread = W * (0.012 + d * 0.06);
+      const x = bx + (rg() - 0.5) * 2 * spread;
+      const s = 0.8 + d * 2.2;
+      ctx.fillRect(x - s, y - 0.5, s * 2, 1 + d);
+    }
+  }
   // horizon mist on the water, fading toward the viewer
   const mist = ctx.createLinearGradient(0, horizon, 0, horizon + (H - horizon) * 0.35);
   mist.addColorStop(0, rgba(mix(sky, "#ffffff", 0.2), 0.35));
