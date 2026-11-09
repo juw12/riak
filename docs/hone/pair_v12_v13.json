@@ -1,0 +1,51 @@
+{
+  "mode": "pair",
+  "models": [
+    "Pega-Vision",
+    "Pega-Thinking",
+    "GLM-5.3-Flash"
+  ],
+  "judges": {
+    "Pega-Vision": {
+      "picks_AB_BA": [
+        "B",
+        "tie"
+      ],
+      "vote": "tie",
+      "reasons": [
+        "The feature summaries are identical, but VERSION 2’s screenshots show slightly clearer interaction feedback and guidance, especially in the fishing fight and journal hints, giving it a small edge in clarity and polish.",
+        "The feature summaries are identical and the screenshots differ only in incidental state such as fish positions, a toast, and journal count, so neither version shows a meaningful advantage under the rubric."
+      ]
+    },
+    "Pega-Thinking": {
+      "picks_AB_BA": [
+        "tie",
+        "tie"
+      ],
+      "vote": "tie",
+      "reasons": [
+        "The feature summaries and look descriptions are word-for-word identical, and the screenshots show the same app with only trivial state differences (e.g., fishing fight status text, journal hint text, a notification banner). Visual craft, clarity, depth, and polish are effectively equivalent across both versions.",
+        "Both versions contain identical text descriptions and visually equivalent screenshots showing the same app with the same features, design, and polish; the only differences are minor state variations (e.g., fishing line tension, journal progress count) that do not affect quality."
+      ]
+    },
+    "GLM-5.3-Flash": {
+      "picks_AB_BA": [
+        "B",
+        "B"
+      ],
+      "vote": "B",
+      "reasons": [
+        "The packets are textually identical, but V2's screenshots show slightly better first-time guidance: the journal's unfound fish display location hints ('Try Lily pond · fresh') matching the described fish dex, and the fishing fight adds a 'Turn to reel' cue with a clearer status message, marginally improving C2 clarity while all other criteria are effectively equal.",
+        "The packets and nearly all screenshots are effectively identical, but Version 1's screenshots substantiate described guidance features that Version 2 lacks — journal 'Try …' hints on not-found species and a mid-fight line-tension state — giving V1 a slight edge on clarity (C2) while V2's only extra is a minor feedback toast."
+      ]
+    }
+  },
+  "votes": {
+    "A": 0,
+    "B": 1,
+    "tie": 2
+  },
+  "quorum": 3,
+  "b_wins": false,
+  "label": "council-judged (3 judges)"
+}

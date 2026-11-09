@@ -1,5 +1,5 @@
 // Offline cache. Bump VERSION when shipping changes.
-const VERSION = "riak-v1.3.0";
+const VERSION = "riak-v1.4.0";
 const ASSETS = [
   "./",
   "index.html",

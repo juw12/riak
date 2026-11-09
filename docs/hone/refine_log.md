@@ -40,3 +40,17 @@ Result: v1.2 baseline 8.10 (pinned-clock re-shoot) -> shipped round 1 at 8.10, p
 | 5 | (run past the plateau at the user's request) round 4 plus the redundant 'tank is ready' toast removed and the v9 toast lane restored | G1-G4 pass | 8.25 vs 8.25 | tie 0/0/3 | no, reverted to v9 | stop: plateau and 5-round max |
 
 Result (v1.3.0): v1.2.1 baseline 8.10 -> shipped round 3 (v9) at 8.25, pairwise win 2/0/1 over v1.2.1, council-judged (3 judges). Below the 8.5 done bar; C1 visual craft 8, C2 clarity 8, C3 depth 9, C4 polish 8. Remaining asks: field-guide character on non-tank screens, loops visible in the UI, richer tank fish at default zoom.
+| 2026-11-09 11:03 | council score | 8.25 | split: - | Pega-Vision=8.1, Pega-Thinking=8.25, GLM-5.3-Flash=8.8 |
+| 2026-11-09 11:07 | council pair | B wins: False | votes A/B/tie 0/1/2 | council-judged (3 judges) |
+
+v1.4 run (baseline v9 8.25):
+| 6 | greenhouse bays (glazing, shrubs, bench, cell tray, seed packet and trowel), field-guide side cards with numbered plates and arrow loop links, focus breathing beside the timer and dashed empty-week targets, larger fish with small species lifted most, stone and driftwood contact shadows, highlights and moss, welcome toast removed, two-column phone trays, shorter tank hint, plain fish load text | G1-G4 pass | 8.25 vs 8.25 | B 1, tie 2, A 0 | yes, working base (non-regression, delivers the requested big pass) | judges: toast over seed shelf, disabled Deliver contrast, crank cue, grey journal silhouettes |
+| 2026-11-09 11:34 | council pair | B wins: False | votes A/B/tie 0/1/2 | council-judged (3 judges) |
+| 2026-11-09 11:40 | council score | 8.25 | split: - | Pega-Vision=8.25, Pega-Thinking=8.25, GLM-5.3-Flash=8.55 |
+| 2026-11-09 12:08 | council pair | B wins: False | votes A/B/tie 0/0/3 | council-judged (3 judges) |
+| 2026-11-09 12:09 | council score | 8.25 | split: - | Pega-Vision=8.25, Pega-Thinking=8.25, GLM-5.3-Flash=8.55 |
+
+| 7 | journal hints on unfound species (Try spot and water), Turn to reel caption under the crank, desktop toasts single line in the header band, disabled buttons readable | G1-G4 pass | 8.25 vs 8.25 | B 1, tie 2, A 0 | yes (non-regression) | judges: care sheet plain tiles, fish detail, phone tool row |
+| 8 | care readings get a range gauge (safe band and marker) on bordered cards, fish bodies get scale rows and a lateral line (batched into one stroke after a frame-time regression in the first gate run) | G1-G4 pass (second run) | 8.25 vs 8.25 | tie 3 (two judges picked B in one order) | yes (non-regression) | plateau: three rounds at 8.25, stop and ship v1.4.0 |
+
+Plateau reached at 8.25 (C1 8, C2 8, C3 9, C4 8). Remaining judge asks, not done: richer fish art at default zoom, grouping the eight tank tools on phone, a calmer desktop side column, entry points for breeding and reef lab on the tank screen.

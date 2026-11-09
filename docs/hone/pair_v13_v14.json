@@ -1,0 +1,51 @@
+{
+  "mode": "pair",
+  "models": [
+    "Pega-Vision",
+    "Pega-Thinking",
+    "GLM-5.3-Flash"
+  ],
+  "judges": {
+    "Pega-Vision": {
+      "picks_AB_BA": [
+        "tie",
+        "B"
+      ],
+      "vote": "tie",
+      "reasons": [
+        "The two versions are textually identical and the screenshots differ only in minor state/design tweaks, such as water-test bars and journal progress. Those differences do not materially change visual craft, clarity, depth of play, or polish under the rubric.",
+        "The feature summaries are identical, but VERSION 1’s screenshots show slightly stronger visual craft and polish, especially the care sheet’s progress bars and the journal’s more complete colored species entries."
+      ]
+    },
+    "Pega-Thinking": {
+      "picks_AB_BA": [
+        "tie",
+        "B"
+      ],
+      "vote": "tie",
+      "reasons": [
+        "Both versions have identical feature descriptions and visually equivalent screenshots showing the same coherent field-guide aesthetic, clear mobile layouts, and deep interlocking loops; minor state differences (e.g., a discovered Guppy in V2's journal, progress bars in V2's care sheet, line-out distance) are negligible.",
+        "The text descriptions are identical, but VERSION 1's care sheet shows interactive sliders for water test values (ammonia, nitrite, nitrate, temperature, algae, glass, filter bacteria) while VERSION 2 shows only static numbers without sliders. This gives V1 better polish (C4) and clearer feedback/interactivity (C2), while visual craft (C1) and depth of play (C3) are equivalent."
+      ]
+    },
+    "GLM-5.3-Flash": {
+      "picks_AB_BA": [
+        "B",
+        "tie"
+      ],
+      "vote": "tie",
+      "reasons": [
+        "The written packets are identical, but VERSION 2's screenshots show slightly better craft and clarity: the water-test tiles add safe-range indicator bars that make readings interpretable at a glance, and the journal showcases a discovered guppy in full colour, better demonstrating the per-species art. VERSION 1 is essentially the same app with marginally less informative readings, so the difference is small but favours VERSION 2.",
+        "The written packets are word-for-word identical, and the screenshots differ only in trivial game state (fish positions, journal 3/47 vs 2/47, line-out 5.0 m vs 9.0 m) and a negligible care-tile styling choice (V1's range bars vs V2's plain tiles with more visible maintenance buttons), so no soft criterion (C1–C4) meaningfully favors either version."
+      ]
+    }
+  },
+  "votes": {
+    "A": 0,
+    "B": 0,
+    "tie": 3
+  },
+  "quorum": 3,
+  "b_wins": false,
+  "label": "council-judged (3 judges)"
+}

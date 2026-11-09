@@ -781,6 +781,36 @@ function levelOf(key, v, s, tank) {
   }
   return "ok";
 }
+// scale and safe band for each reading, used by the small gauge under each tile
+function gaugeSpec(key, tank) {
+  if (key === "amm" || key === "no2") return { min: 0, max: 2, lo: 0, hi: 0.25 };
+  if (key === "no3") return { min: 0, max: 80, lo: 1, hi: 40 };
+  if (key === "algae" || key === "glass") return { min: 0, max: 1, lo: 0, hi: 0.35 };
+  if (key === "bact") return { min: 0, max: 1, lo: 0.4, hi: 1 };
+  if (key === "temp") {
+    let lo = 24;
+    let hi = 27;
+    const fish = core.fishIn(tank.id);
+    if (fish.length) {
+      lo = Math.max(...fish.map((f) => fishById[f.sp].temp[0]));
+      hi = Math.min(...fish.map((f) => fishById[f.sp].temp[1]));
+      if (hi < lo) hi = lo;
+    }
+    return { min: 18, max: 32, lo, hi };
+  }
+  return null;
+}
+function gauge(key, v, tank) {
+  const g = gaugeSpec(key, tank);
+  if (!g) return null;
+  const pct = (x) => Math.max(0, Math.min(100, ((x - g.min) / (g.max - g.min)) * 100));
+  const lo = pct(g.lo);
+  const hi = pct(g.hi);
+  return el("span", { class: "gauge", "aria-hidden": "true" }, [
+    el("span", { class: "gauge-safe", style: { left: lo + "%", width: Math.max(2, hi - lo) + "%" } }),
+    el("span", { class: "gauge-mark", style: { left: pct(v) + "%" } }),
+  ]);
+}
 export function readingsList(w, s, tank) {
   const rows = [
     ["amm", w.amm.toFixed(2) + " ppm"],
@@ -798,8 +828,9 @@ export function readingsList(w, s, tank) {
     grid.append(el("div", { class: "reading " + lv, role: "listitem" }, [
       el("span", { class: "reading-label", text: t("care." + key) }),
       el("b", { class: "reading-value num", text: val }),
+      gauge(key, w[key], tank),
       el("span", { class: "lvl " + lv, text: t("level." + lv) }),
-    ]));
+    ].filter(Boolean)));
   }
   return grid;
 }

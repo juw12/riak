@@ -21,9 +21,15 @@ Screens and interactions:
 - Journal: fish dex with silhouettes and hints, plants, strains, 18 milestones. Focus timer 15-60 min with
   weekly bars and box breathing. Offline catch-up summary on return.
 
-Look (v1.3): warm cream page with a soft top glow, floating white cards with layered shadows, pill buttons
+Look (v1.4): warm cream page with a soft top glow, floating white cards with layered shadows, pill buttons
 and a floating nav; the tank is drawn as a glass box (perspective side panes, receding gravel floor, depth
-haze, back-glass planting silhouettes, fish floor shadows, lid rim, stand). Each of the 47 species has its
-own body form and fins (catfish barbels, angelfish sails, discus disc, fan tails, scutes, glow lines) used in
-the tank, cards and journal silhouettes. Each fishing spot has its own scenery (lily pads, rice terraces,
-mangrove roots, glacier floes, harbour pilings) and a drawn rod; water readings are shown as tiles.
+haze, back-glass planting silhouettes, fish floor shadows, lid rim, stand). Stones and driftwood carry
+contact shadows, a top-light highlight, a core shadow and a moss cap; fish are drawn larger, with small
+species lifted most. Each of the 47 species has its own body form and fins used in the tank, cards and
+journal silhouettes. Each fishing spot has its own scenery and a drawn rod; water readings are tiles.
+Greenhouse trays are illustrated bays of a glasshouse: glazing bars over a warm sky, garden shrubs
+outside, a timber bench and a cell seed tray whose side cells sprout as the main plant grows; empty bays
+show a seed packet and trowel. Side cards read like a field guide (numbered plates I and II, "No. 1"
+order entries, dotted ledger lines) and end in arrow links to the next step of each loop (harvest a tray,
+trim plants in the tank, plant cuttings with Scape, fish orders on the Tank screen). Focus puts box
+breathing beside the timer and shows an empty week as dashed 25 minute targets with a short note.

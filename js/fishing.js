@@ -784,7 +784,7 @@ export class FishingPanel {
       core.changed();
     }, t("flick.drag"));
     return el("div", { class: "rig", hidden: true }, [
-      this.crankEl,
+      el("div", { class: "crank-wrap" }, [this.crankEl, el("span", { class: "crank-cap", "aria-hidden": "true" }, [icon("flip", 14), el("span", { text: t("flick.crankCap") })])]),
       el("div", { class: "rig-main" }, [
         el("div", { class: "rig-top" }, [this.gauges, el("div", { class: "line-out" }, [el("span", { class: "muted", text: t("flick.lineOut") }), this.lineOut])]),
         el("div", { class: "rig-drag" }, [el("span", { class: "rig-label", text: t("flick.drag") }), this.dragSeg]),

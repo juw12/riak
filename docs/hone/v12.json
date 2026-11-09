@@ -1,0 +1,137 @@
+{
+  "mode": "score",
+  "models": [
+    "Pega-Vision",
+    "Pega-Thinking",
+    "GLM-5.3-Flash"
+  ],
+  "weights": {
+    "C1": 0.3,
+    "C2": 0.3,
+    "C3": 0.25,
+    "C4": 0.15
+  },
+  "judges": {
+    "Pega-Vision": {
+      "scores": {
+        "C1": 8.0,
+        "C2": 8.0,
+        "C3": 9.0,
+        "C4": 7.0
+      },
+      "evidence": {
+        "C1": "'tank is drawn as a glass box ... depth haze' and field-guide plates make the tank hero strong, but care, fishing, and garden screens feel less designed.",
+        "C2": "'Flick up on the water, or press Cast' and numbered greenhouse steps clarify next actions; phone tool grids and fishing fight controls are still dense.",
+        "C3": "Feature summary lists care, fishing minigame, breeding, scaping, greenhouse, reef genetics, orders, journal, and focus as interlocking loops.",
+        "C4": "Consistent cards and pills, but the garden unlock toast overlaps the seed shelf and disabled Deliver buttons look low-contrast."
+      },
+      "fixes": [
+        "On 390 px, group the eight tank tools and fishing fight controls into progressive panels or a bottom sheet with one primary action visible, reducing crowding and clarifying the next step.",
+        "Raise the care, fishing, garden, and journal screens to the tank's field-guide standard with richer illustrated plates, consistent iconography, and less generic seed-shelf cards.",
+        "Fix polish defects: prevent the garden unlock toast from overlapping the seed shelf, raise disabled Deliver button contrast, and ensure focus week labels and text are not clipped."
+      ],
+      "total": 8.1,
+      "seconds": 64.5
+    },
+    "Pega-Thinking": {
+      "scores": {
+        "C1": 8.0,
+        "C2": 8.0,
+        "C3": 9.0,
+        "C4": 8.0
+      },
+      "evidence": {
+        "C1": "Distinctive field-guide aesthetic with numbered plates ('No. 01'), dotted ledger lines, warm cream palette, glass-box tank with depth haze and receding gravel; tank art is clearly the hero and every screen feels designed rather than templated.",
+        "C2": "'More to do' card on Tank explicitly lists next steps ('Go fishing', 'Greenhouse and reef lab', 'Field journal'); tools row is labelled (Feed/Care/Scape/Residents/Shop/Photo/Watch/Share); fishing controls clearly split Flick vs Classic with bait list; mobile layout adapts without cramping.",
+        "C3": "Multiple interlocking loops: nitrogen-cycle care, flick-cast fishing with reel tension and tournaments, breeding with inherited colours, 16-plant/8-hardscape aquascaping across 3 tank sizes, greenhouse with variegated sports, reef lab with named strains, journal dex with 47 species and 18 milestones, focus timer with weekly bars - clearly exceeds a typical cozy aquarium app.",
+        "C4": "Consistent pill buttons, floating nav (top on desktop, bottom on mobile), uniform card shadows and spacing across Tank/Care/Fishing/Garden/Journal/Focus; unobtrusive in-scene prompts like 'Tap a fish to meet it, or tap the glass'; selected states (nav, filter chips) are clear."
+      },
+      "fixes": [
+        "Strengthen tank art distinctiveness: fish silhouettes in the journal and tank read as similar grey shapes - vary body forms, fin shapes and scale so each of the 47 species is recognisably different at a glance.",
+        "Make the 'More to do' guidance more visually prominent and persistent across screens (not just Tank) so a first-time player always sees the next step in each loop (e.g., 'Harvest a tray', 'Trim plants in the tank', 'Fish orders on the Tank screen').",
+        "Tighten mobile polish: the bottom nav labels sit close to the icons and the tools grid on Tank leaves uneven gutters at 390 px - equalise cell padding and add a subtle active-state indicator under the current nav item."
+      ],
+      "total": 8.25,
+      "seconds": 25.5
+    },
+    "GLM-5.3-Flash": {
+      "scores": {
+        "C1": 8.0,
+        "C2": 9.0,
+        "C3": 10.0,
+        "C4": 8.0
+      },
+      "evidence": {
+        "C1": "Coherent cream/green palette with serif display type; tank drawn as 'a glass box (perspective side panes, receding gravel floor, depth haze)'; journal uses field-guide plates ('No. 01', 'Paracheirodon innesi'). Not a 10: desktop tank mid-water reads sparse/empty and side cards are conventional white pills, so 'tank art is the hero' only partly lands.",
+        "C2": "Next step is signposted everywhere: 'Tap a fish to meet it, or tap the glass.', 'Flick up on the water, or press Cast', 'How the greenhouse works' 1-4 strip, 'Pick a length and start when you are ready.', arrow links like 'Harvest a ready tray above'. Docked 1: flick-mode fight only says 'Crank the reel and watch the tension' with no cue for how to crank.",
+        "C3": "Every anchor loop is present and linked: 'nitrogen cycle simulation', reel/tension/drag fishing with 'tournaments against CPU anglers', 'Breeding with inherited colours', 'aquascaping with 16 plants... second tank and reef room', 'reef lab (frag, cross, named strains)', 'daily orders', '18 milestones', 'Focus timer 15-60 min', plus loop-crossing links ('plant cuttings with Scape, fish orders on the Tank screen').",
+        "C4": "Consistent pills, tiles and card states across screens ('water readings are tiles', labelled tool row). Docked: the 'Unlocked: Mountain stream, Mangrove inlet and 5 more' toast overlaps and clips the Garden seed-shelf cards, so feedback is not 'unobtrusive and well placed'."
+      },
+      "fixes": [
+        "Reposition or stack the unlock toast so it never covers Garden seed-shelf card text (feedback placement).",
+        "Enrich the desktop tank's mid-water (schooling spread, mid-ground planting) so the tank art is the hero at 1440 px.",
+        "Add an explicit crank gesture cue (e.g. 'Turn the reel' with a drag hint) to the flick-mode fight screen."
+      ],
+      "total": 8.8,
+      "seconds": 52.4
+    }
+  },
+  "quorum": 3,
+  "council_score": 8.25,
+  "criterion_median": {
+    "C1": 8.0,
+    "C2": 8.0,
+    "C3": 9.0,
+    "C4": 8.0
+  },
+  "criterion_spread": {
+    "C1": 0.0,
+    "C2": 1.0,
+    "C3": 1.0,
+    "C4": 1.0
+  },
+  "split_criteria": [],
+  "judge_total_range": [
+    8.1,
+    8.8
+  ],
+  "fixes": [
+    {
+      "judge": "Pega-Vision",
+      "fix": "On 390 px, group the eight tank tools and fishing fight controls into progressive panels or a bottom sheet with one primary action visible, reducing crowding and clarifying the next step."
+    },
+    {
+      "judge": "Pega-Vision",
+      "fix": "Raise the care, fishing, garden, and journal screens to the tank's field-guide standard with richer illustrated plates, consistent iconography, and less generic seed-shelf cards."
+    },
+    {
+      "judge": "Pega-Vision",
+      "fix": "Fix polish defects: prevent the garden unlock toast from overlapping the seed shelf, raise disabled Deliver button contrast, and ensure focus week labels and text are not clipped."
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Strengthen tank art distinctiveness: fish silhouettes in the journal and tank read as similar grey shapes - vary body forms, fin shapes and scale so each of the 47 species is recognisably different at a glance."
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Make the 'More to do' guidance more visually prominent and persistent across screens (not just Tank) so a first-time player always sees the next step in each loop (e.g., 'Harvest a tray', 'Trim plants in the tank', 'Fish orders on the Tank screen')."
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Tighten mobile polish: the bottom nav labels sit close to the icons and the tools grid on Tank leaves uneven gutters at 390 px - equalise cell padding and add a subtle active-state indicator under the current nav item."
+    },
+    {
+      "judge": "GLM-5.3-Flash",
+      "fix": "Reposition or stack the unlock toast so it never covers Garden seed-shelf card text (feedback placement)."
+    },
+    {
+      "judge": "GLM-5.3-Flash",
+      "fix": "Enrich the desktop tank's mid-water (schooling spread, mid-ground planting) so the tank art is the hero at 1440 px."
+    },
+    {
+      "judge": "GLM-5.3-Flash",
+      "fix": "Add an explicit crank gesture cue (e.g. 'Turn the reel' with a drag hint) to the flick-mode fight screen."
+    }
+  ],
+  "label": "council-judged (3 judges)"
+}

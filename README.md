@@ -79,7 +79,7 @@ tank layout and fish you chose to share, inside the link itself.
 
 ## Design
 
-Design notes, colour tokens and contrast ratios are in `design.md`. Version 1.2 adds the depth pass: floating cards with soft warm shadows, pill controls, a floating nav, and a tank drawn as a glass box with perspective, depth haze and fish shadows. Version 1.3 gives every one of the 47 species its own drawn body and fins (barbels, sails, fan tails, scutes, glow lines), adds back-glass planting to the tank, and gives each of the 9 fishing spots its own scenery and a drawn rod; `dev/species.html` shows the full species sheet. Fonts (Fraunces, Source Sans 3) are
+Design notes, colour tokens and contrast ratios are in `design.md`. Version 1.2 adds the depth pass: floating cards with soft warm shadows, pill controls, a floating nav, and a tank drawn as a glass box with perspective, depth haze and fish shadows. Version 1.3 gives every one of the 47 species its own drawn body and fins (barbels, sails, fan tails, scutes, glow lines), adds back-glass planting to the tank, and gives each of the 9 fishing spots its own scenery and a drawn rod; `dev/species.html` shows the full species sheet. Version 1.4 is a field-guide pass: greenhouse bays with glazing, a timber bench and cell trays, numbered plates and dotted ledgers on side cards with arrow links between loops, larger fish with scale rows and a lateral line, care readings drawn as range gauges, a dashed target week on the focus chart, and location hints on unfound journal species. Fonts (Fraunces, Source Sans 3) are
 vendored under the SIL Open Font License.
 
 ## Licence

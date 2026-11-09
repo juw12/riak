@@ -1,0 +1,137 @@
+{
+  "mode": "score",
+  "models": [
+    "Pega-Vision",
+    "Pega-Thinking",
+    "GLM-5.3-Flash"
+  ],
+  "weights": {
+    "C1": 0.3,
+    "C2": 0.3,
+    "C3": 0.25,
+    "C4": 0.15
+  },
+  "judges": {
+    "Pega-Vision": {
+      "scores": {
+        "C1": 8.0,
+        "C2": 8.0,
+        "C3": 9.0,
+        "C4": 8.0
+      },
+      "evidence": {
+        "C1": "tank is drawn as a glass box with depth haze and fish shadows, and journal/garden use field-guide plates, but some cards still feel generic.",
+        "C2": "Flick up on the water, or press Cast is clear, but the phone fishing fight stacks tension, strength, line out, drag, and reel tightly.",
+        "C3": "Breeding with inherited colours; aquascaping; greenhouse trays; reef lab; orders; journal; focus form many loops, though some are less visible in the screenshots.",
+        "C4": "consistent white cards, pill buttons, and icons, but phone fishing controls and desktop side column density show rough edges."
+      },
+      "fixes": [
+        "Rework the phone fishing fight layout so tension, fish strength, line out, drag, and reel are grouped into a clearer, less cramped control panel.",
+        "Reduce density and improve hierarchy in the desktop tank side column by separating water status, care, and orders with clearer headings, spacing, and next-step affordances.",
+        "Surface breeding, reef genetics, and order loops in the main UI with visible entry points and cross-links so the described depth is as clear as the tank, fishing, and garden screens."
+      ],
+      "total": 8.25,
+      "seconds": 39.2
+    },
+    "Pega-Thinking": {
+      "scores": {
+        "C1": 8.0,
+        "C2": 8.0,
+        "C3": 9.0,
+        "C4": 8.0
+      },
+      "evidence": {
+        "C1": "Distinctive field-guide aesthetic with numbered plates, dotted ledger lines, glass-box tank perspective, receding gravel floor, depth haze; warm cream palette is coherent and no purple. Fish illustrations themselves are simple vector shapes compared to the detailed environment art, preventing a 10.",
+        "C2": "Clear tool labels (Feed, Care, Scape, Residents, Shop, Photo, Watch, Share), helpful 'Tap a fish to meet it, or tap the glass' prompt, 'More to do' cards guide next steps, fishing instructions explicit ('Flick up on the water, or press Cast'). However, 8 tools on the tank screen is a lot to scan, and on phone they wrap to two rows of 4 which still feels busy.",
+        "C3": "Many interlocking loops clearly exceeding a typical cozy aquarium: nitrogen cycle care, 9-spot fishing with flick/strike/reel/tension/drag, breeding with inherited colours, aquascaping (16 plants, 8 hardscape, 3 substrates, 3 tank sizes, reef room), greenhouse with variegated sports, reef lab with named strains, journal dex with silhouettes, focus timer with box breathing, offline catch-up. 47 species, 5 rarities, 12 quests, tournaments.",
+        "C4": "Consistent pill buttons, floating cards with layered shadows, coherent warm palette across all screens, field-guide styling maintained. Feedback tooltips well-placed ('It is running. Let it take line'). Minor crowding on phone where tools row sits directly below tank; desktop side column is spacious but phone equivalent stacks tightly."
+      },
+      "fixes": [
+        "Reduce visual load of the 8-tool row on the Tank screen by grouping into primary/secondary tiers or collapsing less-used tools (Photo, Watch, Share) into a menu, especially on phone where it wraps to two rows.",
+        "Increase the detail and distinctiveness of the 47 fish illustrations to match the quality of the environment art (stones, driftwood, greenhouse bays) — currently fish are simple shapes while the tank art around them is richly rendered.",
+        "Make the 'More to do' guidance more prominent for first-time players — currently it sits in the side column below the water status; consider surfacing it as an onboarding overlay or empty-state callout so new players immediately see the next step (Go fishing, Greenhouse and reef lab, Field journal)."
+      ],
+      "total": 8.25,
+      "seconds": 26.0
+    },
+    "GLM-5.3-Flash": {
+      "scores": {
+        "C1": 8.0,
+        "C2": 9.0,
+        "C3": 9.0,
+        "C4": 8.0
+      },
+      "evidence": {
+        "C1": "Coherent cream/green palette and serif type; 'side cards read like a field guide (numbered plates I and II... dotted ledger lines)'; per-species fish forms and glasshouse bays are distinctive. Not a 10: tank water is a flat teal with simple ray overlays and fish remain basic vector shapes, so the tank is pleasant but not yet unmistakably the hero; desktop fishing/tank leave large empty bands.",
+        "C2": "Next-step guidance everywhere: 'Tap a fish to meet it, or tap the glass.', 'Flick up on the water, or press Cast', numbered 'How the greenhouse works' 1-4 strip, journal hints 'Try Blackwater river - fresh', arrow links like 'Harvest a ready tray above'. Not a 10: jargon tools 'Scape' and 'Watch' have no first-time explanation on the tools row.",
+        "C3": "All anchor loops present and interlocked: 'nitrogen cycle simulation', flick/reel fishing with 'tournaments against CPU anglers', 'breeding with inherited colours', 'reef lab (frag, cross, named strains)', orders ('No. 1 Deliver 3 Rotala cuttings'), '18 milestones', focus timer. Not a 10: breeding, reef lab and scaping are asserted in text but visible in no screenshot, so the interlocking depth is only partly verifiable.",
+        "C4": "Consistent pills, cards and icon style; clear states ('Empty tray' with seed packet, disabled 'Deliver', selected 'Medium' drag, active nav pill); unobtrusive toast 'Unlocked: Mountain stream, Mangrove inlet and 5 more'. Rough edges: 'No. 1' in garden orders vs 'No. 01' in journal, and the Cast button floats detached below the fishing scene card."
+      },
+      "fixes": [
+        "Push the tank art to hero level: richer water depth gradient/caustics and more detailed fish rendering so the tank reads as crafted art on both breakpoints (biggest C1 lever, w=0.30).",
+        "Tidy desktop composition: attach the Cast button to the fishing scene card and balance the empty band under the tank tools row so every desktop screen feels fully designed (C1/C4).",
+        "Surface the breeding and reef-lab loops from the tank screen (e.g. a 'More to do' or Residents entry) and unify micro-conventions ('No. 1' vs 'No. 01', one-line hints for 'Scape'/'Watch') (C3/C4)."
+      ],
+      "total": 8.55,
+      "seconds": 87.1
+    }
+  },
+  "quorum": 3,
+  "council_score": 8.25,
+  "criterion_median": {
+    "C1": 8.0,
+    "C2": 8.0,
+    "C3": 9.0,
+    "C4": 8.0
+  },
+  "criterion_spread": {
+    "C1": 0.0,
+    "C2": 1.0,
+    "C3": 0.0,
+    "C4": 0.0
+  },
+  "split_criteria": [],
+  "judge_total_range": [
+    8.25,
+    8.55
+  ],
+  "fixes": [
+    {
+      "judge": "Pega-Vision",
+      "fix": "Rework the phone fishing fight layout so tension, fish strength, line out, drag, and reel are grouped into a clearer, less cramped control panel."
+    },
+    {
+      "judge": "Pega-Vision",
+      "fix": "Reduce density and improve hierarchy in the desktop tank side column by separating water status, care, and orders with clearer headings, spacing, and next-step affordances."
+    },
+    {
+      "judge": "Pega-Vision",
+      "fix": "Surface breeding, reef genetics, and order loops in the main UI with visible entry points and cross-links so the described depth is as clear as the tank, fishing, and garden screens."
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Reduce visual load of the 8-tool row on the Tank screen by grouping into primary/secondary tiers or collapsing less-used tools (Photo, Watch, Share) into a menu, especially on phone where it wraps to two rows."
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Increase the detail and distinctiveness of the 47 fish illustrations to match the quality of the environment art (stones, driftwood, greenhouse bays) — currently fish are simple shapes while the tank art around them is richly rendered."
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Make the 'More to do' guidance more prominent for first-time players — currently it sits in the side column below the water status; consider surfacing it as an onboarding overlay or empty-state callout so new players immediately see the next step (Go fishing, Greenhouse and reef lab, Field journal)."
+    },
+    {
+      "judge": "GLM-5.3-Flash",
+      "fix": "Push the tank art to hero level: richer water depth gradient/caustics and more detailed fish rendering so the tank reads as crafted art on both breakpoints (biggest C1 lever, w=0.30)."
+    },
+    {
+      "judge": "GLM-5.3-Flash",
+      "fix": "Tidy desktop composition: attach the Cast button to the fishing scene card and balance the empty band under the tank tools row so every desktop screen feels fully designed (C1/C4)."
+    },
+    {
+      "judge": "GLM-5.3-Flash",
+      "fix": "Surface the breeding and reef-lab loops from the tank screen (e.g. a 'More to do' or Residents entry) and unify micro-conventions ('No. 1' vs 'No. 01', one-line hints for 'Scape'/'Watch') (C3/C4)."
+    }
+  ],
+  "label": "council-judged (3 judges)"
+}

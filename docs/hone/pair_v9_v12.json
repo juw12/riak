@@ -1,0 +1,51 @@
+{
+  "mode": "pair",
+  "models": [
+    "Pega-Vision",
+    "Pega-Thinking",
+    "GLM-5.3-Flash"
+  ],
+  "judges": {
+    "Pega-Vision": {
+      "picks_AB_BA": [
+        "B",
+        "B"
+      ],
+      "vote": "B",
+      "reasons": [
+        "Version 2 is slightly more polished and user-friendly: the tank tooltip is shorter and less intrusive, labels are clearer, notifications feel less cluttered, and the focus screen groups breathing with the timer more logically. Feature depth is identical, so the small visual and clarity gains decide it.",
+        "Both versions have the same feature summary, but VERSION 1’s screenshots show a more lively, hero-like tank, cleaner feedback, and a more coherent focus layout, giving it slightly better visual craft and polish."
+      ]
+    },
+    "Pega-Thinking": {
+      "picks_AB_BA": [
+        "tie",
+        "tie"
+      ],
+      "vote": "tie",
+      "reasons": [
+        "The text descriptions are identical across both versions, and the visual differences in screenshots (slightly larger/more colorful fish in V2's tank, different journal states showing Guppy found vs not found) are minor and likely reflect different game states rather than meaningful quality differences in craft, clarity, depth, or polish.",
+        "Both versions share identical text descriptions and the same design language (warm cream, glass-box tank, field-guide cards). The screenshots differ only in captured state (e.g., V2 shows a revealed Guppy in the journal and a more prominent onboarding overlay on mobile, while V1 shows a more developed garden and a subtler tank overlay). These are negligible differences across C1–C4."
+      ]
+    },
+    "GLM-5.3-Flash": {
+      "picks_AB_BA": [
+        "B",
+        "A"
+      ],
+      "vote": "tie",
+      "reasons": [
+        "The feature summaries are identical, but Version 2's screenshots edge ahead on the heavily weighted visual and clarity criteria: the mobile tank shows a livelier, fish-filled hero tank with the water-quality status and progress visible, and it demonstrates well-placed feedback (garden collect toast) and consistent interactive states (breathing widget, unfound fish silhouettes). Version 1 is nearly equivalent, so the margin is small but consistent across C1, C2 and C4.",
+        "The packets and feature depth are identical, but Version 2 shows small consistent refinements: clearer, less cramped phone labels (stocking/lights split), unobtrusive toast feedback, a colored journal entry that substantiates the per-species art claim, and a focus week matching the described empty dashed-target state, edging it on C2 and C4."
+      ]
+    }
+  },
+  "votes": {
+    "A": 0,
+    "B": 1,
+    "tie": 2
+  },
+  "quorum": 3,
+  "b_wins": false,
+  "label": "council-judged (3 judges)"
+}

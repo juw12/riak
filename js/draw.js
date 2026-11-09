@@ -501,6 +501,34 @@ function frontFins(ctx, f, L, H, sway, finColor, colors, phase) {
   }
 }
 
+// overlapping scale arcs and a lateral line, faint enough to read as texture
+function bodyScales(ctx, L, H) {
+  const r = Math.max(3, L * 0.06);
+  ctx.save();
+  ctx.lineWidth = Math.max(0.5, L * 0.006);
+  ctx.strokeStyle = "rgba(255,255,255,0.16)";
+  // one path for every arc keeps this to a single stroke per fish
+  ctx.beginPath();
+  let row = 0;
+  for (let y = -H * 0.5; y <= H * 0.5; y += r * 0.9) {
+    const off = row % 2 ? r * 0.5 : 0;
+    for (let x = -L * 0.4 + off; x <= L * 0.26; x += r) {
+      const a = r * 0.62;
+      ctx.moveTo(x + a * Math.cos(-1.2), y + a * Math.sin(-1.2));
+      ctx.arc(x, y, a, -1.2, 1.2);
+    }
+    row++;
+  }
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(L * 0.26, -H * 0.12);
+  ctx.quadraticCurveTo(0, -H * 0.2, -L * 0.42, -H * 0.02);
+  ctx.strokeStyle = "rgba(20,35,35,0.16)";
+  ctx.lineWidth = Math.max(0.6, L * 0.008);
+  ctx.stroke();
+  ctx.restore();
+}
+
 function finRays(ctx, L, H, sway, tailType, f) {
   ctx.save();
   tailPath(ctx, tailType, L, H, sway, f);
@@ -579,6 +607,7 @@ export function drawFish(ctx, fish, x, y, L, dir, phase, opts = {}) {
   } else {
     patternFill(ctx, sp.pattern, L, H, colors, hashString(fish.id || fish.sp));
     bodyMarks(ctx, f, L, H, colors, detail);
+    if (detail && L >= 40) bodyScales(ctx, L, H);
     // soft shading: darker back, lighter belly, a rounded highlight on the flank
     const sh = ctx.createLinearGradient(0, -H * 0.5, 0, H * 0.5);
     sh.addColorStop(0, "rgba(10,25,25,0.30)");
@@ -986,6 +1015,14 @@ export function drawHardscape(ctx, item, x, groundY, H, opts = {}) {
     const w = H * 0.26 * s * (def.round ? 0.8 : 1);
     const h = H * 0.2 * s * (def.round ? 0.6 : 1);
     const pts = stoneShape(item.id, w, h);
+    // contact shadow pools under the stone so it sits in the substrate
+    const contact = ctx.createRadialGradient(w * 0.05, 0, 1, w * 0.05, 0, w * 0.62);
+    contact.addColorStop(0, "rgba(12, 22, 16, 0.42)");
+    contact.addColorStop(1, "rgba(12, 22, 16, 0)");
+    ctx.fillStyle = contact;
+    ctx.beginPath();
+    ctx.ellipse(w * 0.05, 0, w * 0.62, h * 0.16, 0, 0, TAU);
+    ctx.fill();
     ctx.beginPath();
     ctx.moveTo(-w * 0.5, 0);
     for (const [px, py] of pts) ctx.lineTo(px, py);
@@ -997,6 +1034,26 @@ export function drawHardscape(ctx, item, x, groundY, H, opts = {}) {
     gr.addColorStop(1, c2);
     ctx.fillStyle = gr;
     ctx.fill();
+    // light from the surface: a soft top-left highlight, a core shadow low on the right, a moss cap
+    ctx.save();
+    ctx.clip();
+    const top = ctx.createRadialGradient(-w * 0.18, -h * 0.85, 1, -w * 0.18, -h * 0.85, w * 0.55);
+    top.addColorStop(0, "rgba(255, 252, 236, 0.34)");
+    top.addColorStop(1, "rgba(255, 252, 236, 0)");
+    ctx.fillStyle = top;
+    ctx.fillRect(-w, -h * 1.4, w * 2, h * 1.4);
+    const core = ctx.createLinearGradient(-w * 0.1, -h * 0.5, w * 0.45, 0);
+    core.addColorStop(0, "rgba(16, 26, 20, 0)");
+    core.addColorStop(1, "rgba(16, 26, 20, 0.38)");
+    ctx.fillStyle = core;
+    ctx.fillRect(-w, -h * 1.4, w * 2, h * 1.4);
+    if (!def.round) {
+      ctx.fillStyle = "rgba(96, 132, 72, 0.32)";
+      ctx.beginPath();
+      ctx.ellipse(-w * 0.12, -h * 0.95, w * 0.26, h * 0.12, -0.15, 0, TAU);
+      ctx.fill();
+    }
+    ctx.restore();
     // facets
     const r = rng(hashString(item.id + "f"));
     ctx.strokeStyle = rgba(c2, 0.55);
@@ -1046,6 +1103,13 @@ export function drawHardscape(ctx, item, x, groundY, H, opts = {}) {
       }
     };
     ctx.lineCap = "round";
+    const foot = ctx.createRadialGradient(0, 0, 1, 0, 0, len * 0.45);
+    foot.addColorStop(0, "rgba(12, 22, 16, 0.36)");
+    foot.addColorStop(1, "rgba(12, 22, 16, 0)");
+    ctx.fillStyle = foot;
+    ctx.beginPath();
+    ctx.ellipse(0, 0, len * 0.45, H * 0.025, 0, 0, TAU);
+    ctx.fill();
     const baseAngle = def.low ? -0.35 : -1.05;
     branch(-len * 0.25, 0, baseAngle, len * (def.low ? 0.55 : 0.45), H * 0.03 * s, 0);
     branch(-len * 0.1, 0, baseAngle - 0.5, len * 0.3, H * 0.02 * s, 1);

@@ -33,6 +33,7 @@ const ICONS = {
   lock: '<rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
   breath: '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/>',
   flip: '<path d="M12 3v18"/><path d="M8 7L3 12l5 5zM16 7l5 5-5 5z"/>',
+  arrow: '<path d="M5 12h13M13 7l5 5-5 5"/>',
   grid: '<rect x="4" y="4" width="7" height="7"/><rect x="13" y="4" width="7" height="7"/><rect x="4" y="13" width="7" height="7"/><rect x="13" y="13" width="7" height="7"/>',
 };
 

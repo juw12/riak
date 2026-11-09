@@ -17,7 +17,7 @@ import { GardenPanel } from "./garden.js";
 import { JournalPanel } from "./journal.js";
 import { FocusPanel } from "./focus.js";
 
-const VERSION = "1.3.0";
+const VERSION = "1.4.0";
 const NAV = [
   { id: "tank", icon: "tank" },
   { id: "fishing", icon: "hook" },
@@ -267,7 +267,6 @@ function onboard() {
     core.startGame({ tankName: nameIn.value, starter, lang });
     sheet.close();
     rebuild();
-    toast(t("onb.welcome", { name: core.activeTank().name }), "big");
   };
   const sheet = openSheet({ title: t("onb.title"), body, actions: [button(t("onb.start"), { kind: "primary", onclick: start })], onClose: () => {
     if (!started) start();

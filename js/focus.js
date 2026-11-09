@@ -30,12 +30,13 @@ export class FocusPanel {
     ]);
     this.weekEl = el("div", { class: "week", "aria-label": t("focus.week") });
     this.totalEl = el("p", { class: "muted" });
+    this.weekNote = el("p", { class: "week-note" });
     this.breathRing = el("div", { class: "breath-ring" }, [el("i"), el("span", { text: t("focus.in") })]);
     this.breathBtn = button(t("focus.startBreath"), { icon: "breath", kind: "quiet", onclick: () => this.toggleBreath() });
     const notes = el("aside", { class: "notes" }, [
       el("section", {}, [el("h2", { text: t("focus.title") }), el("p", { class: "muted", text: t("focus.lead") }), this.presetBox, this.timerEl, this.stateEl, this.controls]),
-      el("section", {}, [el("h3", { text: t("focus.week") }), this.weekEl, this.totalEl]),
-      el("section", {}, [el("h3", { text: t("focus.breathe") }), el("p", { class: "explain", text: t("focus.breatheLead") }), el("div", { class: "breath" }, [this.breathRing, this.breathBtn])]),
+      el("section", { class: "breath-section" }, [el("div", { class: "breath" }, [this.breathRing, el("div", {}, [el("h3", { text: t("focus.breathe") }), el("p", { class: "explain", text: t("focus.breatheLead") }), this.breathBtn])])]),
+      el("section", {}, [el("h3", { text: t("focus.week") }), this.weekEl, this.weekNote, this.totalEl]),
     ]);
     root.append(el("div", { class: "focus-layout" }, [left, notes]));
     this.view = new TankView(canvas, {
@@ -117,16 +118,23 @@ export class FocusPanel {
 
   renderWeek() {
     const days = core.focusWeek();
+    const week = days.reduce((a, d) => a + d.min, 0);
     const max = Math.max(30, ...days.map((d) => d.min));
+    const today = new Date().toDateString();
     this.weekEl.innerHTML = "";
+    this.weekEl.classList.toggle("empty", week === 0);
     for (const d of days) {
       const label = d.date.toLocaleDateString([], { weekday: "short" });
-      this.weekEl.append(el("div", { class: "bar", title: label + ": " + t("unit.min", { n: d.min }) }, [
-        el("i", { style: { height: (d.min / max) * 100 + "%" } }),
+      const isToday = d.date.toDateString() === today;
+      // an empty week shows a dashed 25 minute target on every day, so the chart reads as a goal, not a blank
+      const height = week === 0 ? (25 / max) * 100 : (d.min / max) * 100;
+      this.weekEl.append(el("div", { class: "bar" + (isToday ? " today" : ""), title: label + ": " + t("unit.min", { n: d.min }) }, [
+        el("i", { style: { height: height + "%" } }),
         el("span", { text: label.slice(0, 3) }),
       ]));
     }
-    const week = days.reduce((a, d) => a + d.min, 0);
+    this.weekNote.textContent = week === 0 ? t("focus.weekEmpty") : "";
+    this.weekNote.hidden = week !== 0;
     this.totalEl.textContent = t("focus.weekTotal", { n: week }) + " · " + t("focus.total", { n: core.S().focus.total });
   }
 

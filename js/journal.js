@@ -86,7 +86,7 @@ export class JournalPanel {
         el("span", { class: "dex-no num", text: t("journal.no", { n: String(index + 1).padStart(2, "0") }) }),
         cv,
         el("div", { class: "dex-name", text: known ? speciesName(sp.id) : t("journal.unknown") }),
-        known ? el("div", { class: "dex-sci", text: sp.sci }) : null,
+        known ? el("div", { class: "dex-sci", text: sp.sci }) : el("div", { class: "dex-hint", text: t("journal.hintAt", { spot: t("spot." + sp.spots[0]) }) + " · " + t("water." + sp.water) }),
         el("div", { class: "dex-sub" }, [el("span", { class: "rar-" + sp.rar, text: t("rar." + sp.rar) }), known && j.golden ? el("span", { class: "rar-5", text: t("fish.card.golden") }) : el("span", { text: known ? "x" + j.count : "" })]),
       ]);
       item.addEventListener("click", () => this.openFish(sp));

@@ -1,0 +1,137 @@
+{
+  "mode": "score",
+  "models": [
+    "Pega-Vision",
+    "Pega-Thinking",
+    "GLM-5.3-Flash"
+  ],
+  "weights": {
+    "C1": 0.3,
+    "C2": 0.3,
+    "C3": 0.25,
+    "C4": 0.15
+  },
+  "judges": {
+    "Pega-Vision": {
+      "scores": {
+        "C1": 8.0,
+        "C2": 8.0,
+        "C3": 9.0,
+        "C4": 8.0
+      },
+      "evidence": {
+        "C1": "Strong field-guide touches like 'numbered plates I and II' and a glass-box tank, but some screens still read as standard white cards.",
+        "C2": "Clear prompts such as 'Tap a fish to meet it, or tap the glass.' and 'Flick up on the water, or press Cast', though the phone tool grid is somewhat crowded.",
+        "C3": "Feature summary lists many interlocking loops: 'Breeding with inherited colours', 'Greenhouse trays', 'reef lab', 'orders', 'journal', 'focus'.",
+        "C4": "Mostly consistent cards and controls, but visible rough edges include truncated care text and a top toast that competes with the header."
+      },
+      "fixes": [
+        "Reduce crowding on the phone tank screen by grouping secondary tools or making the tank more dominant.",
+        "Fix text truncation and overflow in the care sheet and garden seed shelf so all labels and actions are fully visible.",
+        "Bring the field-guide visual language more consistently into fishing, garden, and journal screens so every screen feels as designed as the tank."
+      ],
+      "total": 8.25,
+      "seconds": 31.6
+    },
+    "Pega-Thinking": {
+      "scores": {
+        "C1": 8.0,
+        "C2": 8.0,
+        "C3": 9.0,
+        "C4": 8.0
+      },
+      "evidence": {
+        "C1": "Distinctive field-guide aesthetic with 'No. 01' plates, dotted ledger lines, glass-box tank with perspective side panes and depth haze; coherent warm cream + deep green palette, no purple. Fish illustrations remain simple vector shapes rather than richly detailed art.",
+        "C2": "'More to do' cards with arrow links to next loop step, numbered 'How the greenhouse works' 1-4 onboarding, clear tools row (Feed/Care/Scape/Residents/Shop/Photo/Watch/Share), well-grouped fishing controls (Flick/Classic, Phone motion/Vibration). Phone layout adapts cleanly with two-row tool grid.",
+        "C3": "Care (nitrogen cycle, water test, glass wipe, heater/light schedule, trimming), Fishing (9 spots, flick cast, reel tension/drag, 5 baits, 5 lures, tournaments, 12 quests, 47 species, 5 rarities), Breeding with inherited colors, Aquascaping (16 plants, 8 hardscape, 3 substrates, 3 tank sizes, reef room), Greenhouse (cuttings, variegated sports, houseplants), Reef lab (frag, cross, named strains), Journal (fish dex, plants, strains, 18 milestones), Focus timer with box breathing, offline catch-up. Multiple interlocking loops clearly exceed a typical cozy aquarium.",
+        "C4": "Consistent pill buttons, floating nav, and card styling across all screens; unobtrusive toast like 'Unlocked: Mountain stream, Mangrove inlet and 5 more'; empty states handled (empty trays show seed packet + trowel, unfound fish show silhouettes with hints). Spacing and component rhythm are uniform."
+      },
+      "fixes": [
+        "Increase visual detail and species-specific character in the 47 fish illustrations — current fish read as simple silhouettes and would benefit from more distinctive body shapes, fin detail, and color variation to match the field-guide ambition.",
+        "Add more visual variety to the tank scene — plants and hardscape look repetitive across screenshots; introduce more layered foreground/midground/background elements and richer substrate textures to make each tank feel unique.",
+        "Reduce text density in the desktop side column (water status, more to do, today's care, daily orders) — it competes with the tank as the hero; consider collapsible sections or a more scannable hierarchy so the tank art dominates the viewport."
+      ],
+      "total": 8.25,
+      "seconds": 12.3
+    },
+    "GLM-5.3-Flash": {
+      "scores": {
+        "C1": 8.0,
+        "C2": 9.0,
+        "C3": 9.0,
+        "C4": 8.0
+      },
+      "evidence": {
+        "C1": "Coherent cream/green palette with serif display type; tank drawn as a 'glass box' with 'depth haze', light rays and floor shadows; greenhouse has 'glazing bars over a warm sky'. But the Care sheet is plain grey tiles and fish are simple flat vectors, short of 'every screen feels designed'.",
+        "C2": "Contextual hints on every screen ('Tap a fish to meet it, or tap the glass.', 'Flick up on the water, or press Cast'), a 1-4 'How the greenhouse works' strip, arrow links ('Harvest a ready tray above') and empty-state text ('Plant a seedling to start growing.'). Only gap: the 'Watch' tool's purpose (full-screen clock) must be guessed.",
+        "C3": "Many loops present and interlocking: 'nitrogen cycle simulation', reel fight ('play line tension against fish strength'), tournaments, greenhouse with 'variegated sports', 'reef lab (frag, cross, named strains)', orders, '18 milestones', focus earning shells; 'Trimming gives cuttings' ties tank to garden. Breeding/scaping depth is asserted in the summary rather than visible, so not a clear 10.",
+        "C4": "Consistent pills, cards and status dots ('fine') across tank, care, fishing, garden, journal, focus; toast 'Unlocked: Mountain stream...' is unobtrusive. Rough edge: Journal card misspells the Latin name as 'Paraqueirodon innesi' (standard: Paracheirodon)."
+      },
+      "fixes": [
+        "Correct the misspelled species name in the Journal ('Paraqueirodon innesi' should be 'Paracheirodon innesi') and proofread all 47 species and strain names - credibility of the field-guide framing depends on it.",
+        "Lift the Care sheet to the same illustrated/field-guide standard as the other screens (its flat grey tiles are the least designed surface), strengthening C1 toward 'every screen feels designed'.",
+        "Add a sub-label or first-use hint to the 'Watch' tool (e.g. 'focus clock, keeps screen awake') - the eye icon plus 'Watch' reads as 'watch the fish', the one control a first-time player must guess."
+      ],
+      "total": 8.55,
+      "seconds": 445.1
+    }
+  },
+  "quorum": 3,
+  "council_score": 8.25,
+  "criterion_median": {
+    "C1": 8.0,
+    "C2": 8.0,
+    "C3": 9.0,
+    "C4": 8.0
+  },
+  "criterion_spread": {
+    "C1": 0.0,
+    "C2": 1.0,
+    "C3": 0.0,
+    "C4": 0.0
+  },
+  "split_criteria": [],
+  "judge_total_range": [
+    8.25,
+    8.55
+  ],
+  "fixes": [
+    {
+      "judge": "Pega-Vision",
+      "fix": "Reduce crowding on the phone tank screen by grouping secondary tools or making the tank more dominant."
+    },
+    {
+      "judge": "Pega-Vision",
+      "fix": "Fix text truncation and overflow in the care sheet and garden seed shelf so all labels and actions are fully visible."
+    },
+    {
+      "judge": "Pega-Vision",
+      "fix": "Bring the field-guide visual language more consistently into fishing, garden, and journal screens so every screen feels as designed as the tank."
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Increase visual detail and species-specific character in the 47 fish illustrations — current fish read as simple silhouettes and would benefit from more distinctive body shapes, fin detail, and color variation to match the field-guide ambition."
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Add more visual variety to the tank scene — plants and hardscape look repetitive across screenshots; introduce more layered foreground/midground/background elements and richer substrate textures to make each tank feel unique."
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Reduce text density in the desktop side column (water status, more to do, today's care, daily orders) — it competes with the tank as the hero; consider collapsible sections or a more scannable hierarchy so the tank art dominates the viewport."
+    },
+    {
+      "judge": "GLM-5.3-Flash",
+      "fix": "Correct the misspelled species name in the Journal ('Paraqueirodon innesi' should be 'Paracheirodon innesi') and proofread all 47 species and strain names - credibility of the field-guide framing depends on it."
+    },
+    {
+      "judge": "GLM-5.3-Flash",
+      "fix": "Lift the Care sheet to the same illustrated/field-guide standard as the other screens (its flat grey tiles are the least designed surface), strengthening C1 toward 'every screen feels designed'."
+    },
+    {
+      "judge": "GLM-5.3-Flash",
+      "fix": "Add a sub-label or first-use hint to the 'Watch' tool (e.g. 'focus clock, keeps screen awake') - the eye icon plus 'Watch' reads as 'watch the fish', the one control a first-time player must guess."
+    }
+  ],
+  "label": "council-judged (3 judges)"
+}
