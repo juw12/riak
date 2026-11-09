@@ -21,6 +21,9 @@ Screens and interactions:
 - Journal: fish dex with silhouettes and hints, plants, strains, 18 milestones. Focus timer 15-60 min with
   weekly bars and box breathing. Offline catch-up summary on return.
 
-Look (v1.2): warm cream page with a soft top glow, floating white cards with layered shadows, pill buttons
+Look (v1.3): warm cream page with a soft top glow, floating white cards with layered shadows, pill buttons
 and a floating nav; the tank is drawn as a glass box (perspective side panes, receding gravel floor, depth
-haze, fish floor shadows, lid rim, stand); fishing scenes use haze, a nearer ridge and a sun or moon glint.
+haze, back-glass planting silhouettes, fish floor shadows, lid rim, stand). Each of the 47 species has its
+own body form and fins (catfish barbels, angelfish sails, discus disc, fan tails, scutes, glow lines) used in
+the tank, cards and journal silhouettes. Each fishing spot has its own scenery (lily pads, rice terraces,
+mangrove roots, glacier floes, harbour pilings) and a drawn rod; water readings are shown as tiles.

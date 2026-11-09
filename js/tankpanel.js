@@ -425,9 +425,12 @@ export class TankPanel {
     const showReadings = () => {
       out.innerHTML = "";
       out.append(readingsList(tank.lastReadings || tank.w, s, tank));
-      out.append(el("p", { class: "explain", text: t("care.explain.amm") }));
-      out.append(el("p", { class: "explain", text: t("care.explain.no3") }));
-      out.append(el("p", { class: "explain", text: t("care.explain.algae") }));
+      out.append(el("details", { class: "explain-more" }, [
+        el("summary", { text: t("care.explainMore") }),
+        el("p", { class: "explain", text: t("care.explain.amm") }),
+        el("p", { class: "explain", text: t("care.explain.no3") }),
+        el("p", { class: "explain", text: t("care.explain.algae") }),
+      ]));
     };
     const testBtn = button(t("care.testDo"), { icon: "test", kind: "primary", onclick: () => {
       core.testWater();
@@ -788,10 +791,15 @@ export function readingsList(w, s, tank) {
     ["glass", Math.round(w.glass * 100) + "%"],
     ["bact", Math.round(w.bact * 100) + "%"],
   ];
-  const dl = el("dl", { class: "readings" });
+  // compact tiles: label, value and a status dot, so a test reads at a glance
+  const grid = el("div", { class: "readings", role: "list" });
   for (const [key, val] of rows) {
     const lv = levelOf(key, w[key], s, tank);
-    dl.append(el("dt", { text: t("care." + key) }), el("dd", { text: val }), el("dd", { class: "lvl " + lv, text: t("level." + lv) }));
+    grid.append(el("div", { class: "reading " + lv, role: "listitem" }, [
+      el("span", { class: "reading-label", text: t("care." + key) }),
+      el("b", { class: "reading-value num", text: val }),
+      el("span", { class: "lvl " + lv, text: t("level." + lv) }),
+    ]));
   }
-  return dl;
+  return grid;
 }

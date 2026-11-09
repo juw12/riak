@@ -1,0 +1,51 @@
+{
+  "mode": "pair",
+  "models": [
+    "Pega-Vision",
+    "Pega-Thinking",
+    "GLM-5.3-Flash"
+  ],
+  "judges": {
+    "Pega-Vision": {
+      "picks_AB_BA": [
+        "A",
+        "A"
+      ],
+      "vote": "A",
+      "reasons": [
+        "Both versions have identical feature depth and overall style, but VERSION 1 looks cleaner and more polished, especially on mobile where VERSION 2 has an overlapping toast over the tank heading. VERSION 1 also presents a more satisfying journal state with a discovered fish shown in color.",
+        "The feature summaries are identical, but VERSION 2’s screenshots show cleaner mobile polish, especially no overlapping toast on the tank screen and a more complete journal view. These small improvements better satisfy clarity and polish under the rubric."
+      ]
+    },
+    "Pega-Thinking": {
+      "picks_AB_BA": [
+        "tie",
+        "tie"
+      ],
+      "vote": "tie",
+      "reasons": [
+        "Both versions present the same app with identical text descriptions and visually equivalent screenshots. The only differences are minor state variations (notification banner presence, fish discovery state in journal, fishing minigame state) that do not meaningfully affect visual craft, clarity, depth of play, or polish. Quality is indistinguishable.",
+        "The text descriptions are identical word-for-word, and the screenshots show the same app at trivially different moments (different fishing fight message/line-out value, and V2 has discovered a Guppy in the journal). Visual craft, clarity, depth, and polish are indistinguishable between the two versions."
+      ]
+    },
+    "GLM-5.3-Flash": {
+      "picks_AB_BA": [
+        "A",
+        "A"
+      ],
+      "vote": "A",
+      "reasons": [
+        "The packets and nearly all screens are identical, but Version 2's phone tank screenshot shows a feedback toast ('My first tank is ready') overlapping and obscuring the 'My first tank is doing well' heading, while Version 1 renders the same screen cleanly — a misplaced feedback message and rough edge against C4 (and slightly C2). Version 1's extra found-species art in the journal is a neutral game-state difference, so Version 1 edges ahead on polish.",
+        "The written packets are identical, so the screenshots decide: V1's mobile tank shows a toast overlapping the 'My first tank is doing well' heading (a visible polish/clarity flaw) and fish clustered to one side, while V2 is clean with well-distributed fish, bubbles, and a discovered guppy card that better showcases the per-species art. V2's fishing state ('Line is slack. Reel') is equally consistent with its tension meter, so V2 edges ahead on C1/C4 with no offsetting loss."
+      ]
+    }
+  },
+  "votes": {
+    "A": 2,
+    "B": 0,
+    "tie": 1
+  },
+  "quorum": 3,
+  "b_wins": false,
+  "label": "council-judged (3 judges)"
+}

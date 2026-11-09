@@ -29,3 +29,14 @@ Result: baseline 7.35 -> 7.80 council-judged (3 judges: Pega-Vision, Pega-Thinki
 | 2 | fish art (fin rays, scale rows, lateral line, highlight, eye catchlight), fish 30% larger in the tank, drifting motes, rarity bands on journal cards | G1-G4 pass | 7.80 vs 8.10 | ties 0/0/3 | no, reverted to round 1 | stop: plateau (2 rounds without a +0.3 gain); judges' remaining asks are bigger art work (species-specific fish, fishing/garden scene art) |
 
 Result: v1.2 baseline 8.10 (pinned-clock re-shoot) -> shipped round 1 at 8.10, pairwise win 2/0/1, council-judged (3 judges: Pega-Vision, Pega-Thinking, GLM-5.3-Flash). Below 8.5; weakest C4 polish 7 and C1 visual craft 8.
+| 2026-11-09 09:08 | council score | 8.25 | split: - | Pega-Vision=7.95, Pega-Thinking=8.25, GLM-5.3-Flash=8.95 |
+| 2026-11-09 09:13 | council pair | B wins: True | votes A/B/tie 0/2/1 | council-judged (3 judges) |
+| 3 | species-specific fish forms for all 47 species (body shapes, barbels, sails, discus, fan tails, scutes, glow), tank fish ~45% larger plus back-glass planting layer, per-spot fishing scenery for all 9 spots and a drawn rod, wider desktop fishing scene, water readings as tiles with explanations collapsed, journal rarity bands and fit-to-bounds thumbnails, v1.3.0 | G1-G4 pass | 8.25 vs 8.10 | B wins 2/0/1 | kept as working base (wins pairwise, +0.15 is below the +0.3 gain bar) | judges: fish still read small in the tank, phone toast over header pills, side column empty space, opaque stocking number |
+| 2026-11-09 09:22 | council score | 8.1 | split: - | Pega-Vision=8.25, Pega-Thinking=8.1, GLM-5.3-Flash=8.1 |
+| 2026-11-09 09:22 | council pair | B wins: False | votes A/B/tie 2/0/1 | council-judged (3 judges) |
+| 2026-11-09 09:28 | council pair | B wins: False | votes A/B/tie 0/0/3 | council-judged (3 judges) |
+| 2026-11-09 09:33 | council score | 8.25 | split: - | Pega-Vision=8.25, Pega-Thinking=7.8, GLM-5.3-Flash=8.55 |
+| 4 | small species drawn larger (compressed size curve), phone toasts moved to a snackbar lane above the nav, plain-language stocking status | G1-G4 pass | 8.10 vs 8.25 | A wins 2/0/1 | no, reverted | judges: the bottom toast now covered a heading |
+| 5 | (run past the plateau at the user's request) round 4 plus the redundant 'tank is ready' toast removed and the v9 toast lane restored | G1-G4 pass | 8.25 vs 8.25 | tie 0/0/3 | no, reverted to v9 | stop: plateau and 5-round max |
+
+Result (v1.3.0): v1.2.1 baseline 8.10 -> shipped round 3 (v9) at 8.25, pairwise win 2/0/1 over v1.2.1, council-judged (3 judges). Below the 8.5 done bar; C1 visual craft 8, C2 clarity 8, C3 depth 9, C4 polish 8. Remaining asks: field-guide character on non-tank screens, loops visible in the UI, richer tank fish at default zoom.

@@ -82,7 +82,7 @@ export class JournalPanel {
       const j = s.journal.fish[sp.id];
       const known = j && j.count > 0;
       const cv = el("canvas", { "aria-hidden": "true" });
-      const item = el("button", { type: "button", class: "dex-item" + (known ? "" : " unknown"), "aria-label": known ? speciesName(sp.id) : t("journal.unknown") }, [
+      const item = el("button", { type: "button", class: "dex-item" + (known ? "" : " unknown"), "data-rar": String(sp.rar), "aria-label": known ? speciesName(sp.id) : t("journal.unknown") }, [
         el("span", { class: "dex-no num", text: t("journal.no", { n: String(index + 1).padStart(2, "0") }) }),
         cv,
         el("div", { class: "dex-name", text: known ? speciesName(sp.id) : t("journal.unknown") }),

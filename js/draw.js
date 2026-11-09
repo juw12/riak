@@ -3,54 +3,141 @@ import { fishById, plantById, hardById, coralColors } from "./sim.js";
 import { rng, hashString, shade, rgba, mix, clamp, TAU } from "./util.js";
 
 // ---------- Fish ----------
-function bodyPath(ctx, L, H) {
+// Each species gets a body form so the tank reads like a field guide rather than one fish in many colours.
+// nose 0 = pointed .. 1 = blunt; crown = x of the highest point of the back; back/belly scale the
+// profile; ped = tail-stalk half height; mouth = nose height (negative = upturned); eye = eye scale.
+const FORM_DEFAULT = { nose: 0.5, crown: 0.05, back: 1, belly: 1, bellyX: 0.02, ped: 0.13, mouth: 0, eye: 1, flat: false, fx: [] };
+const CLEAR_FIN = "rgba(226,236,232,0.42)";
+const FORMS = {
+  guppy: { nose: 0.45, back: 0.9, belly: 1.12, ped: 0.15, mouth: -0.04, tail: "delta", fx: ["rays"] },
+  neon: { nose: 0.35, crown: 0.1, back: 0.95, ped: 0.14, eye: 1.4, fin: CLEAR_FIN, fx: ["adipose", "neonRed", "glow"] },
+  cardinal: { nose: 0.35, crown: 0.1, back: 0.95, ped: 0.14, eye: 1.4, fin: CLEAR_FIN, fx: ["adipose", "redFull", "glow"] },
+  ember: { nose: 0.4, crown: 0.08, ped: 0.13, eye: 1.35, fin: "rgba(240,140,90,0.5)", fx: ["adipose"] },
+  cherrybarb: { nose: 0.55, crown: 0.02, back: 1.05, belly: 1.05, ped: 0.14, fx: ["barbels", "rays"] },
+  harlequin: { nose: 0.4, crown: 0.06, back: 1.05, belly: 1.1, ped: 0.13, fin: "rgba(232,150,110,0.55)", fx: [] },
+  chili: { nose: 0.4, crown: 0.06, ped: 0.13, eye: 1.4, fin: "rgba(232,120,90,0.45)", fx: [] },
+  cory: { nose: 0.9, crown: -0.02, back: 1.15, belly: 0.75, ped: 0.17, mouth: 0.26, eye: 1.25, flat: true, fx: ["barbels", "scutes", "adipose"] },
+  pandacory: { nose: 0.9, crown: -0.02, back: 1.15, belly: 0.75, ped: 0.17, mouth: 0.26, eye: 1.25, flat: true, fx: ["barbels", "scutes", "adipose", "mask"] },
+  oto: { nose: 0.7, crown: -0.05, back: 0.9, belly: 0.7, ped: 0.16, mouth: 0.22, flat: true, fin: CLEAR_FIN, fx: ["scutes"] },
+  kuhli: { nose: 0.85, crown: 0, back: 1, belly: 1, ped: 0.34, mouth: 0.12, eye: 0.9, fx: ["barbels"] },
+  betta: { nose: 0.55, crown: 0.02, back: 0.95, belly: 1.05, ped: 0.18, mouth: -0.1, fx: ["longAnal", "pelvicLong", "rays"] },
+  channoides: { nose: 0.6, back: 0.95, ped: 0.18, mouth: -0.08, fx: ["longAnal"] },
+  dwarfgourami: { nose: 0.45, crown: 0.02, back: 1, belly: 1.05, ped: 0.13, mouth: -0.12, fx: ["feelers", "longAnal"] },
+  pearlgourami: { nose: 0.45, crown: 0.0, ped: 0.13, mouth: -0.12, fx: ["feelers", "longAnal", "lateral"] },
+  honeygourami: { nose: 0.5, crown: 0.0, ped: 0.13, mouth: -0.12, fx: ["feelers", "longAnal"] },
+  medaka: { nose: 0.4, crown: -0.12, back: 0.72, belly: 1.05, ped: 0.15, mouth: -0.14, eye: 1.45, fin: CLEAR_FIN, fx: ["longAnal"] },
+  whitecloud: { nose: 0.45, crown: 0.0, ped: 0.13, fx: ["rays"] },
+  zebra: { nose: 0.4, crown: 0.02, ped: 0.13, fx: ["multiStripe", "barbels"] },
+  cpd: { nose: 0.45, ped: 0.13, eye: 1.2, fx: ["rays"] },
+  rainbow: { nose: 0.4, crown: 0.04, back: 1.05, ped: 0.13, fx: ["twoDorsal", "rays"] },
+  angel: { nose: 0.25, crown: 0.06, back: 1, belly: 1, ped: 0.1, dorsal: "none", fx: ["angelFins", "feelers"] },
+  discus: { nose: 0.95, crown: 0.0, back: 1, belly: 1, ped: 0.1, eye: 0.9, dorsal: "none", fx: ["fringe"] },
+  goldfish: { nose: 0.85, crown: 0.06, back: 1.15, belly: 1.15, ped: 0.13, fx: ["scales", "doubleTail"] },
+  koi: { nose: 0.7, crown: 0.0, back: 1.05, ped: 0.15, mouth: 0.06, fx: ["scales", "barbels"] },
+  char: { nose: 0.45, crown: 0.0, ped: 0.15, mouth: 0.04, fx: ["adipose", "lateral", "whiteEdge"] },
+  brooktrout: { nose: 0.45, crown: 0.0, ped: 0.15, mouth: 0.04, fx: ["adipose", "lateral", "whiteEdge"] },
+  grayling: { nose: 0.4, crown: 0.06, ped: 0.14, fx: ["adipose", "lateral", "rays"] },
+  arowana: { nose: 0.15, crown: -0.15, back: 0.62, belly: 1.15, bellyX: -0.08, ped: 0.16, mouth: -0.3, fx: ["scales", "chinBarbels", "rearFins"] },
+  archer: { nose: 0.12, crown: -0.1, back: 0.55, belly: 1.3, bellyX: -0.04, ped: 0.13, mouth: -0.22, eye: 1.35, fx: ["rearFins"] },
+  bumblebee: { nose: 0.9, crown: -0.05, back: 0.95, belly: 0.95, ped: 0.2, eye: 1.2, dorsal: "low", fx: ["twoDorsal"] },
+  mono: { nose: 0.35, crown: 0.05, ped: 0.11, dorsal: "none", fx: ["triFins"] },
+  puffer: { nose: 0.95, crown: -0.02, back: 1.1, belly: 1.2, ped: 0.15, eye: 1.6, fx: ["smallFins"] },
+  clown: { nose: 0.8, crown: 0.02, ped: 0.15, fx: ["bandEdge", "finEdge"] },
+  anthias: { nose: 0.45, crown: 0.06, ped: 0.13, eye: 1.2, fx: ["dorsalFilament", "rays"] },
+  damsel: { nose: 0.6, crown: 0.04, ped: 0.13, fx: ["rays"] },
+  bluetang: { nose: 0.65, crown: 0.04, back: 1.05, belly: 1.05, ped: 0.11, eye: 1.1, fx: ["scalpel", "finEdge"] },
+  yellowtang: { nose: 0.15, crown: 0.06, ped: 0.1, mouth: 0.04, dorsal: "none", fx: ["triFins", "scalpel"] },
+  firefish: { nose: 0.7, crown: 0.0, ped: 0.18, eye: 1.3, fx: ["dorsalFilament"] },
+  banggai: { nose: 0.55, crown: 0.06, ped: 0.11, eye: 1.3, fx: ["twoDorsal", "longAnal", "rays"] },
+  flyingfish: { nose: 0.45, crown: 0.0, ped: 0.13, fx: ["wings"] },
+  idol: { nose: 0.05, crown: 0.06, ped: 0.1, mouth: 0.02, dorsal: "none", fx: ["triFins", "dorsalFilament"] },
+  lionfish: { nose: 0.6, crown: 0.06, ped: 0.14, dorsal: "none", fx: ["spines", "fans"] },
+  mandarin: { nose: 0.85, crown: 0.0, back: 0.95, belly: 1.05, ped: 0.16, eye: 1.25, fx: ["twoDorsal"] },
+  coelacanth: { nose: 0.8, crown: 0.0, back: 1.05, belly: 1.05, ped: 0.18, eye: 1.2, fx: ["lobes", "scales"] },
+};
+
+export function fishForm(spId) {
+  const f = FORMS[spId] || {};
+  return { ...FORM_DEFAULT, ...f, fx: f.fx || [] };
+}
+
+function bodyPath(ctx, L, H, f) {
+  const nx = L * 0.5;
+  const ny = H * f.mouth;
+  const cx = L * f.crown;
+  const cy = -H * 0.5 * f.back;
+  const bx = L * f.bellyX;
+  const by = H * 0.5 * f.belly;
+  const px = -L * 0.4;
+  const pt = H * f.ped;
+  const blunt = f.nose;
   ctx.beginPath();
-  ctx.moveTo(L * 0.5, 0);
-  ctx.bezierCurveTo(L * 0.42, -H * 0.42, L * 0.05, -H * 0.55, -L * 0.22, -H * 0.36);
-  ctx.quadraticCurveTo(-L * 0.36, -H * 0.2, -L * 0.4, -H * 0.1);
-  ctx.lineTo(-L * 0.4, H * 0.1);
-  ctx.quadraticCurveTo(-L * 0.36, H * 0.22, -L * 0.22, H * 0.38);
-  ctx.bezierCurveTo(L * 0.05, H * 0.6, L * 0.42, H * 0.42, L * 0.5, 0);
+  ctx.moveTo(nx, ny);
+  ctx.bezierCurveTo(
+    nx - L * (0.03 + 0.02 * blunt), ny - H * (0.1 + 0.42 * blunt) * f.back,
+    cx + L * (0.1 + 0.16 * (1 - blunt)), cy,
+    cx, cy,
+  );
+  ctx.bezierCurveTo(cx - L * 0.22, cy, px + L * 0.16, -pt * 1.15, px, -pt);
+  ctx.lineTo(px, pt);
+  if (f.flat) {
+    ctx.bezierCurveTo(px + L * 0.12, pt * 1.3, bx - L * 0.3, by, bx, by);
+    ctx.bezierCurveTo(bx + L * 0.28, by, nx - L * 0.04, ny + H * 0.12, nx, ny);
+  } else {
+    ctx.bezierCurveTo(px + L * 0.16, pt * 1.15, bx - L * 0.22, by, bx, by);
+    ctx.bezierCurveTo(
+      bx + L * (0.1 + 0.16 * (1 - blunt)), by,
+      nx - L * (0.03 + 0.02 * blunt), ny + H * (0.1 + 0.36 * blunt) * f.belly,
+      nx, ny,
+    );
+  }
   ctx.closePath();
 }
 
-function tailPath(ctx, type, L, H, sway) {
+function tailPath(ctx, type, L, H, sway, f) {
   const bx = -L * 0.38;
   ctx.save();
   ctx.translate(bx, 0);
   ctx.rotate(sway);
   ctx.beginPath();
   const t = H;
+  const p = Math.max(t * 0.08, H * f.ped * 0.7);
   switch (type) {
     case "fork":
-      ctx.moveTo(0, -t * 0.08);
+      ctx.moveTo(0, -p);
       ctx.quadraticCurveTo(-L * 0.12, -t * 0.25, -L * 0.24, -t * 0.42);
       ctx.quadraticCurveTo(-L * 0.17, -t * 0.08, -L * 0.13, 0);
       ctx.quadraticCurveTo(-L * 0.17, t * 0.08, -L * 0.24, t * 0.42);
-      ctx.quadraticCurveTo(-L * 0.12, t * 0.25, 0, t * 0.08);
+      ctx.quadraticCurveTo(-L * 0.12, t * 0.25, 0, p);
       break;
     case "lyre":
-      ctx.moveTo(0, -t * 0.08);
+      ctx.moveTo(0, -p);
       ctx.quadraticCurveTo(-L * 0.18, -t * 0.25, -L * 0.36, -t * 0.55);
       ctx.quadraticCurveTo(-L * 0.18, -t * 0.12, -L * 0.14, 0);
       ctx.quadraticCurveTo(-L * 0.18, t * 0.12, -L * 0.36, t * 0.55);
-      ctx.quadraticCurveTo(-L * 0.18, t * 0.25, 0, t * 0.08);
+      ctx.quadraticCurveTo(-L * 0.18, t * 0.25, 0, p);
       break;
     case "fan":
-      ctx.moveTo(0, -t * 0.08);
+      ctx.moveTo(0, -p);
       ctx.quadraticCurveTo(-L * 0.2, -t * 0.7, -L * 0.36, -t * 0.4);
       ctx.quadraticCurveTo(-L * 0.42, 0, -L * 0.36, t * 0.4);
-      ctx.quadraticCurveTo(-L * 0.2, t * 0.7, 0, t * 0.08);
+      ctx.quadraticCurveTo(-L * 0.2, t * 0.7, 0, p);
+      break;
+    case "delta":
+      ctx.moveTo(0, -p);
+      ctx.quadraticCurveTo(-L * 0.18, -t * 0.55, -L * 0.48, -t * 0.95);
+      ctx.quadraticCurveTo(-L * 0.56, 0, -L * 0.48, t * 0.95);
+      ctx.quadraticCurveTo(-L * 0.18, t * 0.55, 0, p);
       break;
     case "veil":
-      ctx.moveTo(0, -t * 0.1);
+      ctx.moveTo(0, -p);
       ctx.bezierCurveTo(-L * 0.3, -t * 0.9, -L * 0.6, -t * 0.3, -L * 0.55, t * 0.2);
-      ctx.bezierCurveTo(-L * 0.5, t * 0.7, -L * 0.25, t * 0.8, 0, t * 0.1);
+      ctx.bezierCurveTo(-L * 0.5, t * 0.7, -L * 0.25, t * 0.8, 0, p);
       break;
     case "round":
-      ctx.moveTo(0, -t * 0.1);
+      ctx.moveTo(0, -p);
       ctx.quadraticCurveTo(-L * 0.24, -t * 0.42, -L * 0.24, 0);
-      ctx.quadraticCurveTo(-L * 0.24, t * 0.42, 0, t * 0.1);
+      ctx.quadraticCurveTo(-L * 0.24, t * 0.42, 0, p);
       break;
     default:
       ctx.moveTo(0, 0);
@@ -59,29 +146,34 @@ function tailPath(ctx, type, L, H, sway) {
   ctx.restore();
 }
 
-function dorsalPath(ctx, type, L, H, sway) {
+function dorsalPath(ctx, type, L, H, sway, f) {
   ctx.beginPath();
-  const top = -H * 0.48;
+  const top = -H * 0.48 * f.back;
+  const dx = (f.crown - 0.05) * L * 0.7;
   switch (type) {
     case "low":
-      ctx.moveTo(L * 0.1, top + H * 0.05);
-      ctx.quadraticCurveTo(-L * 0.02, top - H * 0.22, -L * 0.14, top + H * 0.1);
+      ctx.moveTo(dx + L * 0.1, top + H * 0.05);
+      ctx.quadraticCurveTo(dx - L * 0.02, top - H * 0.22, dx - L * 0.14, top + H * 0.1);
       break;
     case "tall":
-      ctx.moveTo(L * 0.16, top + H * 0.04);
-      ctx.quadraticCurveTo(L * 0.02, top - H * 0.55, -L * 0.12 + sway * L * 0.1, top - H * 0.2);
-      ctx.lineTo(-L * 0.16, top + H * 0.14);
+      ctx.moveTo(dx + L * 0.16, top + H * 0.04);
+      ctx.quadraticCurveTo(dx + L * 0.02, top - H * 0.55, dx - L * 0.12 + sway * L * 0.1, top - H * 0.2);
+      ctx.lineTo(dx - L * 0.16, top + H * 0.14);
       break;
     case "sail":
-      ctx.moveTo(L * 0.22, top + H * 0.04);
-      ctx.bezierCurveTo(L * 0.1, top - H * 0.9, -L * 0.2, top - H * 0.8, -L * 0.3 + sway * L * 0.1, top - H * 0.1);
-      ctx.lineTo(-L * 0.2, top + H * 0.16);
+      ctx.moveTo(dx + L * 0.22, top + H * 0.04);
+      ctx.bezierCurveTo(dx + L * 0.1, top - H * 0.9, dx - L * 0.2, top - H * 0.8, dx - L * 0.3 + sway * L * 0.1, top - H * 0.1);
+      ctx.lineTo(dx - L * 0.2, top + H * 0.16);
       break;
     default:
       return false;
   }
   ctx.closePath();
   return true;
+}
+
+function bandCentres(L) {
+  return [L * 0.28, L * 0.01, -L * 0.26];
 }
 
 function patternFill(ctx, pattern, L, H, colors, seed) {
@@ -109,8 +201,7 @@ function patternFill(ctx, pattern, L, H, colors, seed) {
       }
       break;
     case "band":
-      for (let i = 0; i < 3; i++) {
-        const x = L * 0.28 - i * L * 0.27;
+      for (const x of bandCentres(L)) {
         ctx.beginPath();
         ctx.ellipse(x, 0, L * 0.055, H * 0.7, 0, 0, TAU);
         ctx.fill();
@@ -141,95 +232,431 @@ function patternFill(ctx, pattern, L, H, colors, seed) {
   }
 }
 
+// Markings drawn inside the body clip, after the base pattern.
+function bodyMarks(ctx, f, L, H, colors, detail) {
+  const fx = f.fx;
+  if (fx.includes("neonRed") || fx.includes("redFull")) {
+    const front = fx.includes("redFull") ? L * 0.42 : L * 0.02;
+    const g = ctx.createLinearGradient(front, 0, front - L * 0.08, 0);
+    g.addColorStop(0, rgba(colors[2], 0));
+    g.addColorStop(1, colors[2]);
+    ctx.fillStyle = g;
+    ctx.fillRect(-L * 0.5, H * 0.04, front + L * 0.5, H);
+  }
+  if (fx.includes("glow")) {
+    ctx.save();
+    ctx.globalCompositeOperation = "lighter";
+    ctx.fillStyle = rgba(colors[1], 0.45);
+    ctx.fillRect(-L * 0.4, -H * 0.1, L * 0.82, H * 0.07);
+    ctx.restore();
+  }
+  if (fx.includes("multiStripe")) {
+    ctx.fillStyle = colors[1];
+    for (let i = 0; i < 4; i++) {
+      ctx.fillRect(-L * 0.45, -H * 0.27 + i * H * 0.17, L * 0.82, H * 0.07);
+    }
+  }
+  if (fx.includes("bandEdge")) {
+    ctx.strokeStyle = "rgba(20,24,24,0.85)";
+    ctx.lineWidth = Math.max(0.8, L * 0.016);
+    for (const x of bandCentres(L)) {
+      ctx.beginPath();
+      ctx.ellipse(x, 0, L * 0.055, H * 0.7, 0, 0, TAU);
+      ctx.stroke();
+    }
+  }
+  if (fx.includes("mask")) {
+    ctx.fillStyle = "rgba(25,28,28,0.9)";
+    ctx.beginPath();
+    ctx.ellipse(L * 0.34, -H * 0.1, L * 0.06, H * 0.32, 0.2, 0, TAU);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(-L * 0.34, -H * 0.02, L * 0.05, H * 0.2, 0, 0, TAU);
+    ctx.fill();
+  }
+  if (fx.includes("scutes") && detail) {
+    ctx.strokeStyle = "rgba(255,255,255,0.22)";
+    ctx.lineWidth = Math.max(0.6, L * 0.008);
+    for (let i = 0; i < 7; i++) {
+      const x = L * 0.2 - i * L * 0.085;
+      ctx.beginPath();
+      ctx.moveTo(x, -H * 0.35);
+      ctx.quadraticCurveTo(x - L * 0.03, 0, x, H * 0.3);
+      ctx.stroke();
+    }
+    ctx.beginPath();
+    ctx.moveTo(L * 0.25, 0);
+    ctx.lineTo(-L * 0.4, 0);
+    ctx.stroke();
+  }
+  if (fx.includes("scales") && detail) {
+    const s = Math.max(3, L * 0.07);
+    ctx.strokeStyle = "rgba(255,255,255,0.2)";
+    ctx.lineWidth = Math.max(0.5, L * 0.006);
+    for (let row = -3; row <= 3; row++) {
+      const y = row * s * 0.8;
+      for (let col = 0; col < 12; col++) {
+        const x = L * 0.22 - col * s * 0.9 + (row % 2 ? s * 0.45 : 0);
+        ctx.beginPath();
+        ctx.arc(x, y, s * 0.55, Math.PI * 0.6, Math.PI * 1.4);
+        ctx.stroke();
+      }
+    }
+  }
+  if (fx.includes("lateral") && detail) {
+    ctx.strokeStyle = "rgba(255,255,255,0.28)";
+    ctx.lineWidth = Math.max(0.6, L * 0.008);
+    ctx.setLineDash([L * 0.025, L * 0.02]);
+    ctx.beginPath();
+    ctx.moveTo(L * 0.3, -H * 0.12);
+    ctx.quadraticCurveTo(0, -H * 0.06, -L * 0.4, 0);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+  if (fx.includes("scalpel")) {
+    ctx.fillStyle = "rgba(255,240,200,0.85)";
+    ctx.beginPath();
+    ctx.ellipse(-L * 0.33, 0, L * 0.03, H * 0.04, 0, 0, TAU);
+    ctx.fill();
+  }
+}
+
+function finPath(ctx, pts) {
+  ctx.beginPath();
+  ctx.moveTo(pts[0], pts[1]);
+  for (let i = 2; i < pts.length; i += 4) ctx.quadraticCurveTo(pts[i], pts[i + 1], pts[i + 2], pts[i + 3]);
+  ctx.closePath();
+}
+
+// Fins and appendages drawn behind the body.
+function backFins(ctx, f, L, H, sway, finColor, colors) {
+  const fx = f.fx;
+  const back = H * 0.48 * f.back;
+  const belly = H * 0.48 * f.belly;
+  ctx.fillStyle = finColor;
+  if (fx.includes("fringe")) {
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(-L, -H * 2, L * 1.2, H * 4);
+    ctx.clip();
+    ctx.translate(-L * 0.05, 0);
+    ctx.scale(1.08, 1.14);
+    bodyPath(ctx, L, H, f);
+    ctx.fill();
+    ctx.restore();
+  }
+  if (fx.includes("angelFins") || fx.includes("triFins")) {
+    const k = fx.includes("angelFins") ? 1 : 0.62;
+    finPath(ctx, [L * 0.08, -back * 0.9, L * -0.1, -back * (1.6 * k + 0.4), -L * 0.32 + sway * L * 0.2, -back * (1.9 * k + 0.3), -L * 0.18, -back * 0.8, -L * 0.36, -H * 0.12]);
+    ctx.fill();
+    finPath(ctx, [L * 0.04, belly * 0.9, L * -0.12, belly * (1.6 * k + 0.4), -L * 0.32 + sway * L * 0.2, belly * (1.9 * k + 0.3), -L * 0.18, belly * 0.8, -L * 0.36, H * 0.12]);
+    ctx.fill();
+  }
+  if (fx.includes("longAnal")) {
+    finPath(ctx, [L * 0.06, belly * 0.85, -L * 0.04, belly * 1.9, -L * 0.3 + sway * L * 0.15, belly * 1.7, -L * 0.34, belly * 0.9, -L * 0.37, H * 0.12]);
+    ctx.fill();
+  }
+  if (fx.includes("rearFins")) {
+    finPath(ctx, [-L * 0.12, -back * 0.55, -L * 0.28, -back * 1.15, -L * 0.38, -H * 0.1, -L * 0.3, -back * 0.3, -L * 0.12, -back * 0.55]);
+    ctx.fill();
+    finPath(ctx, [-L * 0.08, belly * 0.7, -L * 0.26, belly * 1.3, -L * 0.38, H * 0.1, -L * 0.28, belly * 0.4, -L * 0.08, belly * 0.7]);
+    ctx.fill();
+  }
+  if (fx.includes("twoDorsal")) {
+    finPath(ctx, [-L * 0.1, -back * 0.85, -L * 0.2, -back * 1.45, -L * 0.32, -back * 0.55, -L * 0.2, -back * 0.6, -L * 0.1, -back * 0.85]);
+    ctx.fill();
+  }
+  if (fx.includes("spines")) {
+    ctx.strokeStyle = rgba(colors[1], 0.9);
+    ctx.lineWidth = Math.max(0.7, L * 0.012);
+    for (let i = 0; i < 9; i++) {
+      const x = L * 0.2 - i * L * 0.06;
+      ctx.beginPath();
+      ctx.moveTo(x, -back * 0.85);
+      ctx.lineTo(x - L * 0.06 + sway * L * 0.05, -back * (1.9 - i * 0.07));
+      ctx.stroke();
+    }
+    finPath(ctx, [L * 0.2, -back * 0.85, L * 0.0, -back * 1.5, -L * 0.3, -back * 1.2, -L * 0.3, -back * 0.6, L * 0.2, -back * 0.85]);
+    ctx.fillStyle = rgba(colors[0], 0.35);
+    ctx.fill();
+    ctx.fillStyle = finColor;
+  }
+  if (fx.includes("dorsalFilament")) {
+    ctx.strokeStyle = finColor;
+    ctx.lineWidth = Math.max(0.8, L * 0.014);
+    ctx.beginPath();
+    ctx.moveTo(L * 0.02, -back * 1.0);
+    ctx.quadraticCurveTo(-L * 0.2, -back * 2.2, -L * 0.62 + sway * L * 0.3, -back * 1.6);
+    ctx.stroke();
+  }
+  if (fx.includes("lobes")) {
+    for (const [x, y, a] of [[-L * 0.12, -back * 0.95, -0.9], [-L * 0.14, belly * 0.95, 0.9]]) {
+      ctx.beginPath();
+      ctx.ellipse(x, y + Math.sign(y) * H * 0.12, L * 0.09, H * 0.12, a, 0, TAU);
+      ctx.fill();
+    }
+  }
+  if (fx.includes("smallFins")) {
+    ctx.beginPath();
+    ctx.ellipse(-L * 0.28, -back * 0.62, L * 0.06, H * 0.1, -0.5, 0, TAU);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(-L * 0.28, belly * 0.62, L * 0.06, H * 0.1, 0.5, 0, TAU);
+    ctx.fill();
+  }
+}
+
+// Fins and appendages drawn over the body.
+function frontFins(ctx, f, L, H, sway, finColor, colors, phase) {
+  const fx = f.fx;
+  const back = H * 0.48 * f.back;
+  const belly = H * 0.48 * f.belly;
+  const nx = L * 0.5;
+  const ny = H * f.mouth;
+  ctx.lineCap = "round";
+  if (fx.includes("adipose")) {
+    ctx.fillStyle = finColor;
+    ctx.beginPath();
+    ctx.ellipse(-L * 0.29, -H * (f.ped + 0.07), L * 0.03, H * 0.07, -0.4, 0, TAU);
+    ctx.fill();
+  }
+  if (fx.includes("barbels")) {
+    ctx.strokeStyle = rgba(colors[0], 0.9);
+    ctx.lineWidth = Math.max(0.6, L * 0.01);
+    for (const k of [0, 1]) {
+      ctx.beginPath();
+      ctx.moveTo(nx - L * 0.03, ny + H * 0.04);
+      ctx.quadraticCurveTo(nx + L * 0.02, ny + H * (0.2 + k * 0.08), nx - L * (0.02 + k * 0.04), ny + H * (0.32 + k * 0.06));
+      ctx.stroke();
+    }
+  }
+  if (fx.includes("chinBarbels")) {
+    ctx.strokeStyle = rgba(colors[0], 0.9);
+    ctx.lineWidth = Math.max(0.7, L * 0.01);
+    ctx.beginPath();
+    ctx.moveTo(nx - L * 0.02, ny + H * 0.06);
+    ctx.quadraticCurveTo(nx + L * 0.06, ny - H * 0.02, nx + L * 0.1, ny - H * 0.14);
+    ctx.stroke();
+  }
+  if (fx.includes("feelers")) {
+    ctx.strokeStyle = rgba(colors[2] || colors[0], 0.85);
+    ctx.lineWidth = Math.max(0.6, L * 0.009);
+    ctx.beginPath();
+    ctx.moveTo(L * 0.16, belly * 0.8);
+    ctx.bezierCurveTo(L * 0.1, belly * 1.6, -L * 0.1, belly * 2.0, -L * 0.36 + Math.sin(phase) * L * 0.06, belly * 2.2);
+    ctx.stroke();
+  }
+  if (fx.includes("pelvicLong")) {
+    ctx.fillStyle = finColor;
+    finPath(ctx, [L * 0.18, belly * 0.8, L * 0.12, belly * 1.8, L * 0.02 + sway * L * 0.1, belly * 1.9, L * 0.06, belly * 1.1, L * 0.18, belly * 0.8]);
+    ctx.fill();
+  }
+  if (fx.includes("whiteEdge")) {
+    ctx.strokeStyle = "rgba(250,248,240,0.95)";
+    ctx.lineWidth = Math.max(0.8, L * 0.014);
+    ctx.beginPath();
+    ctx.moveTo(L * 0.1, belly * 0.86);
+    ctx.lineTo(L * 0.02, belly * 1.18);
+    ctx.moveTo(-L * 0.16, belly * 0.78);
+    ctx.lineTo(-L * 0.22, belly * 1.08);
+    ctx.stroke();
+  }
+  if (fx.includes("fans")) {
+    ctx.save();
+    ctx.translate(L * 0.18, H * 0.12);
+    const spread = 0.9 + Math.sin(phase) * 0.08;
+    for (let i = 0; i < 9; i++) {
+      const a = 1.2 + (i / 8) * 1.6 * spread;
+      ctx.strokeStyle = i % 2 ? rgba(colors[1], 0.85) : rgba(colors[0], 0.85);
+      ctx.lineWidth = Math.max(0.8, L * 0.014);
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.lineTo(Math.cos(a) * L * 0.55, Math.sin(a) * L * 0.42);
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+  if (fx.includes("wings")) {
+    ctx.save();
+    ctx.translate(L * 0.18, -H * 0.05);
+    ctx.rotate(-0.25 + Math.sin(phase) * 0.05);
+    finPath(ctx, [0, 0, -L * 0.2, -H * 1.1, -L * 0.62, -H * 0.85, -L * 0.4, -H * 0.1, 0, H * 0.08]);
+    ctx.fillStyle = "rgba(220,235,240,0.55)";
+    ctx.fill();
+    ctx.strokeStyle = "rgba(60,90,110,0.35)";
+    ctx.lineWidth = Math.max(0.5, L * 0.006);
+    for (let i = 1; i < 6; i++) {
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.lineTo(-L * (0.2 + i * 0.07), -H * (1.05 - i * 0.16));
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+  if (fx.includes("lobes")) {
+    ctx.fillStyle = finColor;
+    ctx.beginPath();
+    ctx.ellipse(L * 0.14, H * 0.22, L * 0.1, H * 0.11, 0.7 + sway, 0, TAU);
+    ctx.fill();
+  }
+}
+
+function finRays(ctx, L, H, sway, tailType, f) {
+  ctx.save();
+  tailPath(ctx, tailType, L, H, sway, f);
+  ctx.clip();
+  ctx.translate(-L * 0.38, 0);
+  ctx.rotate(sway);
+  ctx.strokeStyle = "rgba(255,255,255,0.22)";
+  ctx.lineWidth = Math.max(0.5, L * 0.006);
+  for (let i = -4; i <= 4; i++) {
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(-L * 0.6, i * H * 0.22);
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
 export function drawFish(ctx, fish, x, y, L, dir, phase, opts = {}) {
   const sp = fishById[fish.sp];
   if (!sp) return;
-  const colors = fish.colors || sp.colors;
+  const colors = opts.flat ? [opts.flat, opts.flat, opts.flat] : fish.colors || sp.colors;
   if (sp.body === "shrimp") return drawShrimp(ctx, colors, x, y, L, dir, phase, opts);
   if (sp.body === "snail") return drawSnail(ctx, colors, x, y, L, dir, phase, opts);
+  const f = fishForm(sp.id);
   const H = L * sp.h;
+  const tailType = f.tail || sp.tail;
+  const dorsalType = f.dorsal || sp.dorsal;
   const sway = Math.sin(phase) * (opts.sleeping ? 0.08 : 0.28);
+  const detail = !opts.flat && L >= 26;
   ctx.save();
   ctx.translate(x, y);
   ctx.scale(dir, 1);
   if (opts.tilt) ctx.rotate(opts.tilt);
   ctx.globalAlpha = opts.alpha ?? 1;
-  const finColor = rgba(colors[2] || colors[0], 0.78);
+  const finColor = opts.flat ? opts.flat : f.fin || rgba(colors[2] || colors[0], 0.78);
 
-  // tail
-  tailPath(ctx, sp.tail, L, H, sway);
+  backFins(ctx, f, L, H, sway, finColor, colors);
+  // tail (goldfish carry a second, offset lobe)
+  if (f.fx.includes("doubleTail")) {
+    tailPath(ctx, tailType, L, H, -sway * 0.7 + 0.12, f);
+    ctx.fillStyle = opts.flat ? finColor : rgba(colors[2] || colors[0], 0.5);
+    ctx.fill();
+  }
+  tailPath(ctx, tailType, L, H, sway, f);
   ctx.fillStyle = finColor;
   ctx.fill();
-  // dorsal
-  if (dorsalPath(ctx, sp.dorsal, L, H, sway)) {
+  if (detail && (f.fx.includes("rays") || L >= 40)) finRays(ctx, L, H, sway, tailType, f);
+  if (detail && f.fx.includes("finEdge")) {
+    tailPath(ctx, tailType, L, H, sway, f);
+    ctx.strokeStyle = "rgba(20,24,24,0.7)";
+    ctx.lineWidth = Math.max(0.7, L * 0.014);
+    ctx.stroke();
+  }
+  if (dorsalPath(ctx, dorsalType, L, H, sway, f)) {
     ctx.fillStyle = finColor;
     ctx.fill();
   }
   // anal / pelvic fin
-  ctx.beginPath();
-  ctx.moveTo(-L * 0.02, H * 0.44);
-  ctx.quadraticCurveTo(-L * 0.12, H * (sp.tail === "veil" ? 0.95 : 0.66), -L * 0.24, H * 0.32);
-  ctx.closePath();
-  ctx.fillStyle = finColor;
-  ctx.fill();
+  if (!f.fx.includes("longAnal") && !f.fx.includes("angelFins") && !f.fx.includes("triFins") && !f.fx.includes("smallFins")) {
+    const belly = H * 0.44 * f.belly;
+    ctx.beginPath();
+    ctx.moveTo(-L * 0.02, belly);
+    ctx.quadraticCurveTo(-L * 0.12, belly + H * (tailType === "veil" ? 0.5 : 0.22), -L * 0.24, belly * 0.72);
+    ctx.closePath();
+    ctx.fillStyle = finColor;
+    ctx.fill();
+  }
 
   // body with pattern
   ctx.save();
-  bodyPath(ctx, L, H);
+  bodyPath(ctx, L, H, f);
   ctx.clip();
-  patternFill(ctx, sp.pattern, L, H, colors, hashString(fish.id || fish.sp));
-  // soft shading: darker back, lighter belly
-  const sh = ctx.createLinearGradient(0, -H * 0.5, 0, H * 0.5);
-  sh.addColorStop(0, "rgba(10,25,25,0.28)");
-  sh.addColorStop(0.55, "rgba(255,255,255,0)");
-  sh.addColorStop(1, "rgba(255,255,255,0.22)");
-  ctx.fillStyle = sh;
-  ctx.fillRect(-L, -H, L * 2, H * 2);
-  if (fish.golden) {
-    const t = (performance.now() / 1400) % 1;
-    const gx = L * (0.7 - t * 1.6);
-    const gl = ctx.createLinearGradient(gx - L * 0.15, -H, gx + L * 0.15, H);
-    gl.addColorStop(0, "rgba(255,250,220,0)");
-    gl.addColorStop(0.5, "rgba(255,250,220,0.55)");
-    gl.addColorStop(1, "rgba(255,250,220,0)");
-    ctx.fillStyle = gl;
-    ctx.fillRect(-L, -H, L * 2, H * 2);
+  if (opts.flat) {
+    ctx.fillStyle = opts.flat;
+    ctx.fillRect(-L, -H * 2, L * 2, H * 4);
+  } else {
+    patternFill(ctx, sp.pattern, L, H, colors, hashString(fish.id || fish.sp));
+    bodyMarks(ctx, f, L, H, colors, detail);
+    // soft shading: darker back, lighter belly, a rounded highlight on the flank
+    const sh = ctx.createLinearGradient(0, -H * 0.5, 0, H * 0.5);
+    sh.addColorStop(0, "rgba(10,25,25,0.30)");
+    sh.addColorStop(0.5, "rgba(255,255,255,0)");
+    sh.addColorStop(1, "rgba(255,255,255,0.24)");
+    ctx.fillStyle = sh;
+    ctx.fillRect(-L, -H * 2, L * 2, H * 4);
+    const hl = ctx.createRadialGradient(L * 0.12, -H * 0.18, 0, L * 0.12, -H * 0.18, L * 0.3);
+    hl.addColorStop(0, "rgba(255,255,255,0.22)");
+    hl.addColorStop(1, "rgba(255,255,255,0)");
+    ctx.fillStyle = hl;
+    ctx.fillRect(-L, -H * 2, L * 2, H * 4);
+    if (fish.golden) {
+      const t = (performance.now() / 1400) % 1;
+      const gx = L * (0.7 - t * 1.6);
+      const gl = ctx.createLinearGradient(gx - L * 0.15, -H, gx + L * 0.15, H);
+      gl.addColorStop(0, "rgba(255,250,220,0)");
+      gl.addColorStop(0.5, "rgba(255,250,220,0.55)");
+      gl.addColorStop(1, "rgba(255,250,220,0)");
+      ctx.fillStyle = gl;
+      ctx.fillRect(-L, -H * 2, L * 2, H * 4);
+    }
   }
   ctx.restore();
-  // outline for legibility on any background
-  bodyPath(ctx, L, H);
-  ctx.strokeStyle = "rgba(15,30,30,0.28)";
-  ctx.lineWidth = Math.max(0.6, L * 0.012);
-  ctx.stroke();
-  // gill line
-  ctx.beginPath();
-  ctx.arc(L * 0.3, 0, H * 0.32, -0.9, 0.9);
-  ctx.strokeStyle = "rgba(15,30,30,0.18)";
-  ctx.stroke();
-  // pectoral fin
-  ctx.beginPath();
-  ctx.ellipse(L * 0.18, H * 0.1, L * 0.08, H * 0.08, 0.6 + sway, 0, TAU);
-  ctx.fillStyle = finColor;
-  ctx.fill();
-  // eye
-  const ex = L * 0.36;
-  const ey = -H * 0.08;
-  const er = Math.max(1.2, L * 0.045);
-  ctx.beginPath();
-  ctx.arc(ex, ey, er, 0, TAU);
-  ctx.fillStyle = "#f4f1ea";
-  ctx.fill();
-  ctx.beginPath();
-  if (opts.sleeping) {
-    ctx.moveTo(ex - er * 0.8, ey);
-    ctx.lineTo(ex + er * 0.8, ey);
-    ctx.strokeStyle = "#1b2422";
-    ctx.lineWidth = Math.max(0.8, er * 0.4);
+  if (!opts.flat) {
+    // outline for legibility on any background
+    bodyPath(ctx, L, H, f);
+    ctx.strokeStyle = "rgba(15,30,30,0.3)";
+    ctx.lineWidth = Math.max(0.6, L * 0.012);
     ctx.stroke();
-  } else {
-    ctx.arc(ex + er * 0.15, ey, er * 0.62, 0, TAU);
-    ctx.fillStyle = "#1b2422";
+    // gill line
+    const gx = L * (0.27 - 0.03 * (1 - f.nose));
+    ctx.beginPath();
+    ctx.arc(gx, H * f.mouth * 0.5, H * 0.3, -0.9, 0.9);
+    ctx.strokeStyle = "rgba(15,30,30,0.2)";
+    ctx.stroke();
+    // mouth
+    ctx.beginPath();
+    ctx.moveTo(L * 0.5, H * f.mouth);
+    ctx.lineTo(L * 0.455, H * f.mouth + H * 0.03);
+    ctx.strokeStyle = "rgba(15,30,30,0.45)";
+    ctx.stroke();
+  }
+  frontFins(ctx, f, L, H, sway, finColor, colors, phase);
+  // pectoral fin
+  if (!f.fx.includes("fans") && !f.fx.includes("wings")) {
+    ctx.beginPath();
+    ctx.ellipse(L * 0.17, H * 0.1, L * 0.08, H * 0.08, 0.6 + sway, 0, TAU);
+    ctx.fillStyle = finColor;
     ctx.fill();
+  }
+  if (!opts.flat) {
+    // eye with iris and catchlight
+    const ex = L * (0.36 - 0.03 * f.nose + 0.02);
+    const ey = H * f.mouth * 0.4 - H * 0.1;
+    const er = Math.max(1.3, L * 0.045 * f.eye);
+    ctx.beginPath();
+    ctx.arc(ex, ey, er, 0, TAU);
+    ctx.fillStyle = "#f4f1ea";
+    ctx.fill();
+    ctx.beginPath();
+    if (opts.sleeping) {
+      ctx.moveTo(ex - er * 0.8, ey);
+      ctx.lineTo(ex + er * 0.8, ey);
+      ctx.strokeStyle = "#1b2422";
+      ctx.lineWidth = Math.max(0.8, er * 0.4);
+      ctx.stroke();
+    } else {
+      ctx.arc(ex + er * 0.15, ey, er * 0.64, 0, TAU);
+      ctx.fillStyle = "#1b2422";
+      ctx.fill();
+      if (er > 2.2) {
+        ctx.beginPath();
+        ctx.arc(ex + er * 0.35, ey - er * 0.3, er * 0.22, 0, TAU);
+        ctx.fillStyle = "rgba(255,255,255,0.9)";
+        ctx.fill();
+      }
+    }
   }
   ctx.restore();
 }
@@ -804,21 +1231,72 @@ export function drawCoral(ctx, coral, x, y, size, time, opts = {}) {
 }
 
 // Draw a fish centred in a small canvas (cards, journal).
+// The fish is first drawn on a scratch canvas, its painted bounds are measured,
+// and the result is scaled to fit, so long fins and fan tails are never clipped.
+const thumbScratch = typeof document !== "undefined" ? document.createElement("canvas") : null;
+
 export function fishThumb(canvas, fish, opts = {}) {
+  // A canvas inside a sheet that is still opening has no layout yet; wait a few frames
+  // so the art is sized for the real box rather than the default 300 x 150 buffer.
+  const tries = opts.layoutTries || 0;
+  if ((!canvas.clientWidth || !canvas.clientHeight) && tries < 30) {
+    requestAnimationFrame(() => fishThumb(canvas, fish, { ...opts, layoutTries: tries + 1 }));
+    return;
+  }
   const dpr = Math.min(2, window.devicePixelRatio || 1);
   const w = canvas.clientWidth || canvas.width;
   const h = canvas.clientHeight || canvas.height;
   canvas.width = w * dpr;
   canvas.height = h * dpr;
   const ctx = canvas.getContext("2d");
-  ctx.scale(dpr, dpr);
-  ctx.clearRect(0, 0, w, h);
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
   const sp = fishById[fish.sp];
-  const L = Math.min(w * 0.62, h * 0.8 / Math.max(0.4, sp.h * 1.6));
+  let drawOpts = {};
+  let drawn = fish;
   if (opts.silhouette) {
-    ctx.globalAlpha = 1;
-    drawFish(ctx, { ...fish, colors: ["#9aa5a2", "#9aa5a2", "#9aa5a2"], golden: false }, w * 0.52, h * 0.52, L, 1, 0.6, {});
+    const ink = getComputedStyle(canvas).getPropertyValue("--ink").trim() || "#1d2a27";
+    drawOpts = { flat: rgba(ink.startsWith("#") ? ink : "#1d2a27", 0.32) };
+    drawn = { ...fish, golden: false };
+  }
+  const phase = opts.silhouette ? 0.6 : (opts.phase ?? 0.6);
+  // Reference size on the scratch canvas, with room on every side for fins.
+  const refL = 100;
+  const pad = refL * 1.2;
+  const sw = Math.ceil(refL + pad * 2);
+  const sh = Math.ceil(refL * Math.max(0.4, sp.h) * 2 + pad * 2);
+  const scratch = thumbScratch;
+  scratch.width = sw;
+  scratch.height = sh;
+  const sctx = scratch.getContext("2d", { willReadFrequently: true });
+  sctx.clearRect(0, 0, sw, sh);
+  drawFish(sctx, drawn, sw / 2, sh / 2, refL, 1, phase, drawOpts);
+  const data = sctx.getImageData(0, 0, sw, sh).data;
+  let minX = sw;
+  let minY = sh;
+  let maxX = -1;
+  let maxY = -1;
+  for (let y = 0; y < sh; y += 1) {
+    const row = y * sw * 4;
+    for (let x = 0; x < sw; x += 1) {
+      if (data[row + x * 4 + 3] > 8) {
+        if (x < minX) minX = x;
+        if (x > maxX) maxX = x;
+        if (y < minY) minY = y;
+        if (y > maxY) maxY = y;
+      }
+    }
+  }
+  if (maxX < 0) {
     return;
   }
-  drawFish(ctx, fish, w * 0.54, h * 0.52, L, 1, opts.phase ?? 0.6, {});
+  const bw = maxX - minX + 1;
+  const bh = maxY - minY + 1;
+  // Fit the painted bounds into the card art area, never larger than the old body size.
+  const fit = Math.min((w * 0.84) / bw, (h * 0.8) / bh, (w * 0.58) / refL);
+  const L = refL * fit;
+  const cx = w / 2 + (sw / 2 - (minX + bw / 2)) * fit;
+  const cy = h / 2 + (sh / 2 - (minY + bh / 2)) * fit;
+  ctx.scale(dpr, dpr);
+  drawFish(ctx, drawn, cx, cy, L, 1, phase, drawOpts);
 }

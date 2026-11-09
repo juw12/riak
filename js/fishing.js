@@ -140,6 +140,7 @@ export function paintScene(ctx, W, H, spot, ts, time, extra = {}) {
 
   // near bank (bottom-left) with reeds
   const near = mix(spot.near, NIGHT_SKY, (1 - day) * 0.75);
+  paintSpotProps(ctx, W, H, spot, horizon, day, time, near);
   const bankShadow = ctx.createRadialGradient(W * 0.14, H, H * 0.1, W * 0.14, H, W * 0.42);
   bankShadow.addColorStop(0, "rgba(0,0,0,0.22)");
   bankShadow.addColorStop(1, "rgba(0,0,0,0)");
@@ -199,6 +200,298 @@ export function paintScene(ctx, W, H, spot, ts, time, extra = {}) {
   vignette.addColorStop(1, "rgba(0,0,0,0.2)");
   ctx.fillStyle = vignette;
   ctx.fillRect(0, 0, W, H);
+}
+
+// Spot-specific scenery so each place reads at a glance. depth 0 = horizon, 1 = foreground.
+function paintSpotProps(ctx, W, H, spot, horizon, day, time, near) {
+  const id = spot.id;
+  const r = rng(hashString(id + "props"));
+  const waterH = H - horizon;
+  const yAt = (depth) => horizon + waterH * depth;
+  const night = 1 - day;
+  const dim = (c, k = 0.7) => mix(c, NIGHT_SKY, night * k);
+  const sway = (i) => Math.sin(time * 0.0009 + i) * 1.5;
+  if (id === "pond") {
+    // lily pads on the water, smaller toward the horizon, a few cream water lilies
+    for (let i = 0; i < 26; i++) {
+      const d = 0.08 + r() * 0.85;
+      const x = W * (0.32 + r() * 0.66);
+      const y = yAt(d) + sway(i) * 0.3;
+      const s = W * (0.008 + d * 0.035);
+      ctx.fillStyle = dim(i % 3 ? "#5f8f4a" : "#6f9f52");
+      ctx.beginPath();
+      ctx.ellipse(x, y, s, s * 0.32, 0, 0.25, TAU - 0.05);
+      ctx.lineTo(x, y);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = rgba("#ffffff", 0.12);
+      ctx.lineWidth = 1;
+      ctx.stroke();
+      if (i % 5 === 0) {
+        ctx.fillStyle = dim("#f4efe2", 0.5);
+        for (let k = 0; k < 5; k++) {
+          ctx.beginPath();
+          ctx.ellipse(x + Math.cos(k * 1.25) * s * 0.18, y - s * 0.12 + Math.sin(k * 1.25) * s * 0.06, s * 0.16, s * 0.07, k * 1.25, 0, TAU);
+          ctx.fill();
+        }
+        ctx.fillStyle = dim("#e8c04a", 0.5);
+        ctx.beginPath();
+        ctx.arc(x, y - s * 0.12, s * 0.06, 0, TAU);
+        ctx.fill();
+      }
+    }
+  } else if (id === "sawah") {
+    // terraced paddy: bunds receding to the horizon with rows of rice tufts, a field hut far off
+    for (let b = 0; b < 6; b++) {
+      const d = (b + 1) / 7;
+      const y = yAt(d * d);
+      ctx.strokeStyle = dim(mix(near, "#8a7a52", 0.4));
+      ctx.lineWidth = 1 + d * 5;
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.quadraticCurveTo(W * 0.5, y - waterH * 0.02, W, y + waterH * 0.01);
+      ctx.stroke();
+      const tufts = 26;
+      ctx.strokeStyle = dim(b % 2 ? "#7ea64c" : "#8cb85a");
+      ctx.lineWidth = Math.max(1, d * 2.2);
+      for (let k = 0; k < tufts; k++) {
+        const x = W * (k / tufts) + (b % 2) * W * 0.02;
+        const ty = y - waterH * 0.02;
+        const th = 3 + d * 18;
+        ctx.beginPath();
+        ctx.moveTo(x, ty + 2);
+        ctx.lineTo(x - th * 0.3 + sway(k) * d, ty - th);
+        ctx.moveTo(x, ty + 2);
+        ctx.lineTo(x + th * 0.3 + sway(k) * d, ty - th * 0.9);
+        ctx.stroke();
+      }
+    }
+    const hx = W * 0.72;
+    const hy = horizon - 2;
+    ctx.fillStyle = dim("#6b5a3e");
+    ctx.fillRect(hx - 9, hy - 10, 18, 10);
+    ctx.fillStyle = dim("#8a6a3a");
+    ctx.beginPath();
+    ctx.moveTo(hx - 14, hy - 9);
+    ctx.lineTo(hx, hy - 20);
+    ctx.lineTo(hx + 14, hy - 9);
+    ctx.closePath();
+    ctx.fill();
+  } else if (id === "stream") {
+    // boulders with white riffles breaking around them
+    for (let i = 0; i < 9; i++) {
+      const d = 0.15 + r() * 0.75;
+      const x = W * (0.35 + r() * 0.62);
+      const y = yAt(d);
+      const s = W * (0.012 + d * 0.04);
+      ctx.fillStyle = dim(i % 2 ? "#7b8580" : "#8d968f");
+      ctx.beginPath();
+      ctx.ellipse(x, y, s, s * 0.5, 0, Math.PI, TAU);
+      ctx.fill();
+      ctx.fillStyle = rgba("#ffffff", 0.18);
+      ctx.beginPath();
+      ctx.ellipse(x - s * 0.3, y - s * 0.32, s * 0.4, s * 0.12, -0.2, 0, TAU);
+      ctx.fill();
+      ctx.strokeStyle = rgba("#ffffff", 0.55);
+      ctx.lineWidth = 1 + d;
+      for (let k = 0; k < 3; k++) {
+        const off = ((time * 0.04 + k * 9) % 26) * d;
+        ctx.beginPath();
+        ctx.moveTo(x - s * 1.1 - off, y + k * 2);
+        ctx.lineTo(x - s * 1.8 - off, y + k * 2 + 1);
+        ctx.stroke();
+      }
+    }
+  } else if (id === "mangrove") {
+    // mangroves on the right: arching prop roots into the water, dark canopy
+    for (let i = 0; i < 4; i++) {
+      const d = 0.15 + i * 0.22;
+      const x = W * (0.7 + i * 0.08);
+      const base = yAt(d);
+      const tall = waterH * (0.6 + d * 0.9);
+      ctx.strokeStyle = dim("#4a3f2e");
+      ctx.lineWidth = 1 + d * 3;
+      for (let k = -3; k <= 3; k++) {
+        ctx.beginPath();
+        ctx.moveTo(x, base - tall * 0.35);
+        ctx.quadraticCurveTo(x + k * W * 0.012 * (1 + d), base - tall * 0.3, x + k * W * 0.02 * (1 + d), base);
+        ctx.stroke();
+      }
+      ctx.lineWidth = 2 + d * 5;
+      ctx.beginPath();
+      ctx.moveTo(x, base - tall * 0.33);
+      ctx.lineTo(x - W * 0.005, base - tall);
+      ctx.stroke();
+      ctx.fillStyle = dim(i % 2 ? "#3f5f3a" : "#4b6b42");
+      for (let k = 0; k < 4; k++) {
+        ctx.beginPath();
+        ctx.ellipse(x + (k - 1.5) * W * 0.025 * (1 + d), base - tall - k % 2 * 8, W * 0.04 * (1 + d), tall * 0.16, 0, 0, TAU);
+        ctx.fill();
+      }
+    }
+  } else if (id === "blackwater") {
+    // a branch reaching over the tea-coloured water, leaves floating on the surface
+    ctx.strokeStyle = dim("#3a2e22");
+    ctx.lineWidth = 7;
+    ctx.beginPath();
+    ctx.moveTo(W * 1.02, H * 0.08);
+    ctx.quadraticCurveTo(W * 0.8, H * 0.12, W * 0.58, H * 0.26);
+    ctx.stroke();
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(W * 0.74, H * 0.15);
+    ctx.quadraticCurveTo(W * 0.7, H * 0.28, W * 0.66, H * 0.36);
+    ctx.stroke();
+    for (let i = 0; i < 26; i++) {
+      const t = r();
+      const x = W * (0.58 + t * 0.42) + (r() - 0.5) * 30;
+      const y = H * (0.26 - t * 0.17) + r() * 34 + sway(i);
+      ctx.fillStyle = dim(i % 3 ? "#3f5a30" : "#56703a");
+      ctx.beginPath();
+      ctx.ellipse(x, y, 9, 3.5, 0.6 + r(), 0, TAU);
+      ctx.fill();
+    }
+    for (let i = 0; i < 14; i++) {
+      const d = 0.1 + r() * 0.85;
+      ctx.fillStyle = dim(i % 2 ? "#8a5a2a" : "#a8743a");
+      ctx.beginPath();
+      ctx.ellipse(W * (0.3 + r() * 0.68), yAt(d), 2 + d * 7, 1 + d * 2.4, r(), 0, TAU);
+      ctx.fill();
+    }
+  } else if (id === "lagoon") {
+    // a palm leaning in from the right and an outrigger on the horizon
+    const px = W * 0.9;
+    const py = H * 0.98;
+    const tx = W * 0.76;
+    const ty = H * 0.22;
+    ctx.strokeStyle = dim("#7a6040");
+    ctx.lineWidth = 9;
+    ctx.beginPath();
+    ctx.moveTo(px, py);
+    ctx.quadraticCurveTo(W * 0.9, H * 0.5, tx, ty);
+    ctx.stroke();
+    ctx.strokeStyle = dim("#4f7a3a");
+    ctx.lineWidth = 4;
+    for (let k = 0; k < 7; k++) {
+      const a = -Math.PI + (k / 6) * Math.PI * 1.1 + Math.sin(time * 0.0008 + k) * 0.04;
+      ctx.beginPath();
+      ctx.moveTo(tx, ty);
+      ctx.quadraticCurveTo(tx + Math.cos(a) * W * 0.07, ty + Math.sin(a) * H * 0.08 - 10, tx + Math.cos(a) * W * 0.12, ty + Math.sin(a) * H * 0.06 + 22);
+      ctx.stroke();
+    }
+    const bx = W * 0.42;
+    const by = horizon + 4;
+    ctx.fillStyle = dim("#5a4632");
+    ctx.beginPath();
+    ctx.moveTo(bx - 16, by);
+    ctx.lineTo(bx + 16, by);
+    ctx.lineTo(bx + 12, by + 3);
+    ctx.lineTo(bx - 12, by + 3);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = dim("#5a4632");
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(bx - 10, by + 1);
+    ctx.lineTo(bx - 8, by + 7);
+    ctx.lineTo(bx + 8, by + 7);
+    ctx.lineTo(bx + 10, by + 1);
+    ctx.stroke();
+  } else if (id === "glacier") {
+    // a glacier face on the horizon and floes drifting nearer
+    ctx.fillStyle = dim("#e8f0f2", 0.5);
+    ctx.beginPath();
+    ctx.moveTo(W * 0.45, horizon);
+    for (let i = 0; i <= 12; i++) ctx.lineTo(W * (0.45 + i * 0.045), horizon - H * (0.05 + r() * 0.05));
+    ctx.lineTo(W, horizon);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = rgba("#9fbfcf", 0.6);
+    ctx.lineWidth = 1;
+    for (let i = 0; i < 10; i++) {
+      const x = W * (0.47 + i * 0.05);
+      ctx.beginPath();
+      ctx.moveTo(x, horizon - H * 0.05);
+      ctx.lineTo(x + 2, horizon);
+      ctx.stroke();
+    }
+    for (let i = 0; i < 8; i++) {
+      const d = 0.1 + r() * 0.8;
+      const x = W * (0.3 + r() * 0.65);
+      const y = yAt(d) + sway(i) * 0.4;
+      const s = W * (0.01 + d * 0.035);
+      ctx.fillStyle = dim("#f2f6f6", 0.5);
+      ctx.beginPath();
+      ctx.moveTo(x - s, y);
+      ctx.lineTo(x - s * 0.6, y - s * 0.35);
+      ctx.lineTo(x + s * 0.5, y - s * 0.3);
+      ctx.lineTo(x + s, y);
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = rgba("#9fc6d2", 0.35);
+      ctx.fillRect(x - s, y, s * 2, s * 0.12);
+    }
+  } else if (id === "ocean") {
+    // a sail on the horizon, gulls, long swells
+    const sx = W * 0.62;
+    const sy = horizon;
+    ctx.fillStyle = dim("#f2efe6", 0.5);
+    ctx.beginPath();
+    ctx.moveTo(sx, sy - 2);
+    ctx.lineTo(sx, sy - 22);
+    ctx.lineTo(sx + 11, sy - 2);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = dim("#3a3a36");
+    ctx.fillRect(sx - 8, sy - 2, 20, 3);
+    ctx.strokeStyle = rgba(dim("#2f3a3a"), 0.8);
+    ctx.lineWidth = 1.4;
+    for (let i = 0; i < 4; i++) {
+      const gx = W * (0.3 + i * 0.12) + Math.sin(time * 0.0004 + i) * 20;
+      const gy = H * (0.12 + (i % 2) * 0.06);
+      const flap = Math.sin(time * 0.006 + i) * 2;
+      ctx.beginPath();
+      ctx.moveTo(gx - 7, gy - flap);
+      ctx.quadraticCurveTo(gx - 3, gy - 4, gx, gy);
+      ctx.quadraticCurveTo(gx + 3, gy - 4, gx + 7, gy - flap);
+      ctx.stroke();
+    }
+    ctx.strokeStyle = rgba("#ffffff", 0.2);
+    for (let i = 0; i < 6; i++) {
+      const d = (i + 1) / 7;
+      const y = yAt(d * d);
+      ctx.lineWidth = 1 + d * 2;
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      for (let x = 0; x <= W; x += 20) ctx.lineTo(x, y + Math.sin(x * 0.01 + time * 0.001 + i) * d * 4);
+      ctx.stroke();
+    }
+  } else if (id === "harbor") {
+    // pilings and moored boats
+    for (let i = 0; i < 7; i++) {
+      const d = 0.2 + i * 0.1;
+      const x = W * (0.45 + i * 0.075);
+      const y = yAt(d);
+      ctx.fillStyle = dim("#4a3e30");
+      ctx.fillRect(x - 1 - d * 3, y - waterH * (0.25 + d * 0.3), 2 + d * 6, waterH * (0.25 + d * 0.3));
+    }
+    for (let i = 0; i < 3; i++) {
+      const d = 0.12 + i * 0.1;
+      const x = W * (0.5 + i * 0.16);
+      const y = yAt(d);
+      const s = 14 + d * 40;
+      ctx.fillStyle = dim(["#c4552f", "#2f6f66", "#e8e2d2"][i]);
+      ctx.beginPath();
+      ctx.moveTo(x - s, y - s * 0.25);
+      ctx.lineTo(x + s, y - s * 0.25);
+      ctx.lineTo(x + s * 0.7, y);
+      ctx.lineTo(x - s * 0.8, y);
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = dim("#f2efe6");
+      ctx.fillRect(x - s * 0.2, y - s * 0.55, s * 0.45, s * 0.3);
+    }
+  }
 }
 
 // "sunny" reads oddly at night, so clear skies after dark are called clear.
@@ -1242,6 +1535,67 @@ export class FishingPanel {
     ctx.stroke();
   }
 
+  // A tapered rod with cork grip, reel and line guides, bending toward the tip.
+  drawRod(ctx, W, H, bend, tipX, tipY) {
+    const x0 = W * 0.06;
+    const y0 = H * 0.98;
+    const cx = W * (0.14 + bend * 0.2);
+    const cy = H * 0.66;
+    const at = (t) => [
+      (1 - t) * (1 - t) * x0 + 2 * (1 - t) * t * cx + t * t * tipX,
+      (1 - t) * (1 - t) * y0 + 2 * (1 - t) * t * cy + t * t * tipY,
+    ];
+    const unit = Math.max(1, Math.min(W, H) / 300);
+    ctx.lineCap = "round";
+    const steps = 24;
+    for (let i = 0; i < steps; i++) {
+      const t0 = i / steps;
+      const t1 = (i + 1) / steps;
+      const [ax, ay] = at(t0);
+      const [bx, by] = at(t1);
+      ctx.strokeStyle = t0 < 0.2 ? "#b08a5a" : "#2c3a36";
+      ctx.lineWidth = (t0 < 0.2 ? 6.5 : 4.2 - t0 * 3.2) * unit;
+      ctx.beginPath();
+      ctx.moveTo(ax, ay);
+      ctx.lineTo(bx, by);
+      ctx.stroke();
+    }
+    // cork rings and a highlight along the blank
+    ctx.strokeStyle = "rgba(60,40,20,0.35)";
+    ctx.lineWidth = 1;
+    for (let t = 0.03; t < 0.2; t += 0.035) {
+      const [ax, ay] = at(t);
+      ctx.beginPath();
+      ctx.arc(ax, ay, 3.2 * unit, 0, TAU);
+      ctx.stroke();
+    }
+    // reel under the rod
+    const [rx, ry] = at(0.22);
+    ctx.fillStyle = "#3a4642";
+    ctx.beginPath();
+    ctx.arc(rx + 6 * unit, ry + 7 * unit, 7 * unit, 0, TAU);
+    ctx.fill();
+    ctx.fillStyle = "#c9c4b6";
+    ctx.beginPath();
+    ctx.arc(rx + 6 * unit, ry + 7 * unit, 3 * unit, 0, TAU);
+    ctx.fill();
+    ctx.strokeStyle = "#3a4642";
+    ctx.lineWidth = 2 * unit;
+    ctx.beginPath();
+    ctx.moveTo(rx + 6 * unit, ry + 7 * unit);
+    ctx.lineTo(rx + 13 * unit, ry + 11 * unit);
+    ctx.stroke();
+    // line guides
+    ctx.strokeStyle = "#c9c4b6";
+    ctx.lineWidth = 1;
+    for (const t of [0.42, 0.6, 0.76, 0.9]) {
+      const [gx, gy] = at(t);
+      ctx.beginPath();
+      ctx.arc(gx + 2 * unit, gy + 2 * unit, (2.6 - t * 1.4) * unit, 0, TAU);
+      ctx.stroke();
+    }
+  }
+
   draw(time) {
     const cv = this.canvas;
     const dpr = Math.min(2, window.devicePixelRatio || 1);
@@ -1262,13 +1616,7 @@ export class FishingPanel {
     const bend = st === "reel" ? 0.04 : st === "charging" ? -0.03 : tension * 0.11;
     const tipX = W * (0.24 + bend * 0.4);
     const tipY = H * (0.44 + bend);
-    ctx.strokeStyle = "#3b2f25";
-    ctx.lineWidth = 4;
-    ctx.lineCap = "round";
-    ctx.beginPath();
-    ctx.moveTo(W * 0.06, H * 0.98);
-    ctx.quadraticCurveTo(W * (0.14 + bend * 0.2), H * 0.66, tipX, tipY);
-    ctx.stroke();
+    this.drawRod(ctx, W, H, bend, tipX, tipY);
     const b = this.bobber;
     if (b) {
       const p = this.lurePos(performance.now());

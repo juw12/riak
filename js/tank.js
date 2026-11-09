@@ -103,7 +103,7 @@ export class TankView {
   }
   fishLen(fish) {
     const sp = fishById[fish.sp];
-    const base = clamp(this.H * 0.11, 30, 84) * sp.len;
+    const base = clamp(this.H * 0.16, 34, 120) * sp.len;
     const sizeFactor = clamp(0.7 + Math.log2(Math.max(1, fish.size) / 4) * 0.22, 0.6, 1.55);
     return base * sizeFactor * (fish.adult === false ? 0.55 : 1);
   }
@@ -657,6 +657,49 @@ export class TankView {
     ctx.moveTo(W - inset, backTop);
     ctx.lineTo(W - inset, backBottom);
     ctx.stroke();
+
+    // distant planting on the back glass: soft, low-contrast silhouettes that give the water column depth
+    {
+      const r = rng(hashString(tank.id + "backdrop"));
+      const tone = salt ? "rgba(20,70,90," : "rgba(24,72,58,";
+      for (let layer = 0; layer < 2; layer++) {
+        const alpha = layer ? 0.16 : 0.1;
+        const count = 9 + layer * 5;
+        for (let i = 0; i < count; i++) {
+          const bx = inset + r() * (W - inset * 2);
+          const tall = H * (0.18 + r() * 0.28) * (layer ? 0.8 : 1);
+          const base = backBottom + H * 0.01;
+          const sway = reduce ? 0 : Math.sin(t * 0.0005 + i) * W * 0.004;
+          ctx.fillStyle = tone + alpha + ")";
+          if (salt || r() < 0.4) {
+            // rounded clump (rock or coral head seen through haze)
+            ctx.beginPath();
+            ctx.ellipse(bx, base, W * (0.025 + r() * 0.03), tall * 0.35, 0, Math.PI, TAU);
+            ctx.fill();
+          } else {
+            // stem-plant spray
+            const blades = 4 + Math.floor(r() * 4);
+            for (let b = 0; b < blades; b++) {
+              const lean = (b - blades / 2) * W * 0.008;
+              const bw = W * 0.006;
+              const h2 = tall * (0.7 + r() * 0.3);
+              ctx.beginPath();
+              ctx.moveTo(bx - bw, base);
+              ctx.quadraticCurveTo(bx + lean * 0.5, base - h2 * 0.6, bx + lean * 2 + sway, base - h2);
+              ctx.quadraticCurveTo(bx + lean * 0.5 + bw * 2, base - h2 * 0.5, bx + bw, base);
+              ctx.closePath();
+              ctx.fill();
+            }
+          }
+        }
+      }
+      // haze band where the back glass meets the substrate
+      const hz = ctx.createLinearGradient(0, backBottom - H * 0.2, 0, backBottom + H * 0.02);
+      hz.addColorStop(0, rgba(mid, 0));
+      hz.addColorStop(1, rgba(mid, 0.35));
+      ctx.fillStyle = hz;
+      ctx.fillRect(0, backBottom - H * 0.2, W, H * 0.22);
+    }
 
     // light rays
     if (lit) {

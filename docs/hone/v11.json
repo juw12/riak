@@ -1,0 +1,137 @@
+{
+  "mode": "score",
+  "models": [
+    "Pega-Vision",
+    "Pega-Thinking",
+    "GLM-5.3-Flash"
+  ],
+  "weights": {
+    "C1": 0.3,
+    "C2": 0.3,
+    "C3": 0.25,
+    "C4": 0.15
+  },
+  "judges": {
+    "Pega-Vision": {
+      "scores": {
+        "C1": 8.0,
+        "C2": 8.0,
+        "C3": 9.0,
+        "C4": 8.0
+      },
+      "evidence": {
+        "C1": "\"the tank is drawn as a glass box\" and species-specific fish forms make it pleasant, but side cards and garden/focus screens still feel like generic floating cards.",
+        "C2": "\"Tap a fish to meet it. Tap the glass and watch who comes.\" plus labelled tools make actions findable, though phone tool grids and fishing fight controls are dense.",
+        "C3": "\"Breeding with inherited colours; aquascaping... greenhouse trays... reef lab... orders, journal, focus\" clearly exceeds a typical cozy aquarium, but interlocking is mostly described rather than shown.",
+        "C4": "\"floating white cards with layered shadows\" gives consistency, but the garden toast and some small/cut-off helper text need tidier placement."
+      },
+      "fixes": [
+        "Make the next step unmistakable on dense screens: group phone tools and fishing fight controls, and surface one primary action per screen.",
+        "Push the field-guide visual identity beyond generic cards: give side panels, garden trays, and focus stats more distinctive aquarium/field-guide treatment.",
+        "Show the loops interlocking in the UI: connect water quality, fishing catches, cuttings, breeding, orders, and journal progress with visible cause-and-effect feedback."
+      ],
+      "total": 8.25,
+      "seconds": 48.4
+    },
+    "Pega-Thinking": {
+      "scores": {
+        "C1": 7.0,
+        "C2": 8.0,
+        "C3": 9.0,
+        "C4": 7.0
+      },
+      "evidence": {
+        "C1": "Tank environment is well-crafted with perspective glass box, depth haze, receding gravel, back-glass silhouettes, but the fish themselves read as simple flat shapes ('fish floor shadows' present but bodies lack the detail of the environment); palette is coherent warm cream + green, journal silhouettes add field-guide feel.",
+        "C2": "'More to do' section explicitly guides new players to fishing/greenhouse/journal; tools row clearly labeled (Feed, Care, Scape, Residents, Shop, Photo, Watch, Share); phone layout groups 8 tools in 2 rows of 4 with bottom nav; fishing controls (Flick/Classic, Phone motion/Vibration, Bait) are well organized.",
+        "C3": "All listed loops present: nitrogen-cycle care, 9-spot fishing minigame with reel/tension, breeding with inherited colors, aquascaping (16 plants/8 hardscape/3 substrates/3 tank sizes), greenhouse with variegated sports, reef lab with named strains, journal dex with 47 species, focus timer, daily orders, streaks, offline catch-up.",
+        "C4": "Consistent pill buttons, floating nav, card shadows across screens; however the 'Unlocked: Mountain stream, Mangrove inlet and 5 more' toast on the Garden screen overlaps the top nav area, and the focus screen's '0 min this week · 0 min focused in total' sits in an empty bar with no visual fill state."
+      },
+      "fixes": [
+        "Increase detail and distinctiveness of the in-tank fish illustrations (fins, scales, eye, body shading) so they match the quality of the tank environment and the journal silhouettes.",
+        "Reposition or restyle the unlock notification so it does not overlap the top nav on the Garden screen (e.g., slide in below the nav or use an inline banner).",
+        "Replace the plain 'Not found yet' journal cards with partial silhouettes, environmental hints, or rarity-colored outlines so the dex actively teases discovery instead of looking like empty placeholders."
+      ],
+      "total": 7.8,
+      "seconds": 37.1
+    },
+    "GLM-5.3-Flash": {
+      "scores": {
+        "C1": 8.0,
+        "C2": 9.0,
+        "C3": 9.0,
+        "C4": 8.0
+      },
+      "evidence": {
+        "C1": "Coherent cream/green palette and serif/sans pairing; tank is the hero with 'perspective side panes, receding gravel floor, depth haze, back-glass planting silhouettes, fish floor shadows' and per-species forms; journal silhouettes with 'Paracheirodon innesi' give a field-guide feel — but fishing/garden screens are plainer, so not 'every screen feels designed'.",
+        "C2": "Explicit next-step guidance on every screen: 'Tap a fish to meet it. Tap the glass and watch who comes.', 'Flick up on the water, or press Cast', 'Line is slack. Reel', 'How the greenhouse works' steps 1-4; labelled 8-tool row; phone layouts uncramped. Only minor gains left (e.g. tool row lacks care/manage grouping).",
+        "C3": "Summary claims every anchor loop: nitrogen-cycle care, flick/reel fishing with 'drag settings' and 'tournaments against CPU anglers with hot-seat', 'Breeding with inherited colours', reef lab 'frag, cross, named strains', greenhouse, orders, journal, focus; screenshots confirm care/fishing/garden/journal/focus, but breeding, reef genetics and scaping loops are not evidenced visually, so 'clearly exceed' is not fully demonstrated.",
+        "C4": "Consistent pills, cards, floating nav, toasts ('Unlocked: Mountain stream, Mangrove inlet and 5 more') and 'fine' status dots; rough edges remain: the phone onboarding hint is a large dark block covering the tank centre, the care modal's last row has one orphan tile, and the desktop fishing screen's lower-left is empty."
+      },
+      "fixes": [
+        "Lift secondary screens to the tank's craft standard: resolve the desktop fishing screen's empty lower-left, enrich the sparse garden tray art, and push the field-guide character beyond the journal so every screen feels designed (C1, largest weighted gap).",
+        "Pixel-tidy pass: shrink or auto-dismiss the phone onboarding hint so it stops covering the tank, even out the care modal tile grid, and balance the desktop fishing columns (C4).",
+        "Make the hidden depth visible: add discoverable entry points or teasers for breeding, the reef lab and scaping on the tank/journal screens so the interlocking loops are evident in the UI rather than only in the summary (C3)."
+      ],
+      "total": 8.55,
+      "seconds": 322.5
+    }
+  },
+  "quorum": 3,
+  "council_score": 8.25,
+  "criterion_median": {
+    "C1": 8.0,
+    "C2": 8.0,
+    "C3": 9.0,
+    "C4": 8.0
+  },
+  "criterion_spread": {
+    "C1": 1.0,
+    "C2": 1.0,
+    "C3": 0.0,
+    "C4": 1.0
+  },
+  "split_criteria": [],
+  "judge_total_range": [
+    7.8,
+    8.55
+  ],
+  "fixes": [
+    {
+      "judge": "Pega-Vision",
+      "fix": "Make the next step unmistakable on dense screens: group phone tools and fishing fight controls, and surface one primary action per screen."
+    },
+    {
+      "judge": "Pega-Vision",
+      "fix": "Push the field-guide visual identity beyond generic cards: give side panels, garden trays, and focus stats more distinctive aquarium/field-guide treatment."
+    },
+    {
+      "judge": "Pega-Vision",
+      "fix": "Show the loops interlocking in the UI: connect water quality, fishing catches, cuttings, breeding, orders, and journal progress with visible cause-and-effect feedback."
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Increase detail and distinctiveness of the in-tank fish illustrations (fins, scales, eye, body shading) so they match the quality of the tank environment and the journal silhouettes."
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Reposition or restyle the unlock notification so it does not overlap the top nav on the Garden screen (e.g., slide in below the nav or use an inline banner)."
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Replace the plain 'Not found yet' journal cards with partial silhouettes, environmental hints, or rarity-colored outlines so the dex actively teases discovery instead of looking like empty placeholders."
+    },
+    {
+      "judge": "GLM-5.3-Flash",
+      "fix": "Lift secondary screens to the tank's craft standard: resolve the desktop fishing screen's empty lower-left, enrich the sparse garden tray art, and push the field-guide character beyond the journal so every screen feels designed (C1, largest weighted gap)."
+    },
+    {
+      "judge": "GLM-5.3-Flash",
+      "fix": "Pixel-tidy pass: shrink or auto-dismiss the phone onboarding hint so it stops covering the tank, even out the care modal tile grid, and balance the desktop fishing columns (C4)."
+    },
+    {
+      "judge": "GLM-5.3-Flash",
+      "fix": "Make the hidden depth visible: add discoverable entry points or teasers for breeding, the reef lab and scaping on the tank/journal screens so the interlocking loops are evident in the UI rather than only in the summary (C3)."
+    }
+  ],
+  "label": "council-judged (3 judges)"
+}

@@ -270,9 +270,15 @@ main { padding: 24px; padding-bottom: calc(24px + var(--nav-h)); max-width: 1440
 .notes h3 { font-size: 16px; margin-bottom: 8px; font-family: var(--sans); font-weight: 600; text-transform: none; }
 .status-line { font: 600 22px/1.25 var(--serif); margin-bottom: 8px; }
 .status-line.bad { color: var(--warn); }
-dl.readings { display: grid; grid-template-columns: 1fr auto auto; gap: 6px 12px; margin: 0; font-size: 15px; align-items: baseline; }
-dl.readings dt { color: var(--muted); }
-dl.readings dd { margin: 0; font-variant-numeric: tabular-nums; text-align: right; }
+.readings { display: grid; grid-template-columns: repeat(auto-fill, minmax(132px, 1fr)); gap: 8px; margin: 10px 0 0; }
+.reading { display: grid; gap: 2px; padding: 10px 12px; border-radius: 14px; background: var(--surface-2, rgba(0, 0, 0, 0.03)); }
+.reading-label { font-size: 13px; color: var(--muted); }
+.reading-value { font-size: 18px; font-variant-numeric: tabular-nums; }
+.reading .lvl { display: inline-flex; align-items: center; gap: 6px; }
+.reading .lvl::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+.reading .lvl.high::before, .reading .lvl.low::before { background: var(--warn); }
+.explain-more { margin-top: 10px; }
+.explain-more summary { cursor: pointer; font-weight: 600; font-size: 14px; color: var(--accent); min-height: 44px; display: flex; align-items: center; }
 .lvl { font-size: 13px; color: var(--muted); }
 .lvl.high, .lvl.low { color: var(--warn); font-weight: 600; }
 ul.plain { list-style: none; margin: 0; padding: 0; }
@@ -565,7 +571,7 @@ body.watch .tank-wrap { aspect-ratio: auto; height: 100vh; height: 100dvh; }
 .crank canvas { width: 100%; height: 100%; display: block; }
 .rig-label { font-size: 13px; font-weight: 600; color: var(--muted); }
 @media (min-width: 901px) {
-  .scene-wrap { max-height: max(300px, calc(100vh - 500px)); }
+  .scene-wrap { aspect-ratio: 21 / 10; max-height: max(320px, calc(100vh - 420px)); }
 }
 .notes .toggles { margin-top: 10px; }
 .bait.lure b::after { content: ""; display: inline-block; width: 6px; height: 6px; margin-left: 6px; border-radius: 50%; background: var(--gold); vertical-align: middle; }
@@ -880,7 +886,7 @@ body.watch .plate { box-shadow: none; }
   .toasts { top: 16px; bottom: auto; right: 50%; transform: translateX(50%); justify-items: center; width: min(420px, calc(100% - 640px)); }
 }
 @media (max-width: 900px) {
-  .toasts { top: calc(8px + env(safe-area-inset-top)); right: 50%; transform: translateX(50%); width: calc(100% - 24px); justify-items: stretch; }
+  .toasts { top: calc(10px + env(safe-area-inset-top)); right: 50%; transform: translateX(50%); width: calc(100% - 24px); justify-items: stretch; }
   .toast { min-height: 44px; display: flex; align-items: center; }
 }
 
@@ -934,3 +940,9 @@ body.watch .plate { box-shadow: none; }
 .dex-item .dex-sub { border-top: 1px dashed var(--rule); padding-top: 6px; margin-top: 2px; }
 .inv-section, .garden-loop { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.35 0 0 0 0 0.3 0 0 0 0 0.2 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
 :root[data-theme="dark"] .dex-item, :root[data-theme="dark"] .inv-section, :root[data-theme="dark"] .garden-loop { background-image: none; }
+
+/* journal: a thin rarity band on every card; undiscovered species show as ink silhouettes */
+.dex-item[data-rar="2"] { box-shadow: inset 0 3px 0 var(--accent), var(--shadow-1, 0 1px 2px rgba(0, 0, 0, 0.06)); }
+.dex-item[data-rar="3"] { box-shadow: inset 0 3px 0 var(--gold), var(--shadow-1, 0 1px 2px rgba(0, 0, 0, 0.06)); }
+.dex-item[data-rar="4"], .dex-item[data-rar="5"] { box-shadow: inset 0 4px 0 var(--gold), inset 0 0 0 1px rgba(201, 152, 58, 0.35), var(--shadow-1, 0 1px 2px rgba(0, 0, 0, 0.06)); }
+.dex-item.unknown canvas { background: radial-gradient(ellipse at 50% 55%, rgba(31, 95, 74, 0.08), transparent 70%); }

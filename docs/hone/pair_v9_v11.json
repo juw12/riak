@@ -1,0 +1,51 @@
+{
+  "mode": "pair",
+  "models": [
+    "Pega-Vision",
+    "Pega-Thinking",
+    "GLM-5.3-Flash"
+  ],
+  "judges": {
+    "Pega-Vision": {
+      "picks_AB_BA": [
+        "A",
+        "tie"
+      ],
+      "vote": "tie",
+      "reasons": [
+        "The feature summaries are identical, but VERSION 1’s screenshots show richer, more populated visuals—collected fish art in the journal, fuller garden trays, and more detailed fishing scenery—giving it slightly stronger visual craft and polish.",
+        "The two packets describe the same feature set and the screenshots are nearly identical; minor state differences such as a toast, journal discovery, and focus-tank population do not materially change visual craft, clarity, depth, or polish."
+      ]
+    },
+    "Pega-Thinking": {
+      "picks_AB_BA": [
+        "tie",
+        "tie"
+      ],
+      "vote": "tie",
+      "reasons": [
+        "The text descriptions are identical and the screenshots show the same UI design, layout, and visual craft. The only differences are minor game-state snapshots (e.g., Guppy discovered vs not, line length 8.5m vs 6.1m, slight wording in tank capacity label), which do not materially affect any rubric criterion.",
+        "Both versions share identical text descriptions, feature sets, and visual design language. The only differences are minor state variations in screenshots (e.g., a 'tank is ready' notification, different fish discovery progress, different line-out distance), which are negligible against the rubric's criteria."
+      ]
+    },
+    "GLM-5.3-Flash": {
+      "picks_AB_BA": [
+        "tie",
+        "tie"
+      ],
+      "vote": "tie",
+      "reasons": [
+        "The written packets are identical and the screenshots show the same app with only trivial state differences (line-out 8.5 m vs 6.1 m, one extra discovered journal entry in V1 vs slightly livelier tank and clearer 'room for more' microcopy in V2), yielding a negligible net difference on C1–C4.",
+        "The two packets are textually identical and the screenshots show the same app differing only in trivial state details (fish positions/count, a 'tank is ready' toast, one discovered journal entry, line-out 6.1 m vs 8.5 m), so C1–C4 scores are effectively unchanged. No version demonstrates a material edge on visual craft, clarity, depth, or polish."
+      ]
+    }
+  },
+  "votes": {
+    "A": 0,
+    "B": 0,
+    "tie": 3
+  },
+  "quorum": 3,
+  "b_wins": false,
+  "label": "council-judged (3 judges)"
+}

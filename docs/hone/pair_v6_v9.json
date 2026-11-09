@@ -1,0 +1,51 @@
+{
+  "mode": "pair",
+  "models": [
+    "Pega-Vision",
+    "Pega-Thinking",
+    "GLM-5.3-Flash"
+  ],
+  "judges": {
+    "Pega-Vision": {
+      "picks_AB_BA": [
+        "B",
+        "B"
+      ],
+      "vote": "B",
+      "reasons": [
+        "Version 2 shows stronger visual craft and polish, especially in the fishing scenery, care-sheet tiles, and journal cards, while keeping the same depth of play. Version 1 is coherent but feels flatter and less designed in several screens.",
+        "Version 1 has stronger visual craft and polish, with richer tank and fishing scenes, clearer tile-based water readings, and more satisfying journal states. The feature depth is identical, but Version 2’s care sheet and scenes feel plainer and less designed."
+      ]
+    },
+    "Pega-Thinking": {
+      "picks_AB_BA": [
+        "B",
+        "tie"
+      ],
+      "vote": "tie",
+      "reasons": [
+        "Both versions share identical feature descriptions, but VERSION 2 shows slightly better visual craft and polish: the journal displays actual fish illustrations (Guppy with orange tail, Neon tetra with blue/red stripes) rather than silhouettes, better matching the 'field-guide look' rubric criterion, and the care sheet uses a more polished tile/grid layout. The differences are subtle but consistently favor VERSION 2 across C1 and C4.",
+        "The review packets are identical word-for-word, and the screenshots show the same app in different states (e.g., V1 has Guppy caught in journal, V2 doesn't; V2 shows rain in fishing scene, V1 shows clear weather; V1 uses tile layout for water readings, V2 uses list with explanations). These are state variations, not quality differences, so the overall quality against the rubric is equivalent."
+      ]
+    },
+    "GLM-5.3-Flash": {
+      "picks_AB_BA": [
+        "B",
+        "B"
+      ],
+      "vote": "B",
+      "reasons": [
+        "The feature packets are identical, so depth ties, but VERSION 2's screenshots show consistently tighter craft: water readings as labelled tiles with the explanation collapsed, lily pads and reel detail actually matching the 'Lily pond' art brief, a livelier stocked tank, and two distinct species illustrations in the journal versus VERSION 1's plainer list-style care sheet, empty pond, and single discovered fish.",
+        "The packets and feature depth are essentially identical, but Version 2's screenshots show polish defects Version 1 lacks: a toast banner overlapping the mobile header (level/coins hidden, contradicting C4's 'unobtrusive, well placed' feedback) and water readings rendered as a plain list instead of the claimed tiles, plus a less distinctive journal card state. Version 1 matches its described look with tidier, more designed screens, giving it a narrow edge on C1/C2/C4."
+      ]
+    }
+  },
+  "votes": {
+    "A": 0,
+    "B": 2,
+    "tie": 1
+  },
+  "quorum": 3,
+  "b_wins": true,
+  "label": "council-judged (3 judges)"
+}

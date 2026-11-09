@@ -1,0 +1,137 @@
+{
+  "mode": "score",
+  "models": [
+    "Pega-Vision",
+    "Pega-Thinking",
+    "GLM-5.3-Flash"
+  ],
+  "weights": {
+    "C1": 0.3,
+    "C2": 0.3,
+    "C3": 0.25,
+    "C4": 0.15
+  },
+  "judges": {
+    "Pega-Vision": {
+      "scores": {
+        "C1": 8.0,
+        "C2": 8.0,
+        "C3": 9.0,
+        "C4": 8.0
+      },
+      "evidence": {
+        "C1": "Tank art is the hero: 'the tank is drawn as a glass box' with depth haze and species-specific fish, but Garden/Journal feel more like standard cards.",
+        "C2": "Hints like 'Tap a fish to meet it' and 'Flick up on the water' make actions clear, though the mobile toast overlaps the tank heading.",
+        "C3": "Feature summary lists 'care, fishing, breeding, scaping, greenhouse, reef lab, orders, journal, focus' as interlocking loops.",
+        "C4": "Consistent pills/cards and spacing, but mobile 'My first tank is ready' overlaps 'My first tank is doing well'."
+      },
+      "fixes": [
+        "Fix mobile toast placement so it never overlaps headings or content.",
+        "Make the fishing fight controls more discoverable on phones, especially tension, drag, and reel cues.",
+        "Extend the distinctive field-guide art and hierarchy to Garden and Journal so every screen feels designed."
+      ],
+      "total": 8.25,
+      "seconds": 48.8
+    },
+    "Pega-Thinking": {
+      "scores": {
+        "C1": 8.0,
+        "C2": 8.0,
+        "C3": 9.0,
+        "C4": 7.0
+      },
+      "evidence": {
+        "C1": "Tank art is distinctive with glass-box perspective, depth haze, receding gravel, back-glass silhouettes, lid rim and stand; warm cream palette with deep green accents is coherent and no purple; each species has its own body form. Fish themselves read as somewhat simple/cartoonish in the tank view, keeping it from a 9.",
+        "C2": "Tools row (Feed, Care, Scape, Residents, Shop, Photo, Watch, Share) is clearly labelled; 'More to do' panel and 'Tap a fish to meet it' prompt guide first-time players; phone layout uses a tidy 2x4 grid plus bottom nav; fishing controls (Flick/Classic, bait list, Cast) are obvious. Care sheet tiles and journal filters are self-explanatory.",
+        "C3": "Multiple interlocking loops clearly exceed a typical cozy aquarium: nitrogen-cycle care, flick-to-cast fishing with reel tension and tournaments, breeding with inherited colours, aquascaping (16 plants, 8 hardscape, 3 substrates, 3 tank sizes, reef room), greenhouse with variegated sports, reef-lab strain naming, journal dex with 47 species and 18 milestones, focus timer with weekly bars and box breathing, offline catch-up.",
+        "C4": "Pill buttons, floating cards and shadows are reused consistently across Tank, Care, Fishing, Garden, Journal and Focus. However, the 'My first tank is ready' toast visibly overlaps the 'My first tank is doing well' heading on the 390 px tank screen, and the desktop toast sits over the top nav, breaking the otherwise tidy spacing."
+      },
+      "fixes": [
+        "Resolve the 'My first tank is ready' toast overlapping the tank heading on phone and the top nav on desktop so notifications never sit on top of primary content.",
+        "Add more silhouette/fin detail and varied poses to the fish in the tank view so the 47 species read as distinct at a glance rather than as near-identical small tetras.",
+        "Tighten the desktop tank side column: the 'More to do' cards and 'Water test' block sit at noticeably different widths/heights than the tank card, so equalise card metrics and gutters for a calmer grid."
+      ],
+      "total": 8.1,
+      "seconds": 54.4
+    },
+    "GLM-5.3-Flash": {
+      "scores": {
+        "C1": 8.0,
+        "C2": 8.0,
+        "C3": 9.0,
+        "C4": 7.0
+      },
+      "evidence": {
+        "C1": "Coherent cream/green/teal palette with serif display type; tank has 'perspective side panes... depth haze, back-glass planting silhouettes, fish floor shadows' and reads pleasant, but the rock and fish rendering stay simple-flat, short of the 'distinctive calm field-guide look' 10 anchor (field-guide character only fully lands in the Journal's 'No. 01 / Paracheirodon innesi' cards).",
+        "C2": "Strong next-step cues: 'Tap a fish to meet it. Tap the glass and watch who comes.', 'Flick up on the water, or press Cast', 'How the greenhouse works' 4-step strip, labelled tool tiles, water-test tiles with 'fine' dots. Docked because on 390 px the toast 'My first tank is ready' sits over and obscures the 'My first tank is doing well' heading.",
+        "C3": "All anchor loops present and interlocked: nitrogen-cycle care, fishing ('9 spots... tournaments against CPU anglers', flick/reel/drag fight), 'Breeding with inherited colours', scaping, greenhouse cuttings/orders, 'reef lab (frag, cross, named strains)', journal, focus; not a 10 because breeding/reef/shop loops are asserted in the summary rather than evidenced on screen.",
+        "C4": "Consistent cards, pills and tiles across screens, but the 390 px toast overlaps and hides the status heading ('My first tank is doing well' partially covered) — feedback messages are not 'unobtrusive and well placed', so short of the 10 anchor."
+      },
+      "fixes": [
+        "Reposition toasts on phone (top safe-area or non-overlapping placement) so 'My first tank is ready' never covers the 'My first tank is doing well' heading.",
+        "Push tank art from pleasant to hero quality for the C1 10-anchor: richer rock/driftwood shading, more varied and denser fish on screen, so the tank clearly leads every tank-bearing screen.",
+        "Make the interlocking loops visible in-UI (e.g., 'Trim plants gives cuttings -> Garden trays' pointers, catch card -> 'Stock in tank' action) so breeding/reef/orders depth is discoverable to a first-time player, not just stated in the summary."
+      ],
+      "total": 8.1,
+      "seconds": 77.1
+    }
+  },
+  "quorum": 3,
+  "council_score": 8.1,
+  "criterion_median": {
+    "C1": 8.0,
+    "C2": 8.0,
+    "C3": 9.0,
+    "C4": 7.0
+  },
+  "criterion_spread": {
+    "C1": 0.0,
+    "C2": 0.0,
+    "C3": 0.0,
+    "C4": 1.0
+  },
+  "split_criteria": [],
+  "judge_total_range": [
+    8.1,
+    8.25
+  ],
+  "fixes": [
+    {
+      "judge": "Pega-Vision",
+      "fix": "Fix mobile toast placement so it never overlaps headings or content."
+    },
+    {
+      "judge": "Pega-Vision",
+      "fix": "Make the fishing fight controls more discoverable on phones, especially tension, drag, and reel cues."
+    },
+    {
+      "judge": "Pega-Vision",
+      "fix": "Extend the distinctive field-guide art and hierarchy to Garden and Journal so every screen feels designed."
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Resolve the 'My first tank is ready' toast overlapping the tank heading on phone and the top nav on desktop so notifications never sit on top of primary content."
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Add more silhouette/fin detail and varied poses to the fish in the tank view so the 47 species read as distinct at a glance rather than as near-identical small tetras."
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Tighten the desktop tank side column: the 'More to do' cards and 'Water test' block sit at noticeably different widths/heights than the tank card, so equalise card metrics and gutters for a calmer grid."
+    },
+    {
+      "judge": "GLM-5.3-Flash",
+      "fix": "Reposition toasts on phone (top safe-area or non-overlapping placement) so 'My first tank is ready' never covers the 'My first tank is doing well' heading."
+    },
+    {
+      "judge": "GLM-5.3-Flash",
+      "fix": "Push tank art from pleasant to hero quality for the C1 10-anchor: richer rock/driftwood shading, more varied and denser fish on screen, so the tank clearly leads every tank-bearing screen."
+    },
+    {
+      "judge": "GLM-5.3-Flash",
+      "fix": "Make the interlocking loops visible in-UI (e.g., 'Trim plants gives cuttings -> Garden trays' pointers, catch card -> 'Stock in tank' action) so breeding/reef/orders depth is discoverable to a first-time player, not just stated in the summary."
+    }
+  ],
+  "label": "council-judged (3 judges)"
+}
