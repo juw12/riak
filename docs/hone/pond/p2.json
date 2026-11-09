@@ -1,0 +1,137 @@
+{
+  "mode": "score",
+  "models": [
+    "Pega-Vision",
+    "Pega-Thinking",
+    "GLM-5.3-Flash"
+  ],
+  "weights": {
+    "C1": 0.35,
+    "C2": 0.25,
+    "C3": 0.2,
+    "C4": 0.2
+  },
+  "judges": {
+    "Pega-Vision": {
+      "scores": {
+        "C1": 9.0,
+        "C2": 9.0,
+        "C3": 10.0,
+        "C4": 9.0
+      },
+      "evidence": {
+        "C1": "pleasant coherent pond, koi recognisable with varied patterns",
+        "C2": "controls are quiet and minimal",
+        "C3": "rich adjustable soundscape with moods, sleep timer",
+        "C4": "mixer sheet clear and well grouped"
+      },
+      "fixes": [
+        "C4: Replace text labels on mobile bottom controls (e.g., 'Mood: Day') with icons to prevent crowding on 390px screens.",
+        "C2: Dim or hide the top application header ('Level 1', coins) in the Pond tab to reduce gamification distraction and let the scene dominate.",
+        "C1: Refine koi swimming algorithm to prevent unnatural clustering during feeding interactions seen in screenshots."
+      ],
+      "total": 9.2,
+      "seconds": 74.2
+    },
+    "Pega-Thinking": {
+      "scores": {
+        "C1": 7.0,
+        "C2": 8.0,
+        "C3": 9.0,
+        "C4": 8.0
+      },
+      "evidence": {
+        "C1": "Koi are recognisable with varied patterns (kohaku, showa, ogon visible) and the pond has stone rim, moss, lanterns, lily pads, bamboo fountain; night scene shows lantern glow and moon reflection, but koi bodies look somewhat flat/stylised and water depth, while present, lacks the convincing depth of a 'leave open on a second screen' pond.",
+        "C2": "Calm full-screen mode (last screenshot) hides all UI and looks finished; bottom toolbar is quiet and minimal; scene dominates in calm mode; however the persistent bottom toolbar in normal mode slightly competes with the scene.",
+        "C3": "Rich interaction set: tap water for ripple, hold to feed, drag to lead koi, tap koi for name card, tap leaf to spin, plus keys Space/F/R/M/H/Esc; soundscape has stream, fountain, chimes, crickets, rain, plops, pellet ticks, gulps with positional panning; sleep timer with fade-out and dim.",
+        "C4": "Desktop toolbar is tidy and well-spaced; phone (390) layout fits pond and stacks controls cleanly; Sounds sheet is well-grouped into Volume/Layers/Mood/Koi count/Sleep timer sections; minor: koi count and sleep timer pill rows could be slightly more refined."
+      },
+      "fixes": [
+        "Improve koi form and depth — bodies still read as somewhat flat/stylised blobs in places; add more shading, fin detail, and scale texture so they look convincing rather than cartoonish.",
+        "Enhance water depth and caustic light — current caustics are subtle; stronger underwater gradient, light shafts, and bottom texture would push the pond toward 'second screen' quality.",
+        "Make the bottom toolbar auto-hide or more minimal in normal mode so the scene dominates even outside full-screen calm mode, reducing UI competition with the pond."
+      ],
+      "total": 7.85,
+      "seconds": 63.2
+    },
+    "GLM-5.3-Flash": {
+      "scores": {
+        "C1": 7.5,
+        "C2": 8.0,
+        "C3": 9.0,
+        "C4": 8.5
+      },
+      "evidence": {
+        "C1": "Pleasant, coherent pond with varied koi ('9 koi varieties... bodies bend as they swim; fins, tail, patterns, shadows') and light that changes across day/dusk/night (lantern glow, moon reflection, fireflies). But several koi read flat and banana/leaf-shaped (the yellow ogon), and the water texture is uniform speckle noise, so depth and 'convincing form' fall short of the 10 anchor.",
+        "C2": "Calm mode looks finished: dusk shot is full-bleed scene with only a faint eye icon ('calm full-screen mode with all UI hidden'), and the night shot shows no jarring UI. But the default desktop view keeps Level/coins/nav chrome, heading, stats line and a 5-button pill over the pond, so the scene does not fully dominate by default.",
+        "C3": "Beyond the 7 anchor ('feeding, ripples and a few sound toggles') it adds 'tap... hold to feed, drag to lead koi, tap a koi for its name card, tap a leaf to spin it' plus 'volume, layer toggles, mood, koi count 5/9/13, sleep timer 10/20/30 min that fades out and dims' and position-panned layers. Only deduction: drag-to-lead and leaf-spin have no visible hint in any screenshot, so discoverability of the full set is unproven.",
+        "C4": "Tidy at both sizes with no overflow; the mixer sheet is 'clear and well grouped' (Volume / Layers with % readouts / Mood / Koi in the pond / Sleep timer, with helpful notes like 'Crickets only sing in night mood'). Small flaw: on the 390 px pill the 'Sound on' button stacks icon over label while Feed/Rain/Sounds are inline, a minor inconsistency."
+      },
+      "fixes": [
+        "C1 (w=0.35, biggest lever): give koi convincing volume - body shading, dorsal fin, softer pattern edges, fix the banana-shaped yellow koi - and break up the uniform water speckle with deeper darks and varied caustics so the water reads as having depth.",
+        "C2: auto-fade the bottom control pill and the stats line after a few idle seconds (reappear on hover/touch/motion) so the default view is scene-first instead of calm mode being the only quiet state; ensure the night view keeps a subtle affordance to restore controls.",
+        "C4/C3: on 390 px make the 'Sound on' button match its siblings' inline icon+label layout (or make all five uniform), and add a one-time hint ('hold to feed, drag to lead, tap a koi to meet it') so the hidden gestures are discoverable."
+      ],
+      "total": 8.12,
+      "seconds": 40.1
+    }
+  },
+  "quorum": 3,
+  "council_score": 8.12,
+  "criterion_median": {
+    "C1": 7.5,
+    "C2": 8.0,
+    "C3": 9.0,
+    "C4": 8.5
+  },
+  "criterion_spread": {
+    "C1": 2.0,
+    "C2": 1.0,
+    "C3": 1.0,
+    "C4": 1.0
+  },
+  "split_criteria": [],
+  "judge_total_range": [
+    7.85,
+    9.2
+  ],
+  "fixes": [
+    {
+      "judge": "Pega-Vision",
+      "fix": "C4: Replace text labels on mobile bottom controls (e.g., 'Mood: Day') with icons to prevent crowding on 390px screens."
+    },
+    {
+      "judge": "Pega-Vision",
+      "fix": "C2: Dim or hide the top application header ('Level 1', coins) in the Pond tab to reduce gamification distraction and let the scene dominate."
+    },
+    {
+      "judge": "Pega-Vision",
+      "fix": "C1: Refine koi swimming algorithm to prevent unnatural clustering during feeding interactions seen in screenshots."
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Improve koi form and depth — bodies still read as somewhat flat/stylised blobs in places; add more shading, fin detail, and scale texture so they look convincing rather than cartoonish."
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Enhance water depth and caustic light — current caustics are subtle; stronger underwater gradient, light shafts, and bottom texture would push the pond toward 'second screen' quality."
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Make the bottom toolbar auto-hide or more minimal in normal mode so the scene dominates even outside full-screen calm mode, reducing UI competition with the pond."
+    },
+    {
+      "judge": "GLM-5.3-Flash",
+      "fix": "C1 (w=0.35, biggest lever): give koi convincing volume - body shading, dorsal fin, softer pattern edges, fix the banana-shaped yellow koi - and break up the uniform water speckle with deeper darks and varied caustics so the water reads as having depth."
+    },
+    {
+      "judge": "GLM-5.3-Flash",
+      "fix": "C2: auto-fade the bottom control pill and the stats line after a few idle seconds (reappear on hover/touch/motion) so the default view is scene-first instead of calm mode being the only quiet state; ensure the night view keeps a subtle affordance to restore controls."
+    },
+    {
+      "judge": "GLM-5.3-Flash",
+      "fix": "C4/C3: on 390 px make the 'Sound on' button match its siblings' inline icon+label layout (or make all five uniform), and add a one-time hint ('hold to feed, drag to lead, tap a koi to meet it') so the hidden gestures are discoverable."
+    }
+  ],
+  "label": "council-judged (3 judges)"
+}

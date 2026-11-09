@@ -45,8 +45,9 @@ modern browser.
 - **Koi pond** - a top-down relax view: 9 koi varieties (kohaku, sanke, showa, ogon, asagi, tancho, chagoi,
   yamabuki, kujaku) swim with bending bodies among lily pads, lotus and drifting leaves. Tap the water for a
   ripple, hold to feed, drag to lead the koi, tap a koi to learn its name. Every sound is made live in the
-  browser (stream, bamboo shishi-odoshi, wind chimes, night crickets, rain, plops), with a mixer, day, dusk and
-  night moods that follow your clock, a sleep timer and a full-screen calm mode.
+  browser (stream, bamboo shishi-odoshi, wind chimes, night crickets, rain, plops), with a mixer that sets a level
+  per layer, day, dusk and night moods that follow your clock, a sleep timer and a full-screen calm mode;
+  the controls step back after 10 seconds of stillness.
 - **Watch mode** - a full-screen tank with a clock that keeps the screen awake, for a desk or a spare tablet.
 - **Share** - a link that opens your tank read-only for a friend, and a photo export.
 - **Offline time** - when you come back, Riak plays the hours you were away (up to a cap) and tells you what

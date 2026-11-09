@@ -1,0 +1,51 @@
+{
+  "mode": "pair",
+  "models": [
+    "Pega-Vision",
+    "Pega-Thinking",
+    "GLM-5.3-Flash"
+  ],
+  "judges": {
+    "Pega-Vision": {
+      "picks_AB_BA": [
+        "B",
+        "B"
+      ],
+      "vote": "B",
+      "reasons": [
+        "Version 2 provides a richer adjustable soundscape (C3) by implementing individual volume sliders for each audio layer in the mixer, whereas Version 1 only offers simple on/off toggles.",
+        "Version 1 provides a superior adjustable soundscape with individual volume sliders for layers (C3) compared to Version 2's binary toggles, and its night scene is cleaner without the intrusive instructional tooltip seen in Version 2 (C2)."
+      ]
+    },
+    "Pega-Thinking": {
+      "picks_AB_BA": [
+        "B",
+        "tie"
+      ],
+      "vote": "tie",
+      "reasons": [
+        "Both versions are nearly identical in scene art, calm feel, and overall composition. VERSION 2 edges ahead with a more polished and informative Sounds sheet featuring individual per-layer sliders with percentage values (vs. simple toggle buttons in V1), which improves both interaction design (C3) and usability/polish (C4).",
+        "Both versions share identical feature descriptions and very similar visual implementations. Minor differences (V1's cleaner calm mode without visible eye button vs V2's keyboard shortcut hints in sounds sheet) are negligible and offset each other across the criteria."
+      ]
+    },
+    "GLM-5.3-Flash": {
+      "picks_AB_BA": [
+        "B",
+        "B"
+      ],
+      "vote": "B",
+      "reasons": [
+        "The written packets are identical, but the screenshots differ: V2 shows a richer mixer (per-layer level sliders with percentages vs V1's on/off chips, supporting C3's 'rich adjustable soundscape') and a fully wrapped hint pill on phone where V1 truncates it with an ellipsis, plus slightly more varied stonework and warmer dusk grading. V1's sheet fits on one screen and its night shot shows mood state feedback, but these don't outweigh V2's polish and sound-design edges.",
+        "The packets and scene art are essentially identical, but Version 1's Sounds sheet gives per-layer level sliders (a richer adjustable soundscape per C3) and its 390px hint text fits on two lines, while Version 2 truncates the hint ('Drag to lead · T...') and downgrades layers to on/off chips. Version 1's control-free night and calm full-screen shots also read slightly calmer, outweighing Version 2's small exit-button affordance in calm mode."
+      ]
+    }
+  },
+  "votes": {
+    "A": 0,
+    "B": 2,
+    "tie": 1
+  },
+  "quorum": 3,
+  "b_wins": true,
+  "label": "council-judged (3 judges)"
+}

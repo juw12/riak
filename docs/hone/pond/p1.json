@@ -1,0 +1,137 @@
+{
+  "mode": "score",
+  "models": [
+    "Pega-Vision",
+    "Pega-Thinking",
+    "GLM-5.3-Flash"
+  ],
+  "weights": {
+    "C1": 0.35,
+    "C2": 0.25,
+    "C3": 0.2,
+    "C4": 0.2
+  },
+  "judges": {
+    "Pega-Vision": {
+      "scores": {
+        "C1": 9.0,
+        "C2": 9.0,
+        "C3": 10.0,
+        "C4": 9.0
+      },
+      "evidence": {
+        "C1": "Art shows 'depth in the water' and 'light that changes' (night shot with lanterns), but static shots limit full verification of 'convincing form' in motion.",
+        "C2": "Full-screen 'Eye button' mode achieves 'controls are quiet', but the persistent 'Level 1' and coin header in standard view introduces gamification that slightly conflicts with 'ASMR relax'.",
+        "C3": "Design matches anchor perfectly: 'rich adjustable soundscape', 'moods', 'sleep timer', and 'gentle, discoverable interactions' like drag-to-lead and name cards.",
+        "C4": "Mixer sheet is 'clear and well grouped', but mobile controls switch to icons-only which reduces clarity compared to desktop text labels."
+      },
+      "fixes": [
+        "Ensure the 'Eye' button (calm mode) hides the global app header (Level 1, Coins) to fully achieve the 'nothing jarring' anchor for C2.",
+        "Add tooltips or accessible labels to the mobile icon-only control bar (Speaker, Sun, Drop) to match the clarity of the desktop text labels (C4).",
+        "Tune the koi schooling algorithm during feeding to prevent tight clustering that risks looking like a 'blob' rather than individual fish with 'convincing form' (C1)."
+      ],
+      "total": 9.2,
+      "seconds": 110.6
+    },
+    "Pega-Thinking": {
+      "scores": {
+        "C1": 7.0,
+        "C2": 7.0,
+        "C3": 9.0,
+        "C4": 8.0
+      },
+      "evidence": {
+        "C1": "Koi are recognisable with varied patterns (kohaku, ogon, asagi visible), time-of-day lighting changes work (lanterns glow, moon reflection, fireflies at night), composition is balanced with stones/lily pads/lanterns. However, koi forms look somewhat simplified/cartoonish rather than convincing, and water depth is suggested by caustic patterns but the surface reads as fairly flat.",
+        "C2": "Full-screen calm mode (dusk screenshot) looks finished with all UI hidden, bottom control bar is a quiet pill, no jarring elements. But the header tabs, stats line, and the always-visible hint bar 'Tap the water · Hold to feed · Drag to lead · Tap a koi to meet it' keep UI present in normal mode.",
+        "C3": "Multiple gentle interactions described (tap ripple, hold feed, drag lead, tap koi for name card, tap leaf to spin), rich soundscape with stream/fountain/wind chimes/crickets/rain/plops/pellet ticks/gulps, positional panning, sounds sheet with volume, layer toggles, mood (Auto/Day/Dusk/Night), koi count 5/9/13, sleep timer 10/20/30 min. Cannot verify actual audio quality.",
+        "C4": "Desktop (1440) layout is tidy with clean header tabs and compact bottom control bar. Phone (390) scales well with icon-only controls and bottom tab bar. Sounds sheet is well-grouped into Volume/Layers/Mood/Koi count/Sleep timer sections with clear labels and sliders."
+      },
+      "fixes": [
+        "Make koi forms more convincing — current koi read as simplified/cartoonish shapes; add more body curvature, fin detail, and pattern fidelity so they look like real nishikigoi rather than stylized blobs.",
+        "Deepen the water — caustic patterns suggest depth but the surface looks flat; add subtle gradient, underwater shadowing, or layered translucency so the pond reads as having real volume.",
+        "Auto-hide or fade the persistent hint bar ('Tap the water · Hold to feed · Drag to lead · Tap a koi to meet it') after first interaction so the normal view feels calmer and closer to the full-screen calm mode."
+      ],
+      "total": 7.6,
+      "seconds": 40.7
+    },
+    "GLM-5.3-Flash": {
+      "scores": {
+        "C1": 7.5,
+        "C2": 8.0,
+        "C3": 9.5,
+        "C4": 8.5
+      },
+      "evidence": {
+        "C1": "Pleasant coherent pond: caustics, depth gradient, mossy stone rim, 'lantern glow, moon reflection, fireflies' at night show time-of-day light; but koi read as flat patterned cutouts (yellow ogon reads leaf-like at a glance), short of 'convincing form and colour'.",
+        "C2": "'Eye button: calm full-screen mode with all UI hidden' and the dusk calm shot looks finished; night shot hides controls. But desktop tab keeps nav pill, heading, description and stats line ('Just arrived · 0 pellets eaten') above the scene, and the hint pill sits over the water.",
+        "C3": "'tap water for a ripple... hold to feed, drag to lead koi, tap a koi for its name card', keys, plus 'volume, layer toggles, mood, koi count 5/9/13, sleep timer 10/20/30 min that fades out and dims' and position panning — full 10-anchor checklist on paper; only leaf-spin is shallow and undiscoverable.",
+        "C4": "Mixer sheet is clear and well grouped (Volume / Layers with % / Mood / Koi in the pond / Sleep timer); tidy at 1440 and 390, but the phone control row drops to icon-only circles, losing the labels shown on desktop."
+      },
+      "fixes": [
+        "C1 (w=0.35, biggest lever): make koi read as fish, not stickers — add head/eye definition, volumetric body shading and better fin/tail articulation, and vary idle spacing so the school isn't always centre-clustered.",
+        "C2 (w=0.25): let the scene dominate the desktop tab — condense the heading/description/stats block, auto-dismiss the hint pill after first interaction, and fade the bottom control bar when idle in every mood (night shot already does this).",
+        "C4 (w=0.20): restore labels or add first-run tooltips for the 390px icon-only control row, and ensure the Sounds sheet signals scroll so the Sleep timer row isn't apparently cut off."
+      ],
+      "total": 8.22,
+      "seconds": 72.9
+    }
+  },
+  "quorum": 3,
+  "council_score": 8.22,
+  "criterion_median": {
+    "C1": 7.5,
+    "C2": 8.0,
+    "C3": 9.5,
+    "C4": 8.5
+  },
+  "criterion_spread": {
+    "C1": 2.0,
+    "C2": 2.0,
+    "C3": 1.0,
+    "C4": 1.0
+  },
+  "split_criteria": [],
+  "judge_total_range": [
+    7.6,
+    9.2
+  ],
+  "fixes": [
+    {
+      "judge": "Pega-Vision",
+      "fix": "Ensure the 'Eye' button (calm mode) hides the global app header (Level 1, Coins) to fully achieve the 'nothing jarring' anchor for C2."
+    },
+    {
+      "judge": "Pega-Vision",
+      "fix": "Add tooltips or accessible labels to the mobile icon-only control bar (Speaker, Sun, Drop) to match the clarity of the desktop text labels (C4)."
+    },
+    {
+      "judge": "Pega-Vision",
+      "fix": "Tune the koi schooling algorithm during feeding to prevent tight clustering that risks looking like a 'blob' rather than individual fish with 'convincing form' (C1)."
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Make koi forms more convincing — current koi read as simplified/cartoonish shapes; add more body curvature, fin detail, and pattern fidelity so they look like real nishikigoi rather than stylized blobs."
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Deepen the water — caustic patterns suggest depth but the surface looks flat; add subtle gradient, underwater shadowing, or layered translucency so the pond reads as having real volume."
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Auto-hide or fade the persistent hint bar ('Tap the water · Hold to feed · Drag to lead · Tap a koi to meet it') after first interaction so the normal view feels calmer and closer to the full-screen calm mode."
+    },
+    {
+      "judge": "GLM-5.3-Flash",
+      "fix": "C1 (w=0.35, biggest lever): make koi read as fish, not stickers — add head/eye definition, volumetric body shading and better fin/tail articulation, and vary idle spacing so the school isn't always centre-clustered."
+    },
+    {
+      "judge": "GLM-5.3-Flash",
+      "fix": "C2 (w=0.25): let the scene dominate the desktop tab — condense the heading/description/stats block, auto-dismiss the hint pill after first interaction, and fade the bottom control bar when idle in every mood (night shot already does this)."
+    },
+    {
+      "judge": "GLM-5.3-Flash",
+      "fix": "C4 (w=0.20): restore labels or add first-run tooltips for the 390px icon-only control row, and ensure the Sounds sheet signals scroll so the Sleep timer row isn't apparently cut off."
+    }
+  ],
+  "label": "council-judged (3 judges)"
+}

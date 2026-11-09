@@ -12,6 +12,7 @@ export class PondSound {
     this.on = false;
     this.volume = 0.6;
     this.layers = { stream: true, rain: false, fountain: true, chimes: true, insects: true };
+    this.levels = { stream: 0.8, fountain: 0.8, chimes: 0.8, insects: 0.8 };
     this.night = false;
     this.timers = [];
     this.fadeGain = 1;
@@ -135,9 +136,10 @@ export class PondSound {
     if (this.ctx && this.ctx.state === "suspended") this.ctx.resume();
   }
 
-  set({ volume, layers, night }) {
+  set({ volume, layers, levels, night }) {
     if (volume !== undefined) this.volume = volume;
     if (layers) this.layers = { ...this.layers, ...layers };
+    if (levels) this.levels = { ...this.levels, ...levels };
     if (night !== undefined) this.night = night;
     if (this.on) {
       this.applyLevels();
@@ -145,12 +147,17 @@ export class PondSound {
     }
   }
 
+  // per-layer mix: 0.8 is the default level, 1 is a little louder
+  mix(id) {
+    return Math.max(0.02, (this.levels[id] ?? 0.8) / 0.8);
+  }
+
   applyLevels() {
     if (!this.ctx) return;
     const t = this.ctx.currentTime;
     this.master.gain.cancelScheduledValues(t);
     this.master.gain.setTargetAtTime(this.on ? this.volume * 0.9 * this.fadeGain : 0, t, 0.6);
-    this.streamGain.gain.setTargetAtTime(this.layers.stream ? 0.55 : 0, t, 0.8);
+    this.streamGain.gain.setTargetAtTime(this.layers.stream ? 0.55 * this.mix("stream") : 0, t, 0.8);
     this.rainGain.gain.setTargetAtTime(this.layers.rain ? 0.34 : 0, t, 1.2);
   }
 
@@ -237,6 +244,7 @@ export class PondSound {
   // the bamboo arm fills with a rising trickle, tips, knocks on the stone and pours out
   shishiOdoshi() {
     if (!this.ctx) return;
+    const m = this.mix("fountain");
     const t = this.ctx.currentTime;
     const src = this.ctx.createBufferSource();
     src.buffer = this.noiseBuf;
@@ -247,19 +255,19 @@ export class PondSound {
     f.frequency.exponentialRampToValueAtTime(1500, t + 4);
     const g = this.ctx.createGain();
     g.gain.setValueAtTime(0.0001, t);
-    g.gain.exponentialRampToValueAtTime(0.05, t + 1);
-    g.gain.setValueAtTime(0.05, t + 3.8);
+    g.gain.exponentialRampToValueAtTime(0.05 * m, t + 1);
+    g.gain.setValueAtTime(0.05 * m, t + 3.8);
     g.gain.exponentialRampToValueAtTime(0.0001, t + 4.1);
     src.connect(f).connect(g);
     this.out(g, 0.55);
     src.start(t, 0, 4.3);
     // the knock: hollow wood body plus a sharp click
-    this.tone(210, 0.22, 0.22, { when: 4.1, to: 170, panX: 0.55 });
-    this.tone(420, 0.09, 0.08, { when: 4.1, type: "triangle", panX: 0.55 });
-    this.burst(0.05, 1300, 0.22, "bandpass", 5, 0.55, 4.1);
-    this.tone(205, 0.14, 0.07, { when: 4.33, to: 175, panX: 0.55 });
+    this.tone(210, 0.22, 0.22 * m, { when: 4.1, to: 170, panX: 0.55 });
+    this.tone(420, 0.09, 0.08 * m, { when: 4.1, type: "triangle", panX: 0.55 });
+    this.burst(0.05, 1300, 0.22 * m, "bandpass", 5, 0.55, 4.1);
+    this.tone(205, 0.14, 0.07 * m, { when: 4.33, to: 175, panX: 0.55 });
     // water pouring off into the pond
-    this.burst(0.7, 900, 0.07, "lowpass", 0.7, 0.45, 4.15);
+    this.burst(0.7, 900, 0.07 * m, "lowpass", 0.7, 0.45, 4.15);
   }
 
   chimes() {
@@ -269,8 +277,8 @@ export class PondSound {
       const f = CHIME_SCALE[Math.floor(Math.random() * CHIME_SCALE.length)];
       const when = i * (0.18 + Math.random() * 0.35);
       const dur = 3.5 + Math.random() * 2.5;
-      this.tone(f, dur, 0.022, { when, panX, attack: 0.004 });
-      this.tone(f * 2.76, dur * 0.5, 0.006, { when, panX, attack: 0.004 });
+      this.tone(f, dur, 0.022 * this.mix("chimes"), { when, panX, attack: 0.004 });
+      this.tone(f * 2.76, dur * 0.5, 0.006 * this.mix("chimes"), { when, panX, attack: 0.004 });
     }
   }
 
@@ -278,7 +286,7 @@ export class PondSound {
     const panX = Math.random() * 1.8 - 0.9;
     const pulses = 3 + Math.floor(Math.random() * 2);
     const f = 4300 + Math.random() * 500;
-    for (let i = 0; i < pulses; i++) this.tone(f, 0.022, 0.012, { when: i * 0.045, panX, attack: 0.002 });
+    for (let i = 0; i < pulses; i++) this.tone(f, 0.022, 0.012 * this.mix("insects"), { when: i * 0.045, panX, attack: 0.002 });
   }
 
   // ---------- interaction sounds (x is -1 left to 1 right) ----------

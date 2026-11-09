@@ -1,0 +1,137 @@
+{
+  "mode": "score",
+  "models": [
+    "Pega-Vision",
+    "Pega-Thinking",
+    "GLM-5.3-Flash"
+  ],
+  "weights": {
+    "C1": 0.35,
+    "C2": 0.25,
+    "C3": 0.2,
+    "C4": 0.2
+  },
+  "judges": {
+    "Pega-Vision": {
+      "scores": {
+        "C1": 8.0,
+        "C2": 9.0,
+        "C3": 10.0,
+        "C4": 8.0
+      },
+      "evidence": {
+        "C1": "Pleasant coherent pond with varied koi patterns (kohaku, sanke) and lighting changes (lantern glow, fireflies), though the vector style lacks the 'convincing form' or deep water refraction for a perfect 10.",
+        "C2": "The 'calm full-screen mode' (Screenshot 6) successfully removes all UI for a dominating scene, though the default view has slightly busy instructional text.",
+        "C3": "Exceeds criteria with 'drag to lead', 'tap a koi for its name card', and a rich soundscape including sleep timer, mood auto-follow, and positional audio.",
+        "C4": "Layout is tidy on both sizes and the mixer sheet is well grouped, but the mobile instruction tooltip text is visibly truncated ('... T...')."
+      },
+      "fixes": [
+        "Fix the truncated instruction tooltip on the 390px mobile view which cuts off at '... T...' instead of showing the full text.",
+        "Improve the 'Hide controls' UX: currently the button hides the bar containing itself, forcing reliance on the 'Esc' key or the Full Screen eye button to restore it; consider tap-to-reveal.",
+        "Enhance the visual integration of the koi with the water (e.g., stronger shadows or refraction) to increase perceived depth and push the art quality from 'pleasant' to 'immersive'."
+      ],
+      "total": 8.65,
+      "seconds": 153.8
+    },
+    "Pega-Thinking": {
+      "scores": {
+        "C1": 6.0,
+        "C2": 7.0,
+        "C3": 8.0,
+        "C4": 7.0
+      },
+      "evidence": {
+        "C1": "Koi are recognisable with varied patterns (kohaku, ogon, asagi visible) and the scene has caustic light, shadows, and time-of-day shifts, but the fish read as flat illustrated shapes rather than convincing forms; stones are simple gray ovals, lily pads are flat green discs, and there is little sense of water depth.",
+        "C2": "Scene dominates the viewport and the bottom control bar is quiet, with a 'Hide controls' option and a finished-looking full-screen calm mode (eye button), but the top nav (Tank/Fishing/Garden/Journal/Focus/Pond) and the 'Riak' header with Level/coin chips stay visible and compete with the pond.",
+        "C3": "Multiple gentle interactions (tap ripple, hold feed, drag lead, tap koi name card, tap leaf to spin) plus a rich soundscape with volume, layer toggles, mood, koi count 5/9/13, sleep timer 10/20/30 min, positional panning, and keyboard shortcuts (Space/F/R/M/H/Esc).",
+        "C4": "Sounds sheet is well-grouped (Volume/Layers/Mood/Koi count/Sleep timer) and controls collapse to icons on 390 px, but the hint pill truncates to 'Tap the water · Hold to feed · Drag to lead · T...' on phone and the persistent top nav eats vertical space on the small viewport."
+      },
+      "fixes": [
+        "Give the koi more dimensional form (subtle gradient/shading along the body, clearer fin separation, better tail taper) so they stop reading as flat shapes and earn the 'leave open on a second screen' feel.",
+        "Auto-hide or shrink the top app nav and 'Riak / Level / coins' header when the pond tab is active (or in calm mode) so the scene truly dominates and the calm feel reaches a 9-10.",
+        "Fix the truncated interaction hint on 390 px (wrap to two lines, shorten copy, or move it to a discoverable tooltip) so phone users actually see all four gestures."
+      ],
+      "total": 6.85,
+      "seconds": 51.3
+    },
+    "GLM-5.3-Flash": {
+      "scores": {
+        "C1": 8.0,
+        "C2": 7.0,
+        "C3": 9.0,
+        "C4": 8.0
+      },
+      "evidence": {
+        "C1": "Pleasant, coherent pond: varied koi patterns (kohaku, ogon, asagi, chagoi visible), 'caustic light, ripples', koi shadows, and light clearly changes with mood ('lantern glow, moon reflection, fireflies' at night). Falls short of 10: water reads as fairly uniform teal with little depth gradient, and several koi (yellow ogon curves) look like flat bent shapes rather than full-bodied fish.",
+        "C2": "Scene is calm and controls are tidy pills, and the dusk full-screen shot is serene with 'all UI hidden'. But the hint pill 'Tap the water · Hold to feed · Drag to lead…' persists in all three desktop shots, and the bottom cluster is two rows tall (5 buttons + 'Hide controls'), so UI never fully gets out of the way.",
+        "C3": "Matches the 10 anchor's checklist: 'tap water for a ripple… hold to feed, drag to lead, tap a koi for its name card', leaf spin, keys, plus 'volume, layer toggles, mood, koi count 5/9/13, sleep timer… fades out and dims the pond' with positional panning. Kept from 10: soundscape adjustability is master volume plus 4 on/off layers — no per-layer volume or intensity.",
+        "C4": "Tidy at 1440 (centered control bar, aligned header/nav) and at 390 (icon row fits, no overflow); mixer sheet is 'clear and well grouped' (Volume / Layers / Mood / Koi / Sleep timer). Defect: hint pill truncates at 390 ('Drag to lead · T…') and phone controls are icon-only with no labels."
+      },
+      "fixes": [
+        "Make the scene dominate for C2: auto-dismiss the hint pill after the first interaction or a few seconds, and fade the bottom control bar (and 'Hide controls' second row) when idle so calm mode is the default state, not a toggle.",
+        "Push C1 toward the second-screen anchor: add water depth (darker centre/edge vignette or layered depth tint under the caustics) and give koi fuller bodies with stronger shading so they read as fish rather than flat curved cut-outs.",
+        "Fix 390px polish for C4: stop the hint pill truncating mid-sentence ('Drag to lead · T…') by shortening, wrapping or cycling the tips, and add tooltips/aria-labels to the icon-only phone control row."
+      ],
+      "total": 7.95,
+      "seconds": 94.8
+    }
+  },
+  "quorum": 3,
+  "council_score": 7.95,
+  "criterion_median": {
+    "C1": 8.0,
+    "C2": 7.0,
+    "C3": 9.0,
+    "C4": 8.0
+  },
+  "criterion_spread": {
+    "C1": 2.0,
+    "C2": 2.0,
+    "C3": 2.0,
+    "C4": 1.0
+  },
+  "split_criteria": [],
+  "judge_total_range": [
+    6.85,
+    8.65
+  ],
+  "fixes": [
+    {
+      "judge": "Pega-Vision",
+      "fix": "Fix the truncated instruction tooltip on the 390px mobile view which cuts off at '... T...' instead of showing the full text."
+    },
+    {
+      "judge": "Pega-Vision",
+      "fix": "Improve the 'Hide controls' UX: currently the button hides the bar containing itself, forcing reliance on the 'Esc' key or the Full Screen eye button to restore it; consider tap-to-reveal."
+    },
+    {
+      "judge": "Pega-Vision",
+      "fix": "Enhance the visual integration of the koi with the water (e.g., stronger shadows or refraction) to increase perceived depth and push the art quality from 'pleasant' to 'immersive'."
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Give the koi more dimensional form (subtle gradient/shading along the body, clearer fin separation, better tail taper) so they stop reading as flat shapes and earn the 'leave open on a second screen' feel."
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Auto-hide or shrink the top app nav and 'Riak / Level / coins' header when the pond tab is active (or in calm mode) so the scene truly dominates and the calm feel reaches a 9-10."
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Fix the truncated interaction hint on 390 px (wrap to two lines, shorten copy, or move it to a discoverable tooltip) so phone users actually see all four gestures."
+    },
+    {
+      "judge": "GLM-5.3-Flash",
+      "fix": "Make the scene dominate for C2: auto-dismiss the hint pill after the first interaction or a few seconds, and fade the bottom control bar (and 'Hide controls' second row) when idle so calm mode is the default state, not a toggle."
+    },
+    {
+      "judge": "GLM-5.3-Flash",
+      "fix": "Push C1 toward the second-screen anchor: add water depth (darker centre/edge vignette or layered depth tint under the caustics) and give koi fuller bodies with stronger shading so they read as fish rather than flat curved cut-outs."
+    },
+    {
+      "judge": "GLM-5.3-Flash",
+      "fix": "Fix 390px polish for C4: stop the hint pill truncating mid-sentence ('Drag to lead · T…') by shortening, wrapping or cycling the tips, and add tooltips/aria-labels to the icon-only phone control row."
+    }
+  ],
+  "label": "council-judged (3 judges)"
+}

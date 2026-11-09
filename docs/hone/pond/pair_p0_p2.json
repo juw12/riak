@@ -1,0 +1,51 @@
+{
+  "mode": "pair",
+  "models": [
+    "Pega-Vision",
+    "Pega-Thinking",
+    "GLM-5.3-Flash"
+  ],
+  "judges": {
+    "Pega-Vision": {
+      "picks_AB_BA": [
+        "B",
+        "B"
+      ],
+      "vote": "B",
+      "reasons": [
+        "Version 2 offers a richer adjustable soundscape (C3) with individual volume sliders for each layer in the mixer, whereas Version 1 only provides simple toggles. Version 2 also displays slightly more atmospheric lighting effects in the night scene (C1).",
+        "Version 1 offers a richer adjustable soundscape with individual volume sliders for each layer, whereas Version 2 regresses to binary toggle buttons for layers despite text claiming otherwise. Version 1 also maintains a cleaner, more calming interface without the persistent instructional tooltips cluttering the scene in Version 2."
+      ]
+    },
+    "Pega-Thinking": {
+      "picks_AB_BA": [
+        "B",
+        "B"
+      ],
+      "vote": "B",
+      "reasons": [
+        "Both versions are nearly identical in scene art, calm feel, and layout polish. The key differentiator is the Sounds sheet: VERSION 2 provides individual volume sliders for each sound layer (with percentage values), offering a richer, more adjustable soundscape that better satisfies the C3 criterion of a 'rich adjustable soundscape,' whereas VERSION 1 only offers on/off toggles per layer.",
+        "VERSION 1 presents a calmer, less cluttered scene without the persistent 'Tap the water · Hold to feed...' tooltip overlay that VERSION 2 shows across views (and which truncates awkwardly on the 390px phone layout). Both share similar scene art and interaction design, but VERSION 1 better satisfies C2 (calm/relaxing feel) and C4 (polish on phone), which outweigh VERSION 2's minor C3 gain from keyboard-shortcut hints in the sounds sheet."
+      ]
+    },
+    "GLM-5.3-Flash": {
+      "picks_AB_BA": [
+        "B",
+        "B"
+      ],
+      "vote": "B",
+      "reasons": [
+        "The packets are textually identical, but the screenshots differ: Version 2's Sounds sheet has per-layer level sliders with percentages (a richer adjustable soundscape per C3) and shows no persistent hint tooltip, while Version 1 shows a hint bar that is truncated on the phone and clutters the day/night scenes (C2/C4). Scene art quality is comparable, so Version 2's calmer presentation and deeper sound design edge it ahead.",
+        "The packets and scene art are essentially identical, but Version 1's Sounds sheet has per-layer level sliders (a richer adjustable soundscape per C3) versus Version 2's on/off chips, and Version 1 reads calmer and more polished (no persistent hint bar over the water, labeled phone controls, no truncated hint text) per C2/C4."
+      ]
+    }
+  },
+  "votes": {
+    "A": 0,
+    "B": 3,
+    "tie": 0
+  },
+  "quorum": 3,
+  "b_wins": true,
+  "label": "council-judged (3 judges)"
+}

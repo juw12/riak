@@ -68,6 +68,7 @@ export function pondState() {
   const s = core.S();
   const p = (s.pond = Object.assign({ sound: true, volume: 0.6, mood: "auto", rain: false, count: 9, timer: 0, minutes: 0, fed: 0, met: [], hintSeen: false }, s.pond || {}));
   p.layers = Object.assign({ stream: true, fountain: true, chimes: true, insects: true }, p.layers || {});
+  p.levels = Object.assign({ stream: 0.8, fountain: 0.8, chimes: 0.8, insects: 0.8 }, p.levels || {});
   if (!Array.isArray(p.met)) p.met = [];
   return p;
 }
@@ -123,6 +124,13 @@ export class PondPanel {
     ]);
     root.append(el("div", { class: "pond-layout" }, [head, this.stage]));
     this.bindPointer();
+    // controls fade away when nobody is touching the pond and come back on any movement
+    this.wake = () => {
+      this.stage.classList.remove("idle");
+      clearTimeout(this.idleTimer);
+      this.idleTimer = setTimeout(() => this.visible && this.stage.classList.add("idle"), 10000);
+    };
+    for (const type of ["pointermove", "pointerdown", "focusin"]) this.stage.addEventListener(type, this.wake);
     this.onKey = (e) => this.key(e);
     this.onResize = () => this.visible && this.resize();
     this.onVisibility = () => {
@@ -149,13 +157,13 @@ export class PondPanel {
       tool(t("pond.moodBtn", { mood: t("pond.mood." + p.mood) }), p.mood === "night" || (p.mood === "auto" && moodNow("auto") === "night") ? "moon" : "sun", () => this.cycleMood()),
       tool(t("pond.rain"), "drop", () => this.toggleRain(), p.rain),
       tool(t("pond.mixer"), "wave", () => this.openMixer()),
-      tool(t("pond.hide"), "eye", () => this.toggleCalm()),
     );
   }
 
   renderStat() {
     const p = pondState();
-    let text = t("pond.stats", { min: p.minutes, fed: p.fed, met: p.met.length, total: Math.min(NAMES.length, p.count) });
+    const vars = { min: p.minutes, fed: p.fed, met: p.met.length, total: Math.min(NAMES.length, p.count) };
+    let text = t(p.minutes < 1 ? "pond.statsFresh" : "pond.stats", vars);
     if (this.sleepAt) text += " · " + t("pond.sleepLeft", { n: Math.max(1, Math.ceil((this.sleepAt - Date.now()) / 60000)) });
     this.statEl.textContent = text;
   }
@@ -178,6 +186,9 @@ export class PondPanel {
     this.scheduleFountain();
     this.hint.hidden = false;
     this.hint.classList.toggle("gone", pondState().hintSeen);
+    clearTimeout(this.hintTimer);
+    this.hintTimer = setTimeout(() => this.hint.classList.add("gone"), 6000);
+    this.wake();
     this.renderDock();
     this.renderStat();
   }
@@ -187,6 +198,8 @@ export class PondPanel {
     cancelAnimationFrame(this.raf);
     clearInterval(this.secTimer);
     clearTimeout(this.fountainTimer);
+    clearTimeout(this.hintTimer);
+    clearTimeout(this.idleTimer);
     window.removeEventListener("keydown", this.onKey);
     window.removeEventListener("resize", this.onResize);
     document.removeEventListener("visibilitychange", this.onVisibility);
@@ -227,7 +240,7 @@ export class PondPanel {
   // ---------- sound ----------
   startSound() {
     const p = pondState();
-    this.sound.set({ volume: p.volume, layers: { ...p.layers, rain: p.rain }, night: this.mood() === "night" });
+    this.sound.set({ volume: p.volume, layers: { ...p.layers, rain: p.rain }, levels: p.levels, night: this.mood() === "night" });
     if (this.sound.start()) this.muteAmbience();
   }
   muteAmbience() {
@@ -298,17 +311,18 @@ export class PondPanel {
         });
         const layers = el("div", { class: "pond-layers" });
         for (const id of SOUND_LAYERS) {
-          const b = button(t("pond.layer." + id), {
-            kind: "quiet",
-            pressed: p.layers[id],
-            onclick: () => {
-              p.layers[id] = !p.layers[id];
-              b.setAttribute("aria-pressed", String(p.layers[id]));
-              this.sound.set({ layers: { ...p.layers, rain: p.rain } });
-              core.changed();
-            },
+          const level = p.layers[id] ? p.levels[id] : 0;
+          const slider = el("input", { type: "range", min: "0", max: "1", step: "0.05", value: String(level), "aria-label": t("pond.layer." + id) });
+          const readout = el("span", { class: "pond-layer-val", text: Math.round(level * 100) + "%" });
+          slider.addEventListener("input", () => {
+            const v = Number(slider.value);
+            p.layers[id] = v > 0;
+            if (v > 0) p.levels[id] = v;
+            readout.textContent = Math.round(v * 100) + "%";
+            this.sound.set({ layers: { ...p.layers, rain: p.rain }, levels: p.levels });
+            core.changed();
           });
-          layers.append(b);
+          layers.append(el("label", { class: "pond-layer-row" }, [el("span", { text: t("pond.layer." + id) }), slider, readout]));
         }
         body.append(
           el("p", { class: "explain", text: t("pond.mixerLead") }),
@@ -355,6 +369,7 @@ export class PondPanel {
   key(e) {
     if (!this.visible || e.target.closest?.("input, textarea, select, button, .sheet")) return;
     const k = e.key.toLowerCase();
+    this.wake();
     if (k === " ") {
       e.preventDefault();
       const a = Math.random() * TAU;
@@ -384,7 +399,8 @@ export class PondPanel {
     this.cy = H / 2;
     this.rx = W / 2 - m;
     this.ry = H / 2 - m;
-    this.L = clamp(Math.min(W, H) * 0.17, 58, 150);
+    // koi scale with the pond area so a wide desktop pond does not leave them tiny
+    this.L = clamp(Math.max(Math.min(W, H) * 0.17, Math.sqrt(W * H) * 0.13), 58, 160);
     const seed = rng(7);
     this.outline = [];
     for (let i = 0; i < 90; i++) {
@@ -399,6 +415,7 @@ export class PondPanel {
     this.buildRim();
     this.buildCaustics();
     this.buildPads();
+    this.buildCanopy();
     for (const k of this.koi) this.keepInside(k, true);
   }
 
@@ -444,6 +461,16 @@ export class PondPanel {
     ground.addColorStop(1, "#4b5838");
     g.fillStyle = ground;
     g.fillRect(0, 0, W, H);
+    for (let i = 0; i < 28; i++) {
+      const x = R() * W;
+      const y = R() * H;
+      const r = 50 + R() * 140;
+      const patch = g.createRadialGradient(x, y, 0, x, y, r);
+      patch.addColorStop(0, R() < 0.6 ? "rgba(36,54,28,0.32)" : "rgba(160,156,112,0.16)");
+      patch.addColorStop(1, "rgba(0,0,0,0)");
+      g.fillStyle = patch;
+      g.fillRect(x - r, y - r, r * 2, r * 2);
+    }
     for (let i = 0; i < (W * H) / 260; i++) {
       g.fillStyle = R() < 0.5 ? "rgba(214,204,176,0.16)" : "rgba(40,52,30,0.22)";
       g.beginPath();
@@ -454,12 +481,19 @@ export class PondPanel {
     g.save();
     this.pondPath(g);
     g.clip();
-    const deep = g.createRadialGradient(this.cx, this.cy, 0, this.cx, this.cy, Math.max(this.rx, this.ry));
-    deep.addColorStop(0, "#1f5a57");
-    deep.addColorStop(0.7, "#2a6862");
-    deep.addColorStop(1, "#3d7a68");
-    g.fillStyle = deep;
-    g.fillRect(0, 0, W, H);
+    // elliptical gradient that follows the pond shape
+    const ellipse = (stops, ox = 0, oy = 0) => {
+      g.save();
+      g.translate(this.cx + ox, this.cy + oy);
+      g.scale(this.rx, this.ry);
+      const grad = g.createRadialGradient(0, 0, 0, 0, 0, 1);
+      for (const [at, color] of stops) grad.addColorStop(at, color);
+      g.fillStyle = grad;
+      g.fillRect(-1.3, -1.3, 2.6, 2.6);
+      g.restore();
+    };
+    // a sandy shallow shelf at the rim falling away to a deep green-blue middle
+    ellipse([[0, "#143f43"], [0.45, "#1d5753"], [0.76, "#2d6c61"], [0.92, "#5a876b"], [1, "#7d9874"]], this.rx * 0.05, this.ry * 0.04);
     // pebbles, more of them and lighter toward the shallow edge
     const n = Math.round((this.rx * this.ry) / 90);
     for (let i = 0; i < n; i++) {
@@ -489,12 +523,18 @@ export class PondPanel {
       g.quadraticCurveTo(ix + Math.cos(ang + 0.5) * len * 0.5, iy + Math.sin(ang + 0.5) * len * 0.5, ix + Math.cos(ang) * len, iy + Math.sin(ang) * len);
       g.stroke();
     }
-    // depth: the centre reads deeper
-    const shade = g.createRadialGradient(this.cx, this.cy, 0, this.cx, this.cy, Math.max(this.rx, this.ry));
-    shade.addColorStop(0, "rgba(8,30,34,0.42)");
-    shade.addColorStop(1, "rgba(8,30,34,0)");
-    g.fillStyle = shade;
-    g.fillRect(0, 0, W, H);
+    // depth: the middle reads deeper and cooler
+    ellipse([[0, "rgba(6,22,30,0.5)"], [0.5, "rgba(6,22,30,0.22)"], [1, "rgba(6,22,30,0)"]], this.rx * 0.05, this.ry * 0.04);
+    // the bank throws a soft shade onto the water along the upper left
+    g.save();
+    g.translate(9, 12);
+    for (const [width, alpha] of [[54, 0.06], [36, 0.07], [20, 0.08], [8, 0.1]]) {
+      this.pondPath(g);
+      g.lineWidth = width;
+      g.strokeStyle = `rgba(4,20,20,${alpha})`;
+      g.stroke();
+    }
+    g.restore();
     g.restore();
     this.floor = c;
   }
@@ -521,33 +561,38 @@ export class PondPanel {
       const nl = Math.hypot(nx, ny) || 1;
       const x = p.x + (nx / nl) * out;
       const y = p.y + (ny / nl) * out;
-      const rw = 12 + R() * 18;
+      const big = R() < 0.12;
+      const rw = (12 + R() * 18) * (big ? 1.55 : 1);
       const rh = rw * (0.55 + R() * 0.3);
-      const tone = Math.round(118 + R() * 50);
-      // shadow, stone, light edge, maybe moss
-      g.fillStyle = "rgba(20,24,18,0.35)";
+      // granite greys, a cooler blue-grey and a warm tan, each a little different
+      const base = [[150, 146, 136], [128, 136, 140], [158, 146, 122], [138, 134, 126]][Math.floor(R() * 4)];
+      const lift = (R() - 0.5) * 30;
+      const [cr, cg, cb] = base.map((v) => Math.round(v + lift));
+      g.fillStyle = "rgba(18,22,16,0.38)";
       g.beginPath();
-      g.ellipse(x + 3, y + 4, rw, rh, tang, 0, TAU);
+      g.ellipse(x + 3, y + 5, rw * 1.02, rh, tang, 0, TAU);
       g.fill();
-      const sg = g.createRadialGradient(x - rw * 0.3, y - rh * 0.4, 1, x, y, rw * 1.1);
-      sg.addColorStop(0, `rgb(${tone + 40},${tone + 36},${tone + 28})`);
-      sg.addColorStop(1, `rgb(${tone - 30},${tone - 32},${tone - 36})`);
+      const sg = g.createRadialGradient(x - rw * 0.35, y - rh * 0.45, 1, x, y, rw * 1.15);
+      sg.addColorStop(0, `rgb(${cr + 46},${cg + 44},${cb + 38})`);
+      sg.addColorStop(0.55, `rgb(${cr},${cg},${cb})`);
+      sg.addColorStop(1, `rgb(${cr - 46},${cg - 46},${cb - 44})`);
       g.fillStyle = sg;
       g.beginPath();
       g.ellipse(x, y, rw, rh, tang, 0, TAU);
       g.fill();
-      if (R() < 0.45) {
-        g.fillStyle = "rgba(96,128,62,0.7)";
+      if (R() < 0.4) {
+        g.fillStyle = R() < 0.5 ? "rgba(98,128,64,0.6)" : "rgba(122,140,70,0.5)";
         g.beginPath();
-        g.ellipse(x - rw * 0.2, y - rh * 0.3, rw * 0.5, rh * 0.35, tang + 0.3, 0, TAU);
+        g.ellipse(x - rw * 0.25, y - rh * 0.3, rw * 0.45, rh * 0.3, tang + 0.3, 0, TAU);
         g.fill();
       }
       i += 1 + Math.floor(R() * 2);
     }
     // grass tufts on the bank
-    g.strokeStyle = "rgba(120,150,80,0.55)";
     g.lineWidth = 1.4;
-    for (let k = 0; k < 140; k++) {
+    const greens = ["rgba(120,150,80,0.55)", "rgba(96,132,66,0.6)", "rgba(146,164,92,0.5)", "rgba(80,112,58,0.6)"];
+    for (let k = 0; k < 170; k++) {
+      g.strokeStyle = greens[k % greens.length];
       const p = this.outline[Math.floor(R() * total)];
       const nx = p.x - this.cx;
       const ny = p.y - this.cy;
@@ -665,6 +710,43 @@ export class PondPanel {
         drift: (R() - 0.5) * 0.02,
       });
     }
+  }
+
+  // dappled shade from trees just outside the frame, drawn over water and bank
+  buildCanopy() {
+    const [c, g] = this.offscreen();
+    const R = rng(41);
+    const { W, H } = this;
+    const reach = Math.min(W, H) * 0.5;
+    const corners = [[0, 0], [W, H]];
+    for (const [ax, ay] of corners) {
+      for (let i = 0; i < 10; i++) {
+        const x = ax + (R() - 0.5) * reach * 1.2;
+        const y = ay + (R() - 0.5) * reach;
+        const r = reach * (0.3 + R() * 0.35);
+        const grad = g.createRadialGradient(x, y, r * 0.15, x, y, r);
+        grad.addColorStop(0, "rgba(8,26,20,0.17)");
+        grad.addColorStop(1, "rgba(8,26,20,0)");
+        g.fillStyle = grad;
+        g.fillRect(x - r, y - r, r * 2, r * 2);
+      }
+    }
+    // sun coming through gaps in the leaves
+    g.globalCompositeOperation = "destination-out";
+    for (const [ax, ay] of corners) {
+      for (let i = 0; i < 26; i++) {
+        const x = ax + (R() - 0.5) * reach * 1.1;
+        const y = ay + (R() - 0.5) * reach * 0.9;
+        const r = 4 + R() * 12;
+        const grad = g.createRadialGradient(x, y, 0, x, y, r);
+        grad.addColorStop(0, "rgba(0,0,0,0.7)");
+        grad.addColorStop(1, "rgba(0,0,0,0)");
+        g.fillStyle = grad;
+        g.fillRect(x - r, y - r, r * 2, r * 2);
+      }
+    }
+    g.globalCompositeOperation = "source-over";
+    this.canopy = c;
   }
 
   // ---------- koi ----------
@@ -839,7 +921,7 @@ export class PondPanel {
       const nx = -Math.sin(a);
       const ny = Math.cos(a);
       const wave = Math.sin(k.phase - i * 0.55) * L * 0.022 * (i / SPINE);
-      const w = L * 0.12 * WIDTHS[i];
+      const w = L * 0.128 * WIDTHS[i];
       pts.push({ x: p.x + nx * wave, y: p.y + ny * wave, a, nx, ny, w });
     }
     return { pts, L };
@@ -884,28 +966,53 @@ export class PondPanel {
     ctx.globalAlpha = 1 - k.depth * 0.32;
     const flap = Math.sin(k.phase * 1.25);
 
-    // tail fin: two flowing lobes
+    // tail fin: two long translucent lobes with fine rays
     const tail = pts[n - 1];
     const ta = tail.a + Math.PI + Math.sin(k.phase - 1.8) * 0.35;
+    const along = (ang, r) => ({ x: tail.x + Math.cos(ang) * L * r, y: tail.y + Math.sin(ang) * L * r });
     ctx.fillStyle = v.fin;
-    ctx.globalAlpha *= 0.72;
+    ctx.globalAlpha *= 0.62;
+    ctx.lineWidth = Math.max(0.5, L * 0.004);
+    ctx.strokeStyle = "rgba(255,255,255,0.3)";
     for (const side of [-1, 1]) {
-      const tipA = ta + side * 0.5;
+      const tip = along(ta + side * 0.52, 0.37);
+      const c1 = along(ta + side * 0.2, 0.25);
+      const c2 = along(ta + side * 0.16, 0.22);
+      const inner = along(ta, 0.16);
       ctx.beginPath();
       ctx.moveTo(tail.x, tail.y);
-      ctx.quadraticCurveTo(tail.x + Math.cos(ta + side * 0.2) * L * 0.2, tail.y + Math.sin(ta + side * 0.2) * L * 0.2, tail.x + Math.cos(tipA) * L * 0.3, tail.y + Math.sin(tipA) * L * 0.3);
-      ctx.quadraticCurveTo(tail.x + Math.cos(ta) * L * 0.2, tail.y + Math.sin(ta) * L * 0.2, tail.x + Math.cos(ta) * L * 0.16, tail.y + Math.sin(ta) * L * 0.16);
+      ctx.quadraticCurveTo(c1.x, c1.y, tip.x, tip.y);
+      ctx.quadraticCurveTo(c2.x, c2.y, inner.x, inner.y);
       ctx.closePath();
       ctx.fill();
+      ctx.beginPath();
+      for (let r = 0.25; r < 1; r += 0.25) {
+        const end = along(ta + side * 0.5 * r, 0.17 + 0.17 * r);
+        ctx.moveTo(tail.x, tail.y);
+        ctx.lineTo(end.x, end.y);
+      }
+      ctx.stroke();
     }
-    // pectoral and pelvic fins
-    for (const [idx, size] of [[2, 0.13], [6, 0.07]]) {
+    // pectoral and pelvic fins: rounded paddles that row as the koi swims
+    for (const [idx, size] of [[2, 0.16], [6, 0.08]]) {
       const p = pts[idx];
       for (const side of [-1, 1]) {
         const ang = p.a + Math.PI + side * (1.05 + flap * 0.28 * (idx === 2 ? 1 : 0.5));
+        ctx.save();
+        ctx.translate(p.x + p.nx * side * p.w * 0.85, p.y + p.ny * side * p.w * 0.85);
+        ctx.rotate(ang);
         ctx.beginPath();
-        ctx.ellipse(p.x + p.nx * side * p.w * 0.9 + Math.cos(ang) * L * size * 0.55, p.y + p.ny * side * p.w * 0.9 + Math.sin(ang) * L * size * 0.55, L * size * 0.6, L * size * 0.26, ang, 0, TAU);
+        ctx.moveTo(0, 0);
+        ctx.quadraticCurveTo(L * size * 0.5, -L * size * 0.34 * side, L * size, -L * size * 0.08 * side);
+        ctx.quadraticCurveTo(L * size * 0.7, L * size * 0.2 * side, 0, 0);
         ctx.fill();
+        ctx.beginPath();
+        for (let r = 0.3; r < 1; r += 0.3) {
+          ctx.moveTo(0, 0);
+          ctx.lineTo(L * size * (0.8 + 0.15 * r), -L * size * (0.28 - 0.3 * r) * side);
+        }
+        ctx.stroke();
+        ctx.restore();
       }
     }
     ctx.globalAlpha = 1 - k.depth * 0.32;
@@ -967,41 +1074,90 @@ export class PondPanel {
       ctx.stroke();
       ctx.globalAlpha = 1 - k.depth * 0.32;
     }
-    // roundness: a light ridge along the back, darker flanks
+    // roundness: flanks fall into shade, the spine catches the light
+    for (const [width, alpha] of [[1.25, 0.14], [0.65, 0.17], [0.26, 0.2]]) {
+      this.bodyPath(ctx, pts);
+      ctx.strokeStyle = `rgba(14,24,26,${alpha})`;
+      ctx.lineWidth = pts[3].w * width;
+      ctx.stroke();
+    }
     ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    const spine = (from, to) => {
+      ctx.beginPath();
+      ctx.moveTo(pts[from].x, pts[from].y);
+      for (let i = from + 1; i <= to; i++) ctx.lineTo(pts[i].x, pts[i].y);
+    };
+    spine(0, n - 4);
+    ctx.strokeStyle = v.metal ? "rgba(255,246,214,0.26)" : "rgba(255,255,255,0.11)";
+    ctx.lineWidth = pts[3].w * 0.95;
+    ctx.stroke();
+    spine(1, n - 5);
+    ctx.strokeStyle = v.metal ? "rgba(255,252,236,0.6)" : "rgba(255,255,255,0.26)";
+    ctx.lineWidth = pts[3].w * 0.32;
+    ctx.stroke();
+    // metallic koi get a bright shoulder where the light hits hardest
+    if (v.metal) {
+      const sh = pts[2];
+      const glow = ctx.createRadialGradient(sh.x, sh.y, 0, sh.x, sh.y, sh.w * 1.6);
+      glow.addColorStop(0, "rgba(255,250,228,0.45)");
+      glow.addColorStop(1, "rgba(255,250,228,0)");
+      ctx.fillStyle = glow;
+      ctx.fillRect(sh.x - sh.w * 2, sh.y - sh.w * 2, sh.w * 4, sh.w * 4);
+    }
+    // the head: a darker snout and a soft skull highlight
+    const hd = pts[0];
+    const hx = Math.cos(hd.a);
+    const hy = Math.sin(hd.a);
+    ctx.fillStyle = "rgba(14,24,26,0.14)";
     ctx.beginPath();
-    ctx.moveTo(pts[0].x, pts[0].y);
-    for (let i = 1; i < n - 2; i++) ctx.lineTo(pts[i].x, pts[i].y);
-    ctx.strokeStyle = v.metal ? "rgba(255,250,225,0.45)" : "rgba(255,255,255,0.16)";
-    ctx.lineWidth = pts[3].w * (v.metal ? 0.7 : 0.45);
-    ctx.stroke();
-    this.bodyPath(ctx, pts);
-    ctx.strokeStyle = "rgba(10,20,20,0.22)";
-    ctx.lineWidth = Math.max(1, pts[3].w * 0.35);
-    ctx.stroke();
+    ctx.ellipse(hd.x + hx * hd.w * 0.75, hd.y + hy * hd.w * 0.75, hd.w * 0.75, hd.w * 0.9, hd.a, 0, TAU);
+    ctx.fill();
+    ctx.fillStyle = "rgba(255,255,255,0.18)";
+    ctx.beginPath();
+    ctx.ellipse(hd.x - hx * hd.w * 0.1, hd.y - hy * hd.w * 0.1, hd.w * 0.45, hd.w * 0.3, hd.a, 0, TAU);
+    ctx.fill();
     // deeper koi take on the water colour
     if (k.depth > 0.05) {
       ctx.fillStyle = `rgba(24,74,72,${k.depth * 0.32})`;
       ctx.fillRect(k.x - L * 1.5, k.y - L * 1.5, L * 3, L * 3);
     }
     ctx.restore();
-    // dorsal fin
+    this.bodyPath(ctx, pts);
+    ctx.strokeStyle = "rgba(8,20,22,0.28)";
+    ctx.lineWidth = 0.9;
+    ctx.stroke();
+    // dorsal fin: a soft translucent ridge that sways with the body
+    ctx.lineCap = "round";
     ctx.beginPath();
     for (let i = 3; i <= 7; i++) {
-      if (i === 3) ctx.moveTo(pts[i].x, pts[i].y);
-      else ctx.lineTo(pts[i].x, pts[i].y);
+      const sway = Math.sin(k.phase - i * 0.5) * pts[i].w * 0.15;
+      const x = pts[i].x + pts[i].nx * sway;
+      const y = pts[i].y + pts[i].ny * sway;
+      if (i === 3) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
     }
-    ctx.strokeStyle = "rgba(20,24,24,0.22)";
-    ctx.lineWidth = Math.max(1, L * 0.018);
+    ctx.strokeStyle = "rgba(20,26,26,0.16)";
+    ctx.lineWidth = Math.max(1.5, pts[4].w * 0.42);
     ctx.stroke();
-    // eyes
+    ctx.strokeStyle = "rgba(255,255,255,0.14)";
+    ctx.lineWidth = Math.max(0.6, pts[4].w * 0.12);
+    ctx.stroke();
+    // eyes with a tiny catch-light
     const h = pts[0];
     const fx = Math.cos(h.a);
     const fy = Math.sin(h.a);
-    ctx.fillStyle = "#151a1b";
+    const er = Math.max(1.4, L * 0.016);
     for (const side of [-1, 1]) {
+      const ex = h.x + fx * h.w * 0.62 + h.nx * side * h.w * 0.6;
+      const ey = h.y + fy * h.w * 0.62 + h.ny * side * h.w * 0.6;
+      ctx.fillStyle = "#121718";
       ctx.beginPath();
-      ctx.arc(h.x + fx * h.w * 0.5 + h.nx * side * h.w * 0.62, h.y + fy * h.w * 0.5 + h.ny * side * h.w * 0.62, Math.max(1.2, L * 0.013), 0, TAU);
+      ctx.arc(ex, ey, er, 0, TAU);
+      ctx.fill();
+      ctx.fillStyle = "rgba(255,255,255,0.7)";
+      ctx.beginPath();
+      ctx.arc(ex - er * 0.3, ey - er * 0.3, er * 0.35, 0, TAU);
       ctx.fill();
     }
     ctx.restore();
@@ -1113,7 +1269,7 @@ export class PondPanel {
       p.hintSeen = true;
       core.changed();
     }
-    if (this.interactions >= 3) this.hint.classList.add("gone");
+    this.hint.classList.add("gone");
   }
 
   bindPointer() {
@@ -1321,7 +1477,7 @@ export class PondPanel {
     if (this.causticPattern) {
       const tt = reduce ? 0 : now * 0.001;
       ctx.globalCompositeOperation = "screen";
-      ctx.globalAlpha = mood === "night" ? 0.04 : mood === "dusk" ? 0.08 : 0.11;
+      ctx.globalAlpha = mood === "night" ? 0.03 : mood === "dusk" ? 0.06 : 0.075;
       for (const [sc, vx, vy] of [[1.6, 9, 5], [2.3, -6, 8]]) {
         const m = new DOMMatrix().translateSelf((tt * vx) % (256 * sc), (tt * vy) % (256 * sc)).scaleSelf(sc, sc);
         this.causticPattern.setTransform(m);
@@ -1388,10 +1544,31 @@ export class PondPanel {
     }
     ctx.fillStyle = sky;
     ctx.fillRect(0, 0, W, H);
+    // a broad soft sheen where the sky catches the surface
+    if (mood !== "night") {
+      const drift = reduce ? 0 : Math.sin(now * 0.00012) * this.rx * 0.05;
+      ctx.save();
+      ctx.translate(this.cx - this.rx * 0.32 + drift, this.cy - this.ry * 0.42);
+      ctx.rotate(-0.32);
+      ctx.scale(this.rx * 0.52, this.ry * 0.17);
+      const sheen = ctx.createRadialGradient(0, 0, 0, 0, 0, 1);
+      sheen.addColorStop(0, mood === "dusk" ? "rgba(255,206,150,0.13)" : "rgba(255,255,255,0.1)");
+      sheen.addColorStop(1, "rgba(255,255,255,0)");
+      ctx.fillStyle = sheen;
+      ctx.fillRect(-1, -1, 2, 2);
+      ctx.restore();
+    }
     ctx.restore();
 
     ctx.drawImage(this.rim, 0, 0, W, H);
     this.drawShishi(ctx, now);
+    // tree shade sways a little in the wind
+    if (this.canopy) {
+      const sway = reduce ? 0 : Math.sin(now * 0.0004) * 3;
+      ctx.globalAlpha = mood === "night" ? 0.3 : mood === "dusk" ? 0.75 : 1;
+      ctx.drawImage(this.canopy, sway, sway * 0.6, W, H);
+      ctx.globalAlpha = 1;
+    }
 
     // mood overlays
     if (mood === "dusk") {
@@ -1401,7 +1578,10 @@ export class PondPanel {
       ctx.fillStyle = g;
       ctx.fillRect(0, 0, W, H);
     } else if (mood === "night") {
-      ctx.fillStyle = "rgba(6,16,28,0.58)";
+      const nightWash = ctx.createRadialGradient(this.cx, this.cy, 0, this.cx, this.cy, Math.hypot(W, H) * 0.6);
+      nightWash.addColorStop(0, "rgba(10,24,40,0.46)");
+      nightWash.addColorStop(1, "rgba(4,10,20,0.7)");
+      ctx.fillStyle = nightWash;
       ctx.fillRect(0, 0, W, H);
       this.drawNightLights(ctx, now);
     }
@@ -1469,33 +1649,60 @@ export class PondPanel {
     ctx.save();
     ctx.translate(l.x, l.y);
     ctx.rotate(l.rot);
-    ctx.fillStyle = "rgba(4,22,20,0.22)";
+    ctx.fillStyle = "rgba(4,22,20,0.18)";
     ctx.beginPath();
-    ctx.arc(2, 3, l.size * 0.8, 0, TAU);
+    ctx.arc(2, 3, l.size * 0.7, 0, TAU);
     ctx.fill();
     ctx.fillStyle = l.color;
     const s = l.size;
     ctx.beginPath();
     if (l.kind === "maple") {
-      for (let i = 0; i < 10; i++) {
-        const a = (i / 10) * TAU - Math.PI / 2;
-        const r = i % 2 === 0 ? s : s * 0.45;
-        if (i === 0) ctx.moveTo(Math.cos(a) * r, Math.sin(a) * r);
-        else ctx.lineTo(Math.cos(a) * r, Math.sin(a) * r);
+      // five pointed lobes, the middle one longest, the stem pointing back
+      const lobes = [[-190, 0.58], [-140, 0.9], [-90, 1.05], [-40, 0.9], [10, 0.58]];
+      const pt = (deg, r) => [Math.cos((deg * Math.PI) / 180) * s * r, Math.sin((deg * Math.PI) / 180) * s * r];
+      ctx.moveTo(...pt(118, 0.26));
+      let prev = 118 - 360;
+      for (const [deg, len] of lobes) {
+        const notch = pt((prev + deg) / 2, 0.34);
+        ctx.lineTo(...notch);
+        ctx.quadraticCurveTo(...pt(deg - 16, len * 0.62), ...pt(deg, len));
+        ctx.quadraticCurveTo(...pt(deg + 16, len * 0.62), ...pt(deg + 22, len * 0.42));
+        prev = deg;
       }
+      ctx.lineTo(...pt(62, 0.26));
       ctx.closePath();
       ctx.fill();
-      ctx.strokeStyle = "rgba(90,30,10,0.4)";
-      ctx.lineWidth = 0.8;
+      ctx.strokeStyle = "rgba(80,24,8,0.38)";
+      ctx.lineWidth = 0.7;
       ctx.beginPath();
+      for (const [deg, len] of lobes) {
+        ctx.moveTo(0, 0);
+        ctx.lineTo(...pt(deg, len * 0.82));
+      }
       ctx.moveTo(0, 0);
-      ctx.lineTo(0, s * 1.2);
+      ctx.lineTo(...pt(90, 0.95));
       ctx.stroke();
     } else if (l.kind === "ginkgo") {
-      ctx.moveTo(0, s * 0.6);
-      ctx.arc(0, s * 0.6, s * 1.1, -Math.PI * 0.85, -Math.PI * 0.15);
+      // a fan with a small notch in the middle of its outer edge
+      const r = s * 1.15;
+      ctx.moveTo(0, s * 0.55);
+      ctx.lineTo(Math.cos(-Math.PI * 0.86) * r, s * 0.55 + Math.sin(-Math.PI * 0.86) * r);
+      ctx.arc(0, s * 0.55, r, -Math.PI * 0.86, -Math.PI * 0.53);
+      ctx.lineTo(0, s * 0.55 - r * 0.72);
+      ctx.arc(0, s * 0.55, r, -Math.PI * 0.47, -Math.PI * 0.14);
       ctx.closePath();
       ctx.fill();
+      ctx.strokeStyle = "rgba(120,90,20,0.35)";
+      ctx.lineWidth = 0.6;
+      ctx.beginPath();
+      for (let i = 1; i < 6; i++) {
+        const a = -Math.PI * (0.86 - (0.72 * i) / 6);
+        ctx.moveTo(0, s * 0.55);
+        ctx.lineTo(Math.cos(a) * r * 0.92, s * 0.55 + Math.sin(a) * r * 0.92);
+      }
+      ctx.moveTo(0, s * 0.55);
+      ctx.lineTo(0, s * 1.25);
+      ctx.stroke();
     } else {
       for (let i = 0; i < 5; i++) {
         const a = (i / 5) * TAU;
@@ -1563,23 +1770,48 @@ export class PondPanel {
       ctx.fillStyle = g;
       ctx.fillRect(l.x - this.L * 2, l.y - this.L * 2, this.L * 4, this.L * 4);
     }
-    // moon on the water
+    // lantern light pools on the water toward the middle of the pond
+    for (const l of this.lanterns) {
+      const px = l.x + (this.cx - l.x) * 0.18;
+      const py = l.y + (this.cy - l.y) * 0.18;
+      const pool = ctx.createRadialGradient(px, py, 2, px, py, this.L * 1.1);
+      pool.addColorStop(0, "rgba(255,180,100,0.16)");
+      pool.addColorStop(1, "rgba(255,180,100,0)");
+      ctx.fillStyle = pool;
+      ctx.fillRect(px - this.L * 1.2, py - this.L * 1.2, this.L * 2.4, this.L * 2.4);
+    }
+    // moon on the water: a soft glow broken up by the surface
     const mx = this.cx + this.rx * 0.32;
     const my = this.cy - this.ry * 0.34;
-    const mg = ctx.createRadialGradient(mx, my, 1, mx, my, this.L * 0.7);
-    mg.addColorStop(0, "rgba(240,240,222,0.42)");
-    mg.addColorStop(1, "rgba(240,240,222,0)");
-    ctx.fillStyle = mg;
-    ctx.fillRect(mx - this.L, my - this.L, this.L * 2, this.L * 2);
-    ctx.strokeStyle = "rgba(240,240,222,0.35)";
-    ctx.lineWidth = 1.5;
-    for (let i = -3; i <= 3; i++) {
-      const w = this.L * (0.3 - Math.abs(i) * 0.06) * (0.8 + Math.sin(now * 0.002 + i) * 0.2);
-      const y = my + i * 6;
-      const shift = Math.sin(now * 0.0015 + i * 1.7) * 6;
+    const mr = this.L * 0.32;
+    ctx.save();
+    ctx.translate(mx, my);
+    ctx.scale(1, 1.25);
+    const halo = ctx.createRadialGradient(0, 0, 0, 0, 0, mr * 2.6);
+    halo.addColorStop(0, "rgba(220,230,236,0.2)");
+    halo.addColorStop(1, "rgba(220,230,236,0)");
+    ctx.fillStyle = halo;
+    ctx.fillRect(-mr * 2.6, -mr * 2.6, mr * 5.2, mr * 5.2);
+    const disc = ctx.createRadialGradient(0, 0, 0, 0, 0, mr);
+    disc.addColorStop(0, "rgba(246,244,232,0.5)");
+    disc.addColorStop(0.7, "rgba(246,244,232,0.3)");
+    disc.addColorStop(1, "rgba(246,244,232,0)");
+    ctx.fillStyle = disc;
+    ctx.fillRect(-mr, -mr, mr * 2, mr * 2);
+    ctx.restore();
+    ctx.lineCap = "round";
+    for (let i = 0; i < 9; i++) {
+      const row = i - 4;
+      const w = mr * (1.15 - Math.abs(row) * 0.18) * (0.75 + Math.sin(now * 0.0017 + i * 2.1) * 0.25);
+      if (w <= 2) continue;
+      const shift = Math.sin(now * 0.0011 + i * 1.3) * mr * 0.35;
+      ctx.strokeStyle = `rgba(240,240,226,${0.1 + 0.08 * Math.sin(now * 0.002 + i)})`;
+      ctx.lineWidth = 1.6;
       ctx.beginPath();
-      ctx.moveTo(mx - w + shift, y);
-      ctx.lineTo(mx + w + shift, y);
+      ctx.moveTo(mx - w + shift, my + row * mr * 0.32);
+      ctx.lineTo(mx - w * 0.15 + shift, my + row * mr * 0.32);
+      ctx.moveTo(mx + w * 0.1 + shift, my + row * mr * 0.32);
+      ctx.lineTo(mx + w + shift, my + row * mr * 0.32);
       ctx.stroke();
     }
     for (const f of this.flies) {
