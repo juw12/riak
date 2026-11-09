@@ -1,0 +1,51 @@
+{
+  "mode": "pair",
+  "models": [
+    "Pega-Vision",
+    "Pega-Thinking",
+    "GLM-5.3-Flash"
+  ],
+  "judges": {
+    "Pega-Vision": {
+      "picks_AB_BA": [
+        "B",
+        "tie"
+      ],
+      "vote": "tie",
+      "reasons": [
+        "Version 2 demonstrates superior Visual Craft (C1) and Polish (C4); while the UI layout and feature text are identical, the screenshot crops reveal richer environmental art in V2, including water caustic lighting effects, background trees in the fishing scene, and more detailed substrate textures.",
+        "The text descriptions for both versions are identical, and the screenshots reveal the same app design, UI layout, and feature set. The only visible differences are simulation states (e.g., fish positions, journal progress counter, fishing line length), indicating no meaningful difference in quality, craft, or polish between the two versions."
+      ]
+    },
+    "Pega-Thinking": {
+      "picks_AB_BA": [
+        "tie",
+        "tie"
+      ],
+      "vote": "tie",
+      "reasons": [
+        "Both versions share identical text descriptions and nearly identical UI layouts across all screens. The 2x crop comparisons show only minor differences: V2 has slightly more detailed water caustics and atmospheric depth in the fishing scene, while V1 shows a more lively koi pond with more fish. These differences are negligible and do not meaningfully shift the council scores on visual craft, clarity, depth, or polish.",
+        "Both versions have identical text descriptions and visually indistinguishable screenshots; the only differences are trivial state variations (line out 7.4m vs 8.7m, journal progress 2 vs 3 of 47), making the difference negligible across all rubric criteria."
+      ]
+    },
+    "GLM-5.3-Flash": {
+      "picks_AB_BA": [
+        "tie",
+        "B"
+      ],
+      "vote": "tie",
+      "reasons": [
+        "The feature packets are word-for-word identical, so clarity and depth are equal, and the screenshot deltas are small and offsetting: Version 2 has richer fishing scenery (clouds, tree line) and water-surface caustics, while Version 1 keeps a tidier care-meter fill-to-value match, a stronger driftwood focal point, and a denser, more appealing koi crop. No criterion shifts enough to change the council score.",
+        "The feature packets are identical, so the decision rests on the screenshots: V1 renders more refined scenes (caustic water-surface detail, textured gravel, naturally spread koi, filter-bacteria bar matching its 85% label), while V2 shows polish flaws — a rock with stray leg-like lines, koi clumped and overlapping, and a filter bar filled to ~50% despite reading 85%."
+      ]
+    }
+  },
+  "votes": {
+    "A": 0,
+    "B": 0,
+    "tie": 3
+  },
+  "quorum": 3,
+  "b_wins": false,
+  "label": "council-judged (3 judges)"
+}

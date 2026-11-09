@@ -37,3 +37,14 @@
 | w2 | w1 + tank side column 312px / 24px gap, lone Care reading spans the row on phones | G1-G4 pass (smoke passed on retry; first run timed out while the desktop was locked) | 8.95 (C1 8, C2 9, C3 10, C4 9) | tie 3 | no | stop: plateau (2 rounds without a kept gain) |
 
 Result: best stays w0 = v1.5.1 at 8.80 (council-judged, 3 judges). w1 reached 9.25 but neither candidate won the blind pair (A1/B0/tie2, then 0/0/3), so nothing new ships to main. The w1+w2 work is kept on branch `hone/whole-w2` for reference.
+| 2026-11-09 22:42 | council pair | B wins: True | votes A/B/tie 0/2/1 | council-judged (3 judges) |
+| 2026-11-09 22:43 | council pair | B wins: False | votes A/B/tie 0/0/3 | council-judged (3 judges) |
+
+## Re-pair with 2x crops (process change approved by Juwen)
+| pair | packet | votes A/B/tie | B wins |
+|---|---|---|---|
+| w0 vs w1 | 9 shots + 4 zoom crops (tank floor, tank surface, fishing water, pond koi) | 0 / 2 / 1 | yes |
+| w0 vs w2 | same | 0 / 0 / 3 | no |
+
+Decision: w1 kept (9.25 >= 8.80 + 0.3 and blind pair won). Shipped as v1.5.2 = w1 code only (tank.js, fishing.js, pond.js); w2's CSS is not shipped. Fishing backdrop now cached per spot/size/2-min slot (smoke had missed timed bites from per-frame scenery cost). Gates v152c: unit, smoke (errors []), audit, slop pass.
+Final: council 9.25 (C1 9, C2 9, C3 10, C4 9). Not 10/10.

@@ -18,7 +18,7 @@ import { JournalPanel } from "./journal.js";
 import { FocusPanel } from "./focus.js";
 import { PondPanel } from "./pond.js";
 
-const VERSION = "1.5.1";
+const VERSION = "1.5.2";
 const NAV = [
   { id: "tank", icon: "tank" },
   { id: "fishing", icon: "hook" },

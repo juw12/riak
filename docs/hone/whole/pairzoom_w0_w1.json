@@ -1,0 +1,51 @@
+{
+  "mode": "pair",
+  "models": [
+    "Pega-Vision",
+    "Pega-Thinking",
+    "GLM-5.3-Flash"
+  ],
+  "judges": {
+    "Pega-Vision": {
+      "picks_AB_BA": [
+        "B",
+        "B"
+      ],
+      "vote": "B",
+      "reasons": [
+        "Version 2 demonstrates superior visual craft and polish through enhanced art assets, including water caustic lighting effects, richer background scenery in the fishing minigame, and more detailed substrate textures, whereas Version 1 appears flatter and less detailed in comparison.",
+        "Version 1 demonstrates superior visual craft (C1) in the detailed crops, specifically displaying water caustics and surface texture that are absent or flatter in Version 2, while both versions offer equivalent feature depth in text."
+      ]
+    },
+    "Pega-Thinking": {
+      "picks_AB_BA": [
+        "tie",
+        "B"
+      ],
+      "vote": "tie",
+      "reasons": [
+        "The text descriptions are identical, and the visual differences are negligible: VERSION 2 adds water caustics and background foliage detail, but also introduces a hexagonal pattern on the tank floor that could read as visual noise. Neither version clearly exceeds the other across the rubric criteria.",
+        "The 2x detail crops reveal V1 has more refined visual craft: the tank floor stone shows proper contact shadows, top-light highlight, core shadow, and moss cap with a natural rounded form, while V2's stone is flatter and more angular. V1's water surface also renders caustics (light refraction patterns) whereas V2's surface is a flat gradient. These fine-detail differences give V1 a slight edge in C1 (visual craft) and C4 (polish), while C2 and C3 are essentially identical between versions."
+      ]
+    },
+    "GLM-5.3-Flash": {
+      "picks_AB_BA": [
+        "B",
+        "B"
+      ],
+      "vote": "B",
+      "reasons": [
+        "The feature packets are word-for-word identical and most screens match, but Version 2's 2x crops show finer scene craft — water-surface caustics, a textured substrate with pebbles and grass tufts, and clouds/tree lines in the fishing scene — giving it a slight edge on visual craft and polish. Version 1's only advantages (a marginally more cohesive koi cluster and a fight-state fishing screenshot) are too small to offset that.",
+        "The written packets are identical, but the side-by-side 2x crops show VERSION 1 with consistently finer scene craft — caustic surface ripple, textured gravel and rock facets, a tree-lined fishing shore, and well-distributed koi — while VERSION 2's crops are plainer and its koi clump together. VERSION 2's only advantage is a fishing-fight screenshot evidencing the reel/tension UI, which does not offset the visual-craft and polish gap on the weighted rubric."
+      ]
+    }
+  },
+  "votes": {
+    "A": 0,
+    "B": 2,
+    "tie": 1
+  },
+  "quorum": 3,
+  "b_wins": true,
+  "label": "council-judged (3 judges)"
+}
