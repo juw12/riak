@@ -34,6 +34,8 @@ const ICONS = {
   breath: '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/>',
   flip: '<path d="M12 3v18"/><path d="M8 7L3 12l5 5zM16 7l5 5-5 5z"/>',
   arrow: '<path d="M5 12h13M13 7l5 5-5 5"/>',
+  koi: '<path d="M4 12c2.5-3.6 6.5-5 10.5-4.2 2.4.5 4 2.1 4.5 4.2-.5 2.1-2.1 3.7-4.5 4.2C10.5 17 6.5 15.6 4 12z"/><path d="M4 12l-2-2.5M4 12l-2 2.5"/><circle cx="15.5" cy="11" r="0.8"/><path d="M9 10.5c1 .6 1 2.4 0 3"/>',
+  expand: '<path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/>',
   grid: '<rect x="4" y="4" width="7" height="7"/><rect x="13" y="4" width="7" height="7"/><rect x="4" y="13" width="7" height="7"/><rect x="13" y="13" width="7" height="7"/>',
 };
 

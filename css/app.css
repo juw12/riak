@@ -996,3 +996,41 @@ body.watch .plate { box-shadow: none; }
 .reading .gauge-mark { position: absolute; top: -3px; width: 3px; height: 12px; margin-left: -1.5px; border-radius: 2px; background: var(--ink, #1b2422); }
 .reading.high .gauge-mark, .reading.low .gauge-mark { background: var(--warn); }
 .reading { background: var(--card); border: 1px solid var(--rule); }
+
+/* v1.5 koi pond */
+.pond-layout { display: grid; gap: 14px; }
+.pond-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 8px 24px; }
+.pond-head h2 { margin: 0 0 4px; }
+.pond-head p { margin: 0; max-width: 62ch; }
+.pond-stat { font-size: 14px; }
+.pond-stage { position: relative; height: clamp(420px, 72vh, 820px); border-radius: var(--r-lg); overflow: hidden; box-shadow: var(--shadow-2); background: #2a5a55; isolation: isolate; }
+.pond-canvas { display: block; width: 100%; height: 100%; touch-action: none; cursor: pointer; outline: none; }
+.pond-canvas:focus-visible { box-shadow: inset 0 0 0 3px var(--accent); }
+.pond-hint { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); margin: 0; padding: 8px 16px; border-radius: 999px; background: rgba(14, 30, 28, 0.62); color: #f4f1ea; font-size: 14px; white-space: nowrap; max-width: calc(100% - 96px); overflow: hidden; text-overflow: ellipsis; pointer-events: none; transition: opacity 0.6s ease-out; }
+.pond-hint.gone { opacity: 0; }
+.pond-eye { position: absolute; top: 10px; right: 10px; width: 40px; height: 40px; border-radius: 50%; background: rgba(251, 248, 241, 0.82); color: #1d2a27; box-shadow: var(--shadow-1); }
+.pond-dock { position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; padding: 8px; max-width: calc(100% - 24px); border-radius: 24px; background: color-mix(in srgb, var(--card) 88%, transparent); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); box-shadow: var(--shadow-2); transition: opacity 0.4s ease-out; }
+.pond-dock .btn { min-height: 40px; white-space: nowrap; }
+.pond-dock .btn.quiet[aria-pressed]::before { display: none; }
+.pond-layers + .muted, .pond-layers + p { margin-top: 10px; }
+.pond-dock .btn[aria-pressed="true"], .pond-layers .btn[aria-pressed="true"] { background: var(--accent-soft); color: var(--accent); }
+.pond-layers { display: flex; flex-wrap: wrap; gap: 8px; }
+.sheet input[type="range"] { width: 100%; accent-color: var(--accent); }
+.focus-layout .loop-link { margin-top: 10px; }
+body.pond-calm .top, body.pond-calm .tabs, body.pond-calm .pond-head, body.pond-calm .skip { display: none !important; }
+body.pond-calm .pond-stage { position: fixed; inset: 0; height: 100vh; height: 100dvh; border-radius: 0; z-index: 60; box-shadow: none; }
+body.pond-calm .pond-dock, body.pond-calm .pond-hint { opacity: 0; pointer-events: none; }
+body.pond-calm .pond-eye { background: rgba(251, 248, 241, 0.5); }
+@media (max-width: 900px) {
+  .pond-stage { height: max(360px, calc(100svh - 300px)); border-radius: 20px; }
+  .pond-head h2 { font-size: 22px; }
+  .pond-head p.muted:not(.pond-stat) { font-size: 14px; }
+  .pond-dock { bottom: 10px; gap: 4px; padding: 6px; border-radius: 20px; }
+  .pond-dock .btn { min-height: 40px; padding: 0 10px; font-size: 13px; }
+  .pond-hint { font-size: 12px; top: 10px; }
+}
+@media (max-width: 520px) {
+  .pond-dock .btn span:not(.ic) { display: none; }
+  .pond-dock { flex-wrap: nowrap; }
+  .pond-dock .btn { width: 42px; min-width: 42px; padding: 0; justify-content: center; }
+}

@@ -35,7 +35,7 @@ export class FocusPanel {
     this.breathBtn = button(t("focus.startBreath"), { icon: "breath", kind: "quiet", onclick: () => this.toggleBreath() });
     const notes = el("aside", { class: "notes" }, [
       el("section", {}, [el("h2", { text: t("focus.title") }), el("p", { class: "muted", text: t("focus.lead") }), this.presetBox, this.timerEl, this.stateEl, this.controls]),
-      el("section", { class: "breath-section" }, [el("div", { class: "breath" }, [this.breathRing, el("div", {}, [el("h3", { text: t("focus.breathe") }), el("p", { class: "explain", text: t("focus.breatheLead") }), this.breathBtn])])]),
+      el("section", { class: "breath-section" }, [el("div", { class: "breath" }, [this.breathRing, el("div", {}, [el("h3", { text: t("focus.breathe") }), el("p", { class: "explain", text: t("focus.breatheLead") }), this.breathBtn])]), button(t("focus.toPond"), { icon: "koi", kind: "ghost loop-link", onclick: () => this.app.go("pond") })]),
       el("section", {}, [el("h3", { text: t("focus.week") }), this.weekEl, this.weekNote, this.totalEl]),
     ]);
     root.append(el("div", { class: "focus-layout" }, [left, notes]));

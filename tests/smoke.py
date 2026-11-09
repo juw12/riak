@@ -282,6 +282,14 @@ def run_flow(page, ctx, size, w, out, errors, checks, overflow, port):
             page.wait_for_timeout(1200)
             shot("focus-running")
             page.get_by_role("button", name="End early").click()
+            # koi pond
+            page.evaluate("riak.app.go('pond')")
+            page.wait_for_timeout(700)
+            checks[f"pond-koi-{w}"] = page.evaluate("riak.app.panels.pond.koi.length")
+            page.evaluate("riak.app.panels.pond.scatterFood()")
+            page.wait_for_timeout(5000)
+            checks[f"pond-eaten-{w}"] = page.evaluate("riak.app.panels.pond.eaten")
+            shot("pond")
             # settings
             page.click("#settingsBtn")
             shot("settings")

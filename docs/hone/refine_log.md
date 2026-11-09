@@ -54,3 +54,12 @@ v1.4 run (baseline v9 8.25):
 | 8 | care readings get a range gauge (safe band and marker) on bordered cards, fish bodies get scale rows and a lateral line (batched into one stroke after a frame-time regression in the first gate run) | G1-G4 pass (second run) | 8.25 vs 8.25 | tie 3 (two judges picked B in one order) | yes (non-regression) | plateau: three rounds at 8.25, stop and ship v1.4.0 |
 
 Plateau reached at 8.25 (C1 8, C2 8, C3 9, C4 8). Remaining judge asks, not done: richer fish art at default zoom, grouping the eight tank tools on phone, a calmer desktop side column, entry points for breeding and reef lab on the tank screen.
+
+## v1.5.0 - koi pond relax view (2026-11-09)
+
+- New Pond tab (js/pond.js, js/pondaudio.js): top-down koi pond, 9 koi varieties with spine-follow swimming,
+  lily pads and lotus, drifting leaves, lanterns, bamboo shishi-odoshi, caustics, day/dusk/night moods, rain, fireflies.
+- Interactions: tap ripple, hold to feed, drag to lead, tap a koi for its name, tap a leaf to spin it, keys Space/F/R/M/H/Esc.
+- Generative WebAudio soundscape (no audio files) with mixer, layer toggles, sleep timer and calm full-screen mode.
+- Gates r15: unit 26/26, smoke (with new pond step, 9 koi, 8 pellets eaten), audit, slop all pass. Council not re-run:
+  the frozen judge set does not include the pond, so a score would not measure this change.

@@ -42,6 +42,11 @@ modern browser.
 - **Journal** - fish dex with silhouettes until caught, best size, spots and hints; plants, coral strains and
   18 milestones.
 - **Focus** - a calm tank timer for 15 to 60 minutes with weekly totals and box breathing.
+- **Koi pond** - a top-down relax view: 9 koi varieties (kohaku, sanke, showa, ogon, asagi, tancho, chagoi,
+  yamabuki, kujaku) swim with bending bodies among lily pads, lotus and drifting leaves. Tap the water for a
+  ripple, hold to feed, drag to lead the koi, tap a koi to learn its name. Every sound is made live in the
+  browser (stream, bamboo shishi-odoshi, wind chimes, night crickets, rain, plops), with a mixer, day, dusk and
+  night moods that follow your clock, a sleep timer and a full-screen calm mode.
 - **Watch mode** - a full-screen tank with a clock that keeps the screen awake, for a desk or a spare tablet.
 - **Share** - a link that opens your tank read-only for a friend, and a photo export.
 - **Offline time** - when you come back, Riak plays the hours you were away (up to a cap) and tells you what
@@ -79,7 +84,7 @@ tank layout and fish you chose to share, inside the link itself.
 
 ## Design
 
-Design notes, colour tokens and contrast ratios are in `design.md`. Version 1.2 adds the depth pass: floating cards with soft warm shadows, pill controls, a floating nav, and a tank drawn as a glass box with perspective, depth haze and fish shadows. Version 1.3 gives every one of the 47 species its own drawn body and fins (barbels, sails, fan tails, scutes, glow lines), adds back-glass planting to the tank, and gives each of the 9 fishing spots its own scenery and a drawn rod; `dev/species.html` shows the full species sheet. Version 1.4 is a field-guide pass: greenhouse bays with glazing, a timber bench and cell trays, numbered plates and dotted ledgers on side cards with arrow links between loops, larger fish with scale rows and a lateral line, care readings drawn as range gauges, a dashed target week on the focus chart, and location hints on unfound journal species. Fonts (Fraunces, Source Sans 3) are
+Design notes, colour tokens and contrast ratios are in `design.md`. Version 1.2 adds the depth pass: floating cards with soft warm shadows, pill controls, a floating nav, and a tank drawn as a glass box with perspective, depth haze and fish shadows. Version 1.3 gives every one of the 47 species its own drawn body and fins (barbels, sails, fan tails, scutes, glow lines), adds back-glass planting to the tank, and gives each of the 9 fishing spots its own scenery and a drawn rod; `dev/species.html` shows the full species sheet. Version 1.4 is a field-guide pass: greenhouse bays with glazing, a timber bench and cell trays, numbered plates and dotted ledgers on side cards with arrow links between loops, larger fish with scale rows and a lateral line, care readings drawn as range gauges, a dashed target week on the focus chart, and location hints on unfound journal species. Version 1.5 adds the koi pond tab: a stone-rimmed pond with lanterns, a bamboo fountain, caustics, moonlight and fireflies at night, and a generative soundscape with no audio files. Fonts (Fraunces, Source Sans 3) are
 vendored under the SIL Open Font License.
 
 ## Licence

@@ -16,14 +16,16 @@ import { FishingPanel } from "./fishing.js";
 import { GardenPanel } from "./garden.js";
 import { JournalPanel } from "./journal.js";
 import { FocusPanel } from "./focus.js";
+import { PondPanel } from "./pond.js";
 
-const VERSION = "1.4.0";
+const VERSION = "1.5.0";
 const NAV = [
   { id: "tank", icon: "tank" },
   { id: "fishing", icon: "hook" },
   { id: "garden", icon: "leaf" },
   { id: "journal", icon: "book" },
   { id: "focus", icon: "timer" },
+  { id: "pond", icon: "koi" },
 ];
 
 const app = {
@@ -296,6 +298,7 @@ function buildPanels() {
     garden: new GardenPanel(P("garden"), app),
     journal: new JournalPanel(P("journal"), app),
     focus: new FocusPanel(P("focus"), app),
+    pond: new PondPanel(P("pond"), app),
   };
   for (const p of Object.values(app.panels)) p.init();
 }
