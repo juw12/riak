@@ -1001,23 +1001,30 @@ export class PondPanel {
       ctx.stroke();
     }
     // pectoral and pelvic fins: rounded paddles that row as the koi swims
-    for (const [idx, size] of [[2, 0.16], [6, 0.08]]) {
+    for (const [idx, size] of [[2, 0.21], [6, 0.11]]) {
       const p = pts[idx];
       for (const side of [-1, 1]) {
-        const ang = p.a + Math.PI + side * (1.05 + flap * 0.28 * (idx === 2 ? 1 : 0.5));
+        // fins sweep out and back from the flank (they used to fold under the body),
+        // rowing forward and back as the koi swims
+        const ang = p.a + Math.PI - side * (1.0 + flap * 0.3 * (idx === 2 ? 1 : 0.5));
         ctx.save();
-        ctx.translate(p.x + p.nx * side * p.w * 0.85, p.y + p.ny * side * p.w * 0.85);
+        ctx.translate(p.x + p.nx * side * p.w * 0.7, p.y + p.ny * side * p.w * 0.7);
         ctx.rotate(ang);
         ctx.beginPath();
-        ctx.moveTo(0, 0);
-        ctx.quadraticCurveTo(L * size * 0.5, -L * size * 0.34 * side, L * size, -L * size * 0.08 * side);
-        ctx.quadraticCurveTo(L * size * 0.7, L * size * 0.2 * side, 0, 0);
+        ctx.moveTo(0, -L * size * 0.1 * side);
+        ctx.quadraticCurveTo(L * size * 0.55, -L * size * 0.4 * side, L * size, -L * size * 0.1 * side);
+        ctx.quadraticCurveTo(L * size * 0.85, L * size * 0.22 * side, 0, L * size * 0.12 * side);
+        ctx.closePath();
         ctx.fill();
+        const rayStroke = ctx.strokeStyle;
+        ctx.strokeStyle = "rgba(15,30,30,0.22)";
+        ctx.stroke();
         ctx.beginPath();
-        for (let r = 0.3; r < 1; r += 0.3) {
+        for (let r = 0.2; r < 1; r += 0.2) {
           ctx.moveTo(0, 0);
-          ctx.lineTo(L * size * (0.8 + 0.15 * r), -L * size * (0.28 - 0.3 * r) * side);
+          ctx.lineTo(L * size * (0.75 + 0.2 * r), -L * size * (0.3 - 0.42 * r) * side);
         }
+        ctx.strokeStyle = rayStroke;
         ctx.stroke();
         ctx.restore();
       }
