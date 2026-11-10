@@ -1,0 +1,137 @@
+{
+  "mode": "score",
+  "models": [
+    "Pega-Vision",
+    "Pega-Thinking",
+    "GLM-5.3-Flash"
+  ],
+  "weights": {
+    "C1": 0.3,
+    "C2": 0.3,
+    "C3": 0.25,
+    "C4": 0.15
+  },
+  "judges": {
+    "Pega-Vision": {
+      "scores": {
+        "C1": 9.0,
+        "C2": 9.0,
+        "C3": 10.0,
+        "C4": 9.0
+      },
+      "evidence": {
+        "C1": "Distinctive calm field-guide look achieved with warm cream pages, dotted ledger lines, and numbered plates; tank art is the hero with depth haze and custom fish forms.",
+        "C2": "First-time player guidance is excellent via tooltips ('Tap a fish to meet it') and step-by-step guides ('How the greenhouse works'); controls are clearly grouped.",
+        "C3": "Exceeds typical cozy apps with interlocking loops: nitrogen cycle care, fishing minigame with tournaments, reef genetics, greenhouse variegated sports, and focus timer integration.",
+        "C4": "Pixel-tidy consistency across screens; pill buttons and floating cards maintain style; feedback messages like 'Line is slack' are unobtrusive and well-placed."
+      },
+      "fixes": [
+        "Integrate the 'Breathe with the bubbles' animation directly into the tank's visual layer rather than a separate UI circle to deepen immersion in Focus mode.",
+        "Ensure the 'Flick up to cast' fishing gesture has a large enough hit area or a button fallback on 390px screens to prevent conflict with browser navigation gestures.",
+        "Reduce vertical scrolling on the mobile Garden screen by grouping 'Active Tasks' (Trays + Orders) separately from 'Management' (Inventory + Seed Shelf) to improve usability."
+      ],
+      "total": 9.25,
+      "seconds": 26.4
+    },
+    "Pega-Thinking": {
+      "scores": {
+        "C1": 8.0,
+        "C2": 8.0,
+        "C3": 9.0,
+        "C4": 7.0
+      },
+      "evidence": {
+        "C1": "Distinctive field-guide aesthetic with 'No. 01' plates, dotted ledger lines, numbered plates I and II; tank drawn as glass box with perspective side panes, depth haze, fish floor shadows; koi pond top-down with lily pads, lanterns, bamboo fountain. Fish illustrations themselves are somewhat simple vector shapes despite the distinctive framing.",
+        "C2": "'Here to do' card on Tank screen clearly lists next steps (Go fishing, Greenhouse and reef lab, Field journal); tools row clearly labelled (Feed, Care, Scape, Residents, Shop, Photo, Watch, Share); fishing controls grouped with Flick/Classic toggle and three action tiles; phone views show nothing cramped. Some screens like the desktop fishing scene have a lot of competing panels.",
+        "C3": "Many interlocking loops: nitrogen cycle care, 9 fishing spots with weather/day-night and tournaments, breeding with inherited colours, aquascaping (16 plants, 8 hardscape, 3 substrates, 3 tank sizes, reef room), greenhouse with variegated sports, reef lab with named strains, journal with 47 species and 18 milestones, focus timer with breathing, separate koi pond. Clearly exceeds typical cozy aquarium apps.",
+        "C4": "Consistent warm cream background, floating white cards with layered shadows, pill buttons, floating nav across all screens; consistent typography and spacing. Not pixel-perfect: fish art is simpler than the framing suggests, koi pond control row is small and could be more discoverable, some desktop screens feel busy with multiple side panels."
+      },
+      "fixes": [
+        "Refine fish illustrations - the vector fish look somewhat simple and flat compared to the otherwise polished tank framing (perspective, shadows, depth haze); more detailed body forms and fin articulation would elevate the hero art.",
+        "Reduce visual density on desktop screens like Fishing and Tank where the side panels compete with the main scene; consider collapsible sections or clearer hierarchy so the tank/pond remains the visual focus.",
+        "Improve discoverability and polish of the koi pond controls - the single quiet row at the bottom is easy to miss and the sound/feed/mood/rain toggles could use clearer labels or icons that match the field-guide aesthetic used elsewhere."
+      ],
+      "total": 8.1,
+      "seconds": 15.0
+    },
+    "GLM-5.3-Flash": {
+      "scores": {
+        "C1": 8.0,
+        "C2": 9.0,
+        "C3": 10.0,
+        "C4": 8.0
+      },
+      "evidence": {
+        "C1": "Coherent warm-cream/deep-green system, 'glass box (perspective side panes, receding gravel floor, depth haze)' tank and field-guide plates ('numbered plates I and II', 'No. 1' entries) are distinctive; but fishing backdrop hills are flat and the care sheet is standard tiles — short of 'every screen feels designed'.",
+        "C2": "Next step always signposted: 'Tap a fish to meet it, or tap the glass.', gesture tiles 'Flick up to cast / Flick again to strike / Circle to reel', 'How the greenhouse works' steps 1-4, arrow links ending each loop; nothing cramped at 390. Unseen screens (Shop, Residents, Scape, Reef lab) not evidenced for the 10 bar.",
+        "C3": "Every loop in the 10 anchor is present and interlocked: 'nitrogen cycle simulation', 'play line tension against fish strength with drag settings', 'Breeding with inherited colours', 'reef lab (frag, cross, named strains)', greenhouse 'variegated sports', orders, journal '18 milestones', focus timer — clearly beyond a typical cozy aquarium app.",
+        "C4": "Consistent pills, cards and states ('empty bays show a seed packet and trowel', dashed week targets, silhouette 'Not found yet' cards); rough edges remain: journal shows 'Paraheirodon innesi' (should be Paracheirodon innesi) and pond 'lanterns' render as plain grey squares."
+      },
+      "fixes": [
+        "Make the tank the unmistakable hero on the desktop tank screen (enlarge the stage relative to the side column, as Focus already does) and add depth to the flat fishing backdrop hills; also fix small art rough edges like the pond lanterns reading as grey squares.",
+        "Audit all 47 species' Latin names and copy: the journal's neon tetra reads 'Paraheirodon innesi' — should be Paracheirodon innesi; a field-guide identity cannot carry misspelled binomials.",
+        "Extend the next-step system (hint pills, labelled gesture tiles, arrow links) to the screens not evidenced in the packet — Shop, Residents, Scape, Reef lab, breeding — so 'first-time player knows the next step on every screen' is demonstrably met."
+      ],
+      "total": 8.8,
+      "seconds": 106.7
+    }
+  },
+  "quorum": 3,
+  "council_score": 8.8,
+  "criterion_median": {
+    "C1": 8.0,
+    "C2": 9.0,
+    "C3": 10.0,
+    "C4": 8.0
+  },
+  "criterion_spread": {
+    "C1": 1.0,
+    "C2": 1.0,
+    "C3": 1.0,
+    "C4": 2.0
+  },
+  "split_criteria": [],
+  "judge_total_range": [
+    8.1,
+    9.25
+  ],
+  "fixes": [
+    {
+      "judge": "Pega-Vision",
+      "fix": "Integrate the 'Breathe with the bubbles' animation directly into the tank's visual layer rather than a separate UI circle to deepen immersion in Focus mode."
+    },
+    {
+      "judge": "Pega-Vision",
+      "fix": "Ensure the 'Flick up to cast' fishing gesture has a large enough hit area or a button fallback on 390px screens to prevent conflict with browser navigation gestures."
+    },
+    {
+      "judge": "Pega-Vision",
+      "fix": "Reduce vertical scrolling on the mobile Garden screen by grouping 'Active Tasks' (Trays + Orders) separately from 'Management' (Inventory + Seed Shelf) to improve usability."
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Refine fish illustrations - the vector fish look somewhat simple and flat compared to the otherwise polished tank framing (perspective, shadows, depth haze); more detailed body forms and fin articulation would elevate the hero art."
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Reduce visual density on desktop screens like Fishing and Tank where the side panels compete with the main scene; consider collapsible sections or clearer hierarchy so the tank/pond remains the visual focus."
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Improve discoverability and polish of the koi pond controls - the single quiet row at the bottom is easy to miss and the sound/feed/mood/rain toggles could use clearer labels or icons that match the field-guide aesthetic used elsewhere."
+    },
+    {
+      "judge": "GLM-5.3-Flash",
+      "fix": "Make the tank the unmistakable hero on the desktop tank screen (enlarge the stage relative to the side column, as Focus already does) and add depth to the flat fishing backdrop hills; also fix small art rough edges like the pond lanterns reading as grey squares."
+    },
+    {
+      "judge": "GLM-5.3-Flash",
+      "fix": "Audit all 47 species' Latin names and copy: the journal's neon tetra reads 'Paraheirodon innesi' — should be Paracheirodon innesi; a field-guide identity cannot carry misspelled binomials."
+    },
+    {
+      "judge": "GLM-5.3-Flash",
+      "fix": "Extend the next-step system (hint pills, labelled gesture tiles, arrow links) to the screens not evidenced in the packet — Shop, Residents, Scape, Reef lab, breeding — so 'first-time player knows the next step on every screen' is demonstrably met."
+    }
+  ],
+  "label": "council-judged (3 judges)"
+}

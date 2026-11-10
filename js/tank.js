@@ -147,7 +147,7 @@ export class TankView {
     const sp = fishById[fish.sp];
     const base = clamp(this.H * 0.18, 38, 130) * sp.len;
     // small species are lifted more than large ones, so a school of tetras still reads at a glance
-    const sizeFactor = clamp(0.88 + Math.log2(Math.max(1, fish.size) / 4) * 0.24, 0.78, 1.6);
+    const sizeFactor = clamp(0.95 + Math.log2(Math.max(1, fish.size) / 4) * 0.24, 0.84, 1.6);
     return base * sizeFactor * (fish.adult === false ? 0.55 : 1);
   }
 

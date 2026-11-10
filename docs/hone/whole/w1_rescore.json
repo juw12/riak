@@ -1,0 +1,109 @@
+{
+  "mode": "score",
+  "models": [
+    "Pega-Vision",
+    "Pega-Thinking",
+    "GLM-5.3-Flash"
+  ],
+  "weights": {
+    "C1": 0.3,
+    "C2": 0.3,
+    "C3": 0.25,
+    "C4": 0.15
+  },
+  "judges": {
+    "Pega-Vision": {
+      "scores": {
+        "C1": 10.0,
+        "C2": 9.0,
+        "C3": 10.0,
+        "C4": 9.0
+      },
+      "evidence": {
+        "C1": "Distinctive calm field-guide look with 'numbered plates' in Journal and 'field guide' side cards; tank art is the hero with 'depth haze' and 'fish floor shadows'.",
+        "C2": "Main actions findable with big pill buttons, but the mobile fishing tooltip ('Flick up on the water...') obscures the interaction area, and 'Phone motion' label appears on desktop.",
+        "C3": "Several interlocking loops exceeding typical apps: 'breeding with inherited colours', 'reef lab (frag, cross)', 'greenhouse trays', and 'focus timer' alongside fishing tournaments.",
+        "C4": "Pixel-tidy with 'layered shadows' and consistent rounded corners, though the Garden 'Inventory' sidebar is text-heavy compared to the visual richness of the tank and journal."
+      },
+      "fixes": [
+        "Reduce opacity or size of the 'Flick up on the water' tooltip on mobile fishing screen, as it currently obscures the water surface where the gesture must be performed.",
+        "Update the 'Phone motion' toggle label on the desktop Fishing screen to 'Motion' or 'Mouse/Touch' to avoid confusion for non-mobile users.",
+        "Add small thumbnail icons to the 'Inventory' list in the Garden sidebar to match the visual 'field guide' style of the rest of the app and reduce text density."
+      ],
+      "total": 9.55,
+      "seconds": 46.6
+    },
+    "Pega-Thinking": {
+      "scores": {
+        "C1": 8.0,
+        "C2": 8.0,
+        "C3": 9.0,
+        "C4": 8.0
+      },
+      "evidence": {
+        "C1": "Coherent warm cream palette, glass-box tank with perspective panes and depth haze, field-guide journal with 'No. 01' plates and silhouettes, illustrated greenhouse bays. Fish art is the hero but vector fish read as somewhat simple/generic shapes rather than truly distinctive species portraits.",
+        "C2": "Clear tools row (Feed/Care/Scape/Residents/Shop/Photo/Watch/Share), 'Have to do' checklist with explicit next steps, bottom nav consistent across phone views, Care sheet tiles are scannable. Phone layouts are not cramped; main actions are findable on every screen.",
+        "C3": "Many interlocking loops: nitrogen-cycle care, 9-spot fishing with flick+reel+tension, breeding with inherited colours, 16-plant/8-hardscape scaping, greenhouse cuttings/variegated sports, reef lab frag/cross/named strains, journal dex with 47 species and 18 milestones, focus timer, koi pond with generative sound mix. Clearly exceeds a typical cozy aquarium app.",
+        "C4": "Consistent pill buttons, floating white cards with layered shadows, unified typography and spacing across Tank/Care/Fishing/Garden/Journal/Focus/Pond. Nav states are consistent; feedback like 'Tap a fish to meet it' is unobtrusive. Minor rough edges: desktop side column feels slightly disconnected from the tank card, and some tile densities vary between screens."
+      },
+      "fixes": [
+        "Make the 47 fish species more visually distinctive in the tank and journal silhouettes — current vector fish read as similar generic shapes, weakening the 'field-guide' promise.",
+        "Tighten the desktop tank layout so the side column (water status, checklist, orders) feels integrated with the tank card rather than a separate stack — improve visual hierarchy and shared spacing rhythm.",
+        "Add more depth/texture to the koi pond water surface (subtle ripples, light caustics, varied lily pad shading) so the top-down view doesn't read as flat compared to the richly layered tank scene."
+      ],
+      "total": 8.25,
+      "seconds": 15.8
+    },
+    "GLM-5.3-Flash": {
+      "error": "URLError: [WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection fa",
+      "raw": "",
+      "seconds": 366.6
+    }
+  },
+  "quorum": 2,
+  "council_score": 8.9,
+  "criterion_median": {
+    "C1": 9.0,
+    "C2": 8.5,
+    "C3": 9.5,
+    "C4": 8.5
+  },
+  "criterion_spread": {
+    "C1": 2.0,
+    "C2": 1.0,
+    "C3": 1.0,
+    "C4": 1.0
+  },
+  "split_criteria": [],
+  "judge_total_range": [
+    8.25,
+    9.55
+  ],
+  "fixes": [
+    {
+      "judge": "Pega-Vision",
+      "fix": "Reduce opacity or size of the 'Flick up on the water' tooltip on mobile fishing screen, as it currently obscures the water surface where the gesture must be performed."
+    },
+    {
+      "judge": "Pega-Vision",
+      "fix": "Update the 'Phone motion' toggle label on the desktop Fishing screen to 'Motion' or 'Mouse/Touch' to avoid confusion for non-mobile users."
+    },
+    {
+      "judge": "Pega-Vision",
+      "fix": "Add small thumbnail icons to the 'Inventory' list in the Garden sidebar to match the visual 'field guide' style of the rest of the app and reduce text density."
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Make the 47 fish species more visually distinctive in the tank and journal silhouettes — current vector fish read as similar generic shapes, weakening the 'field-guide' promise."
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Tighten the desktop tank layout so the side column (water status, checklist, orders) feels integrated with the tank card rather than a separate stack — improve visual hierarchy and shared spacing rhythm."
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Add more depth/texture to the koi pond water surface (subtle ripples, light caustics, varied lily pad shading) so the top-down view doesn't read as flat compared to the richly layered tank scene."
+    }
+  ],
+  "label": "council-judged (2 judges)"
+}

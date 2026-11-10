@@ -420,6 +420,23 @@ export class TankPanel {
     const s = core.S();
     const tank = core.activeTank();
     body.innerHTML = "";
+    const quality = waterQuality(tank.w);
+    const dirty = quality < 70;
+    const changeWater = () => {
+      core.doWaterChange();
+      if (tank.lastReadings) tank.lastReadings = { ...tank.w };
+      this.fillCare(body);
+    };
+    // when the water is poor, the fix leads the sheet instead of sitting under the readings
+    if (dirty) {
+      body.append(el("div", { class: "care-alert", role: "status" }, [
+        el("div", {}, [
+          el("b", { text: t("care.alertTitle") }),
+          el("p", { text: t("care.alertBody", { q: quality }) }),
+        ]),
+        button(t("care.change"), { icon: "wave", kind: "primary", onclick: changeWater }),
+      ]));
+    }
     body.append(el("h3", { text: t("care.test") }));
     const out = el("div");
     const showReadings = () => {
@@ -442,11 +459,7 @@ export class TankPanel {
 
     body.append(el("h3", { text: t("care.actions") }));
     body.append(el("div", { class: "row" }, [
-      button(t("care.change"), { icon: "wave", kind: "quiet", onclick: () => {
-        core.doWaterChange();
-        if (tank.lastReadings) tank.lastReadings = { ...tank.w };
-        this.fillCare(body);
-      } }),
+      button(t("care.change"), { icon: "wave", kind: "quiet", onclick: changeWater }),
       button(t("care.wipe"), { icon: "brush", kind: "quiet", onclick: () => {
         this.careSheet?.close();
         this.setMode("clean");
@@ -821,16 +834,26 @@ export function readingsList(w, s, tank) {
     ["glass", Math.round(w.glass * 100) + "%"],
     ["bact", Math.round(w.bact * 100) + "%"],
   ];
-  // compact tiles: label, value and a status dot, so a test reads at a glance
-  const grid = el("div", { class: "readings", role: "list" });
-  for (const [key, val] of rows) {
+  // two groups (chemistry 2x2, tank condition in one row of three) so no tile is left orphaned;
+  // readings out of range move to the front of their group and carry a warning tint
+  const tile = ([key, val]) => {
     const lv = levelOf(key, w[key], s, tank);
-    grid.append(el("div", { class: "reading " + lv, role: "listitem" }, [
+    return el("div", { class: "reading " + lv + (lv === "ok" ? "" : " warn"), role: "listitem" }, [
       el("span", { class: "reading-label", text: t("care." + key) }),
       el("b", { class: "reading-value num", text: val }),
       gauge(key, w[key], tank),
       el("span", { class: "lvl " + lv, text: t("level." + lv) }),
-    ].filter(Boolean)));
-  }
-  return grid;
+    ].filter(Boolean));
+  };
+  const warnFirst = (list) => [...list].sort((a, b) => (levelOf(b[0], w[b[0]], s, tank) !== "ok") - (levelOf(a[0], w[a[0]], s, tank) !== "ok"));
+  const chem = rows.filter(([k]) => ["amm", "no2", "no3", "temp"].includes(k));
+  const cond = rows.filter(([k]) => ["algae", "glass", "bact"].includes(k));
+  const warnings = rows.filter(([k]) => levelOf(k, w[k], s, tank) !== "ok").length;
+  return el("div", { class: "readings-wrap" }, [
+    warnings ? el("p", { class: "readings-warn", text: t(warnings > 1 ? "care.warnCountMany" : "care.warnCount", { n: warnings }) }) : null,
+    el("h4", { class: "readings-head", text: t("care.chem") }),
+    el("div", { class: "readings readings-chem", role: "list" }, warnFirst(chem).map(tile)),
+    el("h4", { class: "readings-head", text: t("care.cond") }),
+    el("div", { class: "readings readings-cond", role: "list" }, warnFirst(cond).map(tile)),
+  ].filter(Boolean));
 }

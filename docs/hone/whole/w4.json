@@ -1,0 +1,137 @@
+{
+  "mode": "score",
+  "models": [
+    "Pega-Vision",
+    "Pega-Thinking",
+    "GLM-5.3-Flash"
+  ],
+  "weights": {
+    "C1": 0.3,
+    "C2": 0.3,
+    "C3": 0.25,
+    "C4": 0.15
+  },
+  "judges": {
+    "Pega-Vision": {
+      "scores": {
+        "C1": 9.0,
+        "C2": 9.0,
+        "C3": 10.0,
+        "C4": 9.0
+      },
+      "evidence": {
+        "C1": "Text promises 'field-guide look' with 'dotted ledger lines', but Journal screenshot shows standard white card grid.",
+        "C2": "Fishing controls rely on dense text instructions ('Flick up to cast... Flick again to strike') rather than intuitive icons.",
+        "C3": "Features 'interlocking loops (care, fishing minigame, breeding, scaping, greenhouse, reef genetics, orders, journal, focus)' exceeding typical apps.",
+        "C4": "Mobile tank screen pushes critical 'Water quality' and 'Care' summary below the fold, requiring scroll to see status."
+      },
+      "fixes": [
+        "Replace the dense text block explaining fishing gestures ('Flick up to cast...') with clear iconography or a brief interactive tutorial overlay.",
+        "Elevate the 'Water quality' status and 'Care' checklist on the mobile tank screen so tank health is visible without scrolling.",
+        "Apply stronger 'field guide' styling (e.g., sketchbook textures, ledger typography) to the Journal UI to match the described visual theme."
+      ],
+      "total": 9.25,
+      "seconds": 73.4
+    },
+    "Pega-Thinking": {
+      "scores": {
+        "C1": 8.0,
+        "C2": 8.0,
+        "C3": 9.0,
+        "C4": 8.0
+      },
+      "evidence": {
+        "C1": "Coherent cream/green palette, field-guide aesthetic with 'No. 01' plates and dotted ledger lines, tank drawn with perspective side panes and depth haze. Tank art is hero but fish read small and plants look somewhat similar across screens.",
+        "C2": "'How to do' cards on Tank screen give clear next steps; tools row labelled (Feed, Care, Scape, Residents, Shop, Photo, Watch, Share); fishing controls explained inline ('Flick up to cast', 'Flick again to strike'). Advanced loops (breeding, reef lab, tournaments) are not surfaced on the main tank screen.",
+        "C3": "Multiple interlocking loops: nitrogen-cycle care, flick-cast fishing with line-tension minigame and tournaments, breeding with inherited colours, aquascaping (16 plants, 8 hardscape, 3 substrates, 3 tank sizes), greenhouse with variegated sports, reef lab with named strains, journal dex, focus timer, koi pond. 47 species, 5 rarities, 12 quests, 18 milestones.",
+        "C4": "Consistent pill buttons, floating cards with layered shadows, numbered step lists ('How the greenhouse works'), bottom nav on phone / top nav on desktop. Spacing and components align across screens; minor density on Garden desktop where trays, inventory, orders and seed shelf compete."
+      },
+      "fixes": [
+        "Surface advanced loops (breeding, reef lab, tournaments, second tank) on the Tank screen so first-time players discover them without reading the journal",
+        "Push the tank illustration further into the field-guide hero treatment - larger, more varied fish silhouettes and more distinct plant forms so the tank reads as the visual centerpiece rather than a small window",
+        "Tighten the Garden desktop layout - the trays, inventory, orders and seed shelf feel crowded; consider collapsing inventory/orders into a tab or moving the seed shelf below the fold"
+      ],
+      "total": 8.25,
+      "seconds": 17.7
+    },
+    "GLM-5.3-Flash": {
+      "scores": {
+        "C1": 8.0,
+        "C2": 9.0,
+        "C3": 9.0,
+        "C4": 8.0
+      },
+      "evidence": {
+        "C1": "Coherent cream/green palette with serif display type and genuine field-guide styling ('numbered plates I and II, dotted ledger lines', italic 'Paracheirodon innesi'); tank has light rays, depth haze and contact shadows. Not a 10: the Care sheet is generic labelled tiles, and on desktop the tank sits small in empty cream space rather than being the hero.",
+        "C2": "Next-step guidance everywhere: 'Tap a fish to meet it, or tap the glass.', 'Flick up on the water, or press Cast', 'Line is slack. Reel', a 4-step 'How the greenhouse works', and arrow links like 'Fish orders are on the Tank screen →'. Phone layouts airy, controls grouped and labelled. Gap: koi pond gestures (hold to feed, drag to lead) have no on-screen hint, unlike every other screen.",
+        "C3": "Matches the 10 anchor's loop list: nitrogen-cycle care, flick/reel/drag fishing ('9 spots... tournaments... 47 species, 5 rarities'), breeding, scaping, greenhouse trays, 'reef lab (frag, cross, named strains)', orders, journal, focus. Interlocks are explicit (trim → cuttings → trays → orders). Held at 9 because breeding, scaping and reef lab appear only in the summary, not in any screenshot.",
+        "C4": "Consistent pills, cards, chips and 'fine' status dots across all screens; feedback is unobtrusive ('Unlocked: Mountain stream...' toast, dark hint pills). Rough edges: journal card No. 03 carries an unexplained green top-border state, and the desktop footer text is near-illegibly small."
+      },
+      "fixes": [
+        "Give the koi pond a first-visit gesture hint pill ('Tap for ripples, hold to feed, drag to lead') matching the onboarding pattern used on the tank and fishing screens.",
+        "Show or surface the breeding, scaping and reef-lab loops with screenshots and the same next-step arrow links, so the claimed depth is verifiable rather than summary-only.",
+        "Push visual craft on the weakest screens: make the tank a larger hero on desktop and give the Care sheet the illustrated field-guide treatment used in the greenhouse and journal."
+      ],
+      "total": 8.55,
+      "seconds": 272.9
+    }
+  },
+  "quorum": 3,
+  "council_score": 8.55,
+  "criterion_median": {
+    "C1": 8.0,
+    "C2": 9.0,
+    "C3": 9.0,
+    "C4": 8.0
+  },
+  "criterion_spread": {
+    "C1": 1.0,
+    "C2": 1.0,
+    "C3": 1.0,
+    "C4": 1.0
+  },
+  "split_criteria": [],
+  "judge_total_range": [
+    8.25,
+    9.25
+  ],
+  "fixes": [
+    {
+      "judge": "Pega-Vision",
+      "fix": "Replace the dense text block explaining fishing gestures ('Flick up to cast...') with clear iconography or a brief interactive tutorial overlay."
+    },
+    {
+      "judge": "Pega-Vision",
+      "fix": "Elevate the 'Water quality' status and 'Care' checklist on the mobile tank screen so tank health is visible without scrolling."
+    },
+    {
+      "judge": "Pega-Vision",
+      "fix": "Apply stronger 'field guide' styling (e.g., sketchbook textures, ledger typography) to the Journal UI to match the described visual theme."
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Surface advanced loops (breeding, reef lab, tournaments, second tank) on the Tank screen so first-time players discover them without reading the journal"
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Push the tank illustration further into the field-guide hero treatment - larger, more varied fish silhouettes and more distinct plant forms so the tank reads as the visual centerpiece rather than a small window"
+    },
+    {
+      "judge": "Pega-Thinking",
+      "fix": "Tighten the Garden desktop layout - the trays, inventory, orders and seed shelf feel crowded; consider collapsing inventory/orders into a tab or moving the seed shelf below the fold"
+    },
+    {
+      "judge": "GLM-5.3-Flash",
+      "fix": "Give the koi pond a first-visit gesture hint pill ('Tap for ripples, hold to feed, drag to lead') matching the onboarding pattern used on the tank and fishing screens."
+    },
+    {
+      "judge": "GLM-5.3-Flash",
+      "fix": "Show or surface the breeding, scaping and reef-lab loops with screenshots and the same next-step arrow links, so the claimed depth is verifiable rather than summary-only."
+    },
+    {
+      "judge": "GLM-5.3-Flash",
+      "fix": "Push visual craft on the weakest screens: make the tank a larger hero on desktop and give the Care sheet the illustrated field-guide treatment used in the greenhouse and journal."
+    }
+  ],
+  "label": "council-judged (3 judges)"
+}

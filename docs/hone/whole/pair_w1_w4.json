@@ -1,0 +1,51 @@
+{
+  "mode": "pair",
+  "models": [
+    "Pega-Vision",
+    "Pega-Thinking",
+    "GLM-5.3-Flash"
+  ],
+  "judges": {
+    "Pega-Vision": {
+      "picks_AB_BA": [
+        "B",
+        "A"
+      ],
+      "vote": "tie",
+      "reasons": [
+        "Version 2 demonstrates greater depth of play and clarity in the screenshots, specifically revealing the fishing fight mechanics (tension meter, drag settings) and additional care actions (wipe glass, trim plants) that are absent in Version 1's interface, alongside better instructional labeling for controls.",
+        "Version 2 demonstrates superior polish and clarity, featuring consistent action buttons across all empty Garden trays, a more readable mobile layout for the Care screen stats, and helpful trajectory feedback in the Fishing minigame."
+      ]
+    },
+    "Pega-Thinking": {
+      "picks_AB_BA": [
+        "B",
+        "tie"
+      ],
+      "vote": "tie",
+      "reasons": [
+        "VERSION 2 shows slightly better clarity and polish: the Care sheet is organized into labeled sections (WATER CHEMISTRY / TANK CONDITION) with visible maintenance actions, the fishing scene uses numbered step controls (1/2/3) that guide first-time players, and the phone fishing screen demonstrates actual fight gameplay (line tension, fish strength, drag, 'Hold to reel') rather than just the cast prompt. Visual craft and depth of play are otherwise comparable between the two versions.",
+        "Both versions present the same app with identical text descriptions, design language, and visual quality. The screenshots show the same warm cream/green palette, field-guide aesthetic, and tank art; differences are merely different captured states (e.g., fishing cast vs. fight, garden with different tray states, water chemistry in grid vs. stack layout) rather than quality differences."
+      ]
+    },
+    "GLM-5.3-Flash": {
+      "picks_AB_BA": [
+        "B",
+        "B"
+      ],
+      "vote": "B",
+      "reasons": [
+        "The feature summaries are identical, but Version 2's screenshots show clearer, better-organized UI: the care sheet groups readings under WATER CHEMISTRY/TANK CONDITION labels with maintenance actions visible, the fishing controls use illustrated step tiles instead of a text paragraph, and the phone fishing shot demonstrates the full fight UI (tension, strength, drag, reel). Version 1 only edges ahead on a slightly better-composed koi crop, which is negligible against Version 2's C2/C4 gains.",
+        "The feature packets are identical, so the screenshots decide it: Version 1's care sheet keeps the primary 'Test the water' action, a correct Water chemistry vs Tank condition grouping, and fully visible maintenance actions, and it evidences the fishing fight UI (tension, drag, reel), while Version 2 drops the test button, mislabels tank-condition tiles as water chemistry, pushes maintenance below the fold, and never shows the fight screen. Version 2's nicer koi crop and cast state are negligible offsets."
+      ]
+    }
+  },
+  "votes": {
+    "A": 0,
+    "B": 1,
+    "tie": 2
+  },
+  "quorum": 3,
+  "b_wins": false,
+  "label": "council-judged (3 judges)"
+}

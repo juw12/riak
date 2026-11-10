@@ -33,6 +33,8 @@ CLOCK_PIN = """(() => {
 })();"""
 
 
+SYSTEM_CHROME = r"C:\Program Files\Google\Chrome\Application\chrome.exe"
+
 def serve():
     handler = lambda *a, **k: http.server.SimpleHTTPRequestHandler(*a, directory=str(ROOT), **k)
     http.server.SimpleHTTPRequestHandler.log_message = lambda *a, **k: None
@@ -59,7 +61,11 @@ def main():
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
     with sync_playwright() as p:
-        browser = p.chromium.launch(args=["--no-proxy-server"])
+        try:
+            browser = p.chromium.launch(args=["--no-proxy-server"])
+        except Exception:
+            # Playwright's bundled shell can lag behind a library upgrade; fall back to installed Chrome
+            browser = p.chromium.launch(executable_path=SYSTEM_CHROME, args=["--no-proxy-server"])
         for size in args.sizes.split(","):
             w, h = (int(v) for v in size.split("x"))
             ctx = browser.new_context(viewport={"width": w, "height": h}, color_scheme="dark" if args.dark else "light")
