@@ -624,6 +624,23 @@ export function weatherLabel(spotId, ts) {
   return t("weather." + w);
 }
 
+
+// Small phone diagrams for the control strip: a gesture reads faster than a sentence.
+const GESTURES = {
+  flick: '<path d="M20 29V12"/><path d="M14.5 17.5 20 12l5.5 5.5"/><circle cx="20" cy="31" r="2.2" class="fill"/>',
+  tap: '<circle cx="20" cy="21" r="2.6" class="fill"/><circle cx="20" cy="21" r="6.5"/>',
+  crank: '<path d="M26.5 17.5a7 7 0 1 1-3-3.6"/><path d="M23.6 10.4l.2 3.8-3.7.6"/>',
+  hold: '<circle cx="20" cy="21" r="3.2" class="fill"/><path d="M20 12.5a8.5 8.5 0 1 1-8.2 6.3"/>',
+};
+function gestureIcon(kind) {
+  const span = el("span", { class: "gest-ic", "aria-hidden": "true" });
+  span.innerHTML = '<svg viewBox="0 0 40 40" width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="4" width="22" height="32" rx="4" class="phone"/>' + GESTURES[kind] + "</svg>";
+  return span;
+}
+function gestureStrip(steps) {
+  return el("ol", { class: "gest-strip" }, steps.map(([kind, key]) => el("li", {}, [gestureIcon(kind), el("span", { text: t(key) })])));
+}
+
 export class FishingPanel {
   constructor(root, app) {
     this.root = root;
@@ -981,7 +998,10 @@ export class FishingPanel {
         core.changed();
         this.resetCast();
       }, t("flick.controls")),
-      el("p", { class: "explain", text: t(a.controls === "classic" ? "flick.classicHint" : "flick.flickHint") }),
+      a.controls === "classic"
+        ? gestureStrip([["hold", "flick.gClassicCast"], ["tap", "flick.gClassicHook"], ["hold", "flick.gClassicKeep"]])
+        : gestureStrip([["flick", "flick.gCast"], ["flick", "flick.gStrike"], ["crank", "flick.gReel"]]),
+      a.controls === "classic" ? null : el("p", { class: "explain", text: t("flick.lureNote") }),
       el("div", { class: "row toggles" }, [
         button(t("flick.motion"), { kind: "quiet small", pressed: !!a.motion, onclick: () => this.enableMotion(!a.motion) }),
         button(t("flick.haptics"), { kind: "quiet small", pressed: a.haptics !== false, onclick: () => {

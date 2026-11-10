@@ -84,3 +84,6 @@ Run queue (final)
 - [x] Council score + blind pair vs best for w3 and w4, w1 re-scored for drift
 - [x] Ship decision: nothing ships to main (keep rule not met); candidates pushed to `hone/whole-w4`
 - [x] Sync: README unchanged (no release), landing shot unchanged, portfolio card check, Obsidian, lessons, precedent log
+
+## Ship override (2026-11-10)
+Juwen asked to make all of the run 3 work live. v1.5.3 shipped the koi fin direction fix alone; v1.5.4 ships the rest of hone/whole-w4 (tank fish detail, koi tail/scales/markings, stone lanterns, Garden tiles and single primary action, grouped Care sheet with water-change alert, fishing gesture strip). Gates v154: unit 26/26, smoke (bite, fight, catch), audit, slop all pass. This is a user decision, not a hone keep: council scores stay as logged (w4 8.55 vs w1 8.90 re-scored).

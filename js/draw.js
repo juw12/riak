@@ -503,23 +503,29 @@ function frontFins(ctx, f, L, H, sway, finColor, colors, phase) {
 
 // overlapping scale arcs and a lateral line, faint enough to read as texture
 function bodyScales(ctx, L, H) {
-  const r = Math.max(3, L * 0.06);
+  const r = Math.max(2.4, L * 0.06);
   ctx.save();
   ctx.lineWidth = Math.max(0.5, L * 0.006);
-  ctx.strokeStyle = "rgba(255,255,255,0.16)";
-  // one path for every arc keeps this to a single stroke per fish
-  ctx.beginPath();
-  let row = 0;
-  for (let y = -H * 0.5; y <= H * 0.5; y += r * 0.9) {
-    const off = row % 2 ? r * 0.5 : 0;
-    for (let x = -L * 0.4 + off; x <= L * 0.26; x += r) {
-      const a = r * 0.62;
-      ctx.moveTo(x + a * Math.cos(-1.2), y + a * Math.sin(-1.2));
-      ctx.arc(x, y, a, -1.2, 1.2);
+  // two passes of the same scale rows: a shadowed rim, then a lit edge just above it,
+  // which reads as overlapping plates instead of a flat line pattern
+  const scaleRows = (dx, dy) => {
+    ctx.beginPath();
+    let row = 0;
+    for (let y = -H * 0.5; y <= H * 0.5; y += r * 0.9) {
+      const off = row % 2 ? r * 0.5 : 0;
+      for (let x = -L * 0.4 + off; x <= L * 0.26; x += r) {
+        const a = r * 0.62;
+        ctx.moveTo(x + dx + a * Math.cos(-1.2), y + dy + a * Math.sin(-1.2));
+        ctx.arc(x + dx, y + dy, a, -1.2, 1.2);
+      }
+      row++;
     }
-    row++;
-  }
-  ctx.stroke();
+    ctx.stroke();
+  };
+  ctx.strokeStyle = "rgba(10,28,28,0.16)";
+  scaleRows(0, 0);
+  ctx.strokeStyle = "rgba(255,255,255,0.2)";
+  scaleRows(-ctx.lineWidth * 1.1, -ctx.lineWidth * 0.6);
   ctx.beginPath();
   ctx.moveTo(L * 0.26, -H * 0.12);
   ctx.quadraticCurveTo(0, -H * 0.2, -L * 0.42, -H * 0.02);
@@ -575,7 +581,26 @@ export function drawFish(ctx, fish, x, y, L, dir, phase, opts = {}) {
   tailPath(ctx, tailType, L, H, sway, f);
   ctx.fillStyle = finColor;
   ctx.fill();
-  if (detail && (f.fx.includes("rays") || L >= 40)) finRays(ctx, L, H, sway, tailType, f);
+  if (detail) {
+    // fins thin out toward the edge: the colour lifts and turns translucent at the tips
+    ctx.save();
+    tailPath(ctx, tailType, L, H, sway, f);
+    ctx.clip();
+    const tip = ctx.createLinearGradient(-L * 0.4, 0, -L * 0.9, 0);
+    tip.addColorStop(0, "rgba(10,28,28,0.14)");
+    tip.addColorStop(0.45, "rgba(255,255,255,0)");
+    tip.addColorStop(1, "rgba(255,255,255,0.3)");
+    ctx.fillStyle = tip;
+    ctx.fillRect(-L * 1.2, -H * 2, L, H * 4);
+    ctx.restore();
+  }
+  if (detail && (f.fx.includes("rays") || L >= 28)) finRays(ctx, L, H, sway, tailType, f);
+  if (detail && !f.fx.includes("finEdge")) {
+    tailPath(ctx, tailType, L, H, sway, f);
+    ctx.strokeStyle = "rgba(15,30,30,0.18)";
+    ctx.lineWidth = Math.max(0.5, L * 0.008);
+    ctx.stroke();
+  }
   if (detail && f.fx.includes("finEdge")) {
     tailPath(ctx, tailType, L, H, sway, f);
     ctx.strokeStyle = "rgba(20,24,24,0.7)";
@@ -585,6 +610,11 @@ export function drawFish(ctx, fish, x, y, L, dir, phase, opts = {}) {
   if (dorsalPath(ctx, dorsalType, L, H, sway, f)) {
     ctx.fillStyle = finColor;
     ctx.fill();
+    if (detail) {
+      ctx.strokeStyle = "rgba(15,30,30,0.18)";
+      ctx.lineWidth = Math.max(0.5, L * 0.008);
+      ctx.stroke();
+    }
   }
   // anal / pelvic fin
   if (!f.fx.includes("longAnal") && !f.fx.includes("angelFins") && !f.fx.includes("triFins") && !f.fx.includes("smallFins")) {
@@ -607,7 +637,7 @@ export function drawFish(ctx, fish, x, y, L, dir, phase, opts = {}) {
   } else {
     patternFill(ctx, sp.pattern, L, H, colors, hashString(fish.id || fish.sp));
     bodyMarks(ctx, f, L, H, colors, detail);
-    if (detail && L >= 40) bodyScales(ctx, L, H);
+    if (detail) bodyScales(ctx, L, H);
     // soft shading: darker back, lighter belly, a rounded highlight on the flank
     const sh = ctx.createLinearGradient(0, -H * 0.5, 0, H * 0.5);
     sh.addColorStop(0, "rgba(10,25,25,0.30)");
@@ -620,6 +650,24 @@ export function drawFish(ctx, fish, x, y, L, dir, phase, opts = {}) {
     hl.addColorStop(1, "rgba(255,255,255,0)");
     ctx.fillStyle = hl;
     ctx.fillRect(-L, -H * 2, L * 2, H * 4);
+    // roundness: the body edge falls into shade (same treatment as the pond koi)
+    if (detail) {
+      bodyPath(ctx, L, H, f);
+      ctx.strokeStyle = "rgba(10,25,25,0.16)";
+      ctx.lineWidth = H * 0.34;
+      ctx.stroke();
+      ctx.strokeStyle = "rgba(10,25,25,0.14)";
+      ctx.lineWidth = H * 0.12;
+      ctx.stroke();
+      // the back catches the light: a soft specular ridge along the upper flank
+      ctx.beginPath();
+      ctx.moveTo(L * 0.3, -H * 0.2);
+      ctx.quadraticCurveTo(0, -H * 0.34, -L * 0.3, -H * 0.1);
+      ctx.lineCap = "round";
+      ctx.strokeStyle = "rgba(255,255,255,0.26)";
+      ctx.lineWidth = Math.max(1, H * 0.09);
+      ctx.stroke();
+    }
     if (fish.golden) {
       const t = (performance.now() / 1400) % 1;
       const gx = L * (0.7 - t * 1.6);
@@ -652,12 +700,34 @@ export function drawFish(ctx, fish, x, y, L, dir, phase, opts = {}) {
     ctx.stroke();
   }
   frontFins(ctx, f, L, H, sway, finColor, colors, phase);
-  // pectoral fin
+  // pectoral fin: a small rayed fan behind the gill that rows on its own beat
   if (!f.fx.includes("fans") && !f.fx.includes("wings")) {
+    const row = opts.sleeping ? 0 : Math.sin(phase * 1.7 + 0.8);
+    const pl = L * 0.13;
+    ctx.save();
+    ctx.translate(L * 0.2, H * 0.1);
+    ctx.rotate(0.35 + row * 0.32);
     ctx.beginPath();
-    ctx.ellipse(L * 0.17, H * 0.1, L * 0.08, H * 0.08, 0.6 + sway, 0, TAU);
+    ctx.moveTo(0, -H * 0.04);
+    ctx.quadraticCurveTo(-pl * 0.5, -H * 0.14, -pl, -H * 0.06);
+    ctx.quadraticCurveTo(-pl * 1.08, H * 0.04, -pl * 0.86, H * 0.12);
+    ctx.quadraticCurveTo(-pl * 0.4, H * 0.12, 0, H * 0.04);
+    ctx.closePath();
     ctx.fillStyle = finColor;
     ctx.fill();
+    if (detail) {
+      ctx.strokeStyle = "rgba(15,30,30,0.22)";
+      ctx.lineWidth = Math.max(0.5, L * 0.007);
+      ctx.stroke();
+      ctx.beginPath();
+      for (const k of [-0.05, 0.02, 0.09]) {
+        ctx.moveTo(-pl * 0.08, 0);
+        ctx.lineTo(-pl * 0.92, H * k);
+      }
+      ctx.strokeStyle = "rgba(255,255,255,0.32)";
+      ctx.stroke();
+    }
+    ctx.restore();
   }
   if (!opts.flat) {
     // eye with iris and catchlight

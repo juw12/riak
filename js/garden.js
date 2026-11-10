@@ -338,7 +338,7 @@ export class GardenPanel {
       const actions = el("div", { class: "row" });
       const card = el("div", { class: "tray" }, [cv, title, bar, status, actions]);
       trays.append(card);
-      const ref = { tray, cv, title, status, bar, actions, state: null };
+      const ref = { tray, cv, title, status, bar, actions, card, state: null };
       this.trayRefs.push(ref);
     });
     const inv = el("div", { class: "inv-section" });
@@ -387,8 +387,12 @@ export class GardenPanel {
     }
     if (state === ref.state && !force) return;
     ref.state = state;
+    // only one call to action per row: a ready harvest wins, otherwise the first empty tray
+    const anyReady = this.trayRefs.some((r) => r.tray.crop && cropProgress(r.tray.crop, now) >= 1);
+    const nextEmpty = !anyReady && this.trayRefs.find((r) => !r.tray.crop) === ref;
+    ref.card.className = "tray tray-" + state + (nextEmpty ? " tray-next" : "");
     ref.actions.innerHTML = "";
-    if (state === "empty") ref.actions.append(button(t("garden.plant"), { icon: "plus", kind: "primary small", onclick: () => this.openChooser(ref.tray) }));
+    if (state === "empty") ref.actions.append(button(t("garden.plant"), { icon: "plus", kind: nextEmpty ? "primary small" : "quiet small", onclick: () => this.openChooser(ref.tray) }));
     if (state === "growing") ref.actions.append(button(t("garden.water"), { icon: "drop", kind: "quiet small", onclick: () => {
       core.waterTray(ref.tray);
       this.app.audio.bubble(1.1);
@@ -487,21 +491,36 @@ export class GardenPanel {
     box.classList.add("field-card");
     box.append(el("h3", { text: t("garden.inventory") }));
     const cut = Object.entries(s.inv.cuttings).filter(([, n]) => n > 0);
-    box.append(el("h4", { class: "plate-head" }, [el("span", { class: "plate-no", text: "I" }), el("span", { text: t("garden.cuttings") })]));
+    const hpCount = Object.values(s.inv.house).reduce((a, n) => a + Math.max(0, n), 0);
+    const cutCount = cut.reduce((a, [, n]) => a + n, 0);
+    // stock at a glance: two count tiles instead of a text ledger
+    const stockTile = (ic, n, label) => el("div", { class: "stock-tile" + (n ? "" : " is-empty") }, [
+      el("span", { class: "stock-ic", "aria-hidden": "true" }, [icon(ic, 20)]),
+      el("b", { class: "num", text: String(n) }),
+      el("span", { text: label }),
+    ]);
+    box.append(el("div", { class: "stock-tiles" }, [
+      stockTile("scissors", cutCount, t("garden.stockCuttings")),
+      stockTile("leaf", hpCount, t("garden.stockHouse")),
+    ]));
     if (!cut.length) {
-      box.append(el("p", { class: "muted", text: t("garden.noCuttingsShort") }));
       box.append(el("p", { class: "from-head", text: t("garden.from") }));
-      box.append(el("div", { class: "loop-links" }, [
-        this.loopLink(t("garden.fromTray"), () => this.root.querySelector(".trays")?.scrollIntoView({ behavior: "smooth", block: "center" })),
-        this.loopLink(t("garden.fromTrim"), () => this.app.go("tank")),
+      const source = (ic, label, onclick) => el("button", { type: "button", class: "source-tile", onclick }, [
+        el("span", { class: "stock-ic", "aria-hidden": "true" }, [icon(ic, 18)]),
+        el("span", { text: label }),
+        icon("arrow", 16),
+      ]);
+      box.append(el("div", { class: "source-tiles" }, [
+        source("leaf", t("garden.fromTray"), () => this.root.querySelector(".trays")?.scrollIntoView({ behavior: "smooth", block: "center" })),
+        source("scissors", t("garden.fromTrim"), () => this.app.go("tank")),
       ]));
     } else {
+      box.append(el("h4", { class: "plate-head" }, [el("span", { text: t("garden.cuttings") })]));
       box.append(el("ul", { class: "plain ledger" }, cut.map(([k, n]) => el("li", {}, [el("span", { text: plantName(k) }), el("i", { class: "leader", "aria-hidden": "true" }), el("b", { class: "num", text: "x" + n })]))));
       box.append(el("div", { class: "loop-links" }, [this.loopLink(t("garden.toScape"), () => this.app.go("tank"))]));
     }
-    box.append(el("h4", { class: "plate-head" }, [el("span", { class: "plate-no", text: "II" }), el("span", { text: t("garden.houseplants") })]));
     const hp = Object.entries(s.inv.house).filter(([, n]) => n > 0);
-    if (!hp.length) box.append(el("p", { class: "muted", text: t("garden.noHouse") }));
+    if (hp.length) box.append(el("h4", { class: "plate-head" }, [el("span", { text: t("garden.houseplants") })]));
     for (const [k, n] of hp) {
       const [id, v] = k.split(":");
       box.append(el("div", { class: "order" }, [

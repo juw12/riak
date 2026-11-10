@@ -410,7 +410,7 @@ export class PondPanel {
     }
     this.spout = this.edgePoint(-0.42, -6);
     this.shishi = this.edgePoint(0.22, -4);
-    this.lanterns = [this.edgePoint(-2.45, 34), this.edgePoint(0.85, 34)];
+    this.lanterns = [this.edgePoint(-2.45, 50), this.edgePoint(0.85, 50)];
     this.buildFloor();
     this.buildRim();
     this.buildCaustics();
@@ -611,19 +611,50 @@ export class PondPanel {
     // stone lanterns, seen from above
     for (const l of this.lanterns) {
       if (l.x < 18 || l.y < 18 || l.x > this.W - 18 || l.y > this.H - 18) continue;
-      g.fillStyle = "rgba(20,24,18,0.35)";
-      g.fillRect(l.x - 13, l.y - 9, 30, 30);
-      g.fillStyle = "#8f8b82";
-      g.beginPath();
-      g.roundRect(l.x - 16, l.y - 16, 32, 32, 6);
+      // a tōrō from above: warm light spilling from the firebox, an eight-sided stone roof
+      // with ridges running to the corners, and the round jewel finial at the top
+      const glow = g.createRadialGradient(l.x, l.y, 6, l.x, l.y, 34);
+      glow.addColorStop(0, "rgba(255,216,150,0.32)");
+      glow.addColorStop(1, "rgba(255,216,150,0)");
+      g.fillStyle = glow;
+      g.fillRect(l.x - 34, l.y - 34, 68, 68);
+      const roof = (r, dx = 0, dy = 0) => {
+        g.beginPath();
+        for (let k = 0; k < 8; k++) {
+          const a = (k / 8) * TAU + Math.PI / 8;
+          const px = l.x + dx + Math.cos(a) * r;
+          const py = l.y + dy + Math.sin(a) * r;
+          if (k === 0) g.moveTo(px, py);
+          else g.lineTo(px, py);
+        }
+        g.closePath();
+      };
+      g.fillStyle = "rgba(20,24,18,0.32)";
+      roof(18, 5, 7);
       g.fill();
-      g.fillStyle = "#a7a297";
-      g.beginPath();
-      g.roundRect(l.x - 10, l.y - 10, 20, 20, 4);
+      const stone = g.createLinearGradient(l.x - 16, l.y - 16, l.x + 16, l.y + 16);
+      stone.addColorStop(0, "#bdb7aa");
+      stone.addColorStop(1, "#7c776c");
+      g.fillStyle = stone;
+      roof(18);
       g.fill();
-      g.fillStyle = "#5e5a52";
+      g.strokeStyle = "rgba(40,40,32,0.4)";
+      g.lineWidth = 1;
+      g.stroke();
       g.beginPath();
-      g.arc(l.x, l.y, 3, 0, TAU);
+      for (let k = 0; k < 8; k++) {
+        const a = (k / 8) * TAU + Math.PI / 8;
+        g.moveTo(l.x + Math.cos(a) * 5, l.y + Math.sin(a) * 5);
+        g.lineTo(l.x + Math.cos(a) * 17, l.y + Math.sin(a) * 17);
+      }
+      g.strokeStyle = "rgba(60,58,48,0.35)";
+      g.stroke();
+      const jewel = g.createRadialGradient(l.x - 1.5, l.y - 1.5, 0.5, l.x, l.y, 5.5);
+      jewel.addColorStop(0, "#d6d0c2");
+      jewel.addColorStop(1, "#857f73");
+      g.fillStyle = jewel;
+      g.beginPath();
+      g.arc(l.x, l.y, 5.5, 0, TAU);
       g.fill();
     }
     // bamboo pipe feeding the pond (kakei)
@@ -796,7 +827,8 @@ export class PondPanel {
       const n = 3 + Math.floor(R() * 4);
       for (let i = 0; i < n; i++) {
         const color = i < 2 || v.spots.length === 1 ? v.spots[0] : v.spots[1 + Math.floor(R() * (v.spots.length - 1))];
-        out.push({ at: 0.3 + R() * 8.2, side: (R() - 0.5) * 1.1, r: 0.6 + R() * 0.8, color });
+        const lobes = [0, 1].map(() => ({ da: (R() - 0.5) * 1.3, ds: (R() - 0.5) * 0.9, k: 0.45 + R() * 0.35 }));
+        out.push({ at: 0.3 + R() * 8.2, side: (R() - 0.5) * 1.1, r: 0.6 + R() * 0.8, color, lobes });
       }
       if (k.variety === "sanke" || k.variety === "showa") {
         for (let i = 0; i < 4; i++) out.push({ at: 2 + R() * 7, side: (R() - 0.5) * 1.4, r: 0.25 + R() * 0.3, color: v.spots[1] });
@@ -977,35 +1009,37 @@ export class PondPanel {
     const tail = pts[n - 1];
     const ta = tail.a + Math.PI + Math.sin(k.phase - 1.8) * 0.35;
     const along = (ang, r) => ({ x: tail.x + Math.cos(ang) * L * r, y: tail.y + Math.sin(ang) * L * r });
+    const finAlpha = ctx.globalAlpha * 0.82;
+    ctx.globalAlpha = finAlpha;
     ctx.fillStyle = v.fin;
-    ctx.globalAlpha *= 0.62;
     ctx.lineWidth = Math.max(0.5, L * 0.004);
-    ctx.strokeStyle = "rgba(255,255,255,0.3)";
     for (const side of [-1, 1]) {
-      const tip = along(ta + side * 0.52, 0.37);
-      const c1 = along(ta + side * 0.2, 0.25);
-      const c2 = along(ta + side * 0.16, 0.22);
-      const inner = along(ta, 0.16);
+      const tip = along(ta + side * 0.6, 0.4);
+      const c1 = along(ta + side * 0.34, 0.3);
+      const c2 = along(ta + side * 0.2, 0.25);
+      const inner = along(ta, 0.17);
       ctx.beginPath();
       ctx.moveTo(tail.x, tail.y);
       ctx.quadraticCurveTo(c1.x, c1.y, tip.x, tip.y);
       ctx.quadraticCurveTo(c2.x, c2.y, inner.x, inner.y);
       ctx.closePath();
       ctx.fill();
+      ctx.strokeStyle = "rgba(15,30,30,0.2)";
+      ctx.stroke();
       ctx.beginPath();
-      for (let r = 0.25; r < 1; r += 0.25) {
-        const end = along(ta + side * 0.5 * r, 0.17 + 0.17 * r);
+      for (let r = 0.2; r < 1; r += 0.2) {
+        const end = along(ta + side * 0.56 * r, 0.18 + 0.2 * r);
         ctx.moveTo(tail.x, tail.y);
         ctx.lineTo(end.x, end.y);
       }
+      ctx.strokeStyle = "rgba(255,255,255,0.34)";
       ctx.stroke();
     }
     // pectoral and pelvic fins: rounded paddles that row as the koi swims
     for (const [idx, size] of [[2, 0.21], [6, 0.11]]) {
       const p = pts[idx];
       for (const side of [-1, 1]) {
-        // fins sweep out and back from the flank (they used to fold under the body),
-        // rowing forward and back as the koi swims
+        // fins sweep out and back from the flank, rowing forward and back as the koi swims
         const ang = p.a + Math.PI - side * (1.0 + flap * 0.3 * (idx === 2 ? 1 : 0.5));
         ctx.save();
         ctx.translate(p.x + p.nx * side * p.w * 0.7, p.y + p.ny * side * p.w * 0.7);
@@ -1016,7 +1050,6 @@ export class PondPanel {
         ctx.quadraticCurveTo(L * size * 0.85, L * size * 0.22 * side, 0, L * size * 0.12 * side);
         ctx.closePath();
         ctx.fill();
-        const rayStroke = ctx.strokeStyle;
         ctx.strokeStyle = "rgba(15,30,30,0.22)";
         ctx.stroke();
         ctx.beginPath();
@@ -1024,7 +1057,7 @@ export class PondPanel {
           ctx.moveTo(0, 0);
           ctx.lineTo(L * size * (0.75 + 0.2 * r), -L * size * (0.3 - 0.42 * r) * side);
         }
-        ctx.strokeStyle = rayStroke;
+        ctx.strokeStyle = "rgba(255,255,255,0.36)";
         ctx.stroke();
         ctx.restore();
       }
@@ -1050,6 +1083,15 @@ export class PondPanel {
       ctx.fillStyle = s.color;
       ctx.beginPath();
       ctx.arc(p.x + p.nx * s.side * p.w, p.y + p.ny * s.side * p.w, p.w * s.r * 1.1, 0, TAU);
+      // two offset lobes break the round blob into an organic koi marking
+      for (const lobe of s.lobes || []) {
+        const q = at(clamp(s.at + lobe.da, 0, n - 1.01));
+        const qx = q.x + q.nx * (s.side + lobe.ds) * q.w;
+        const qy = q.y + q.ny * (s.side + lobe.ds) * q.w;
+        const qr = q.w * s.r * lobe.k;
+        ctx.moveTo(qx + qr, qy);
+        ctx.arc(qx, qy, qr, 0, TAU);
+      }
       ctx.fill();
     }
     if (v.crown) {
@@ -1087,6 +1129,27 @@ export class PondPanel {
       }
       ctx.stroke();
       ctx.globalAlpha = 1 - k.depth * 0.32;
+    }
+    if (!v.net) {
+      ctx.lineWidth = Math.max(0.5, L * 0.005);
+      for (const [tone, shift] of [["rgba(10,28,28,0.13)", 0], ["rgba(255,255,255,0.16)", 1]]) {
+        ctx.strokeStyle = tone;
+        ctx.beginPath();
+        for (let f = 0.9; f < n - 2.5; f += 0.5) {
+          const p = at(f);
+          const sr = p.w * 0.2;
+          const back = shift * ctx.lineWidth * 1.2;
+          const row = Math.round(f * 2) % 2 ? 0.2 : 0;
+          for (let s = -0.7 + row; s <= 0.71; s += 0.4) {
+            const x = p.x + p.nx * s * p.w + Math.cos(p.a) * back;
+            const y = p.y + p.ny * s * p.w + Math.sin(p.a) * back;
+            const a0 = p.a - 1.2;
+            ctx.moveTo(x + Math.cos(a0) * sr, y + Math.sin(a0) * sr);
+            ctx.arc(x, y, sr, a0, p.a + 1.2);
+          }
+        }
+        ctx.stroke();
+      }
     }
     // roundness: flanks fall into shade, the spine catches the light
     for (const [width, alpha] of [[1.25, 0.14], [0.65, 0.17], [0.26, 0.2]]) {
@@ -1137,9 +1200,10 @@ export class PondPanel {
       ctx.fillRect(k.x - L * 1.5, k.y - L * 1.5, L * 3, L * 3);
     }
     ctx.restore();
+    // outline weight matches the tank fish (scaled to body length)
     this.bodyPath(ctx, pts);
-    ctx.strokeStyle = "rgba(8,20,22,0.28)";
-    ctx.lineWidth = 0.9;
+    ctx.strokeStyle = "rgba(15,30,30,0.3)";
+    ctx.lineWidth = Math.max(0.9, L * 0.01);
     ctx.stroke();
     // dorsal fin: a soft translucent ridge that sways with the body
     ctx.lineCap = "round";
