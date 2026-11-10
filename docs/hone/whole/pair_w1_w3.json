@@ -1,0 +1,51 @@
+{
+  "mode": "pair",
+  "models": [
+    "Pega-Vision",
+    "Pega-Thinking",
+    "GLM-5.3-Flash"
+  ],
+  "judges": {
+    "Pega-Vision": {
+      "picks_AB_BA": [
+        "B",
+        "A"
+      ],
+      "vote": "tie",
+      "reasons": [
+        "Version 2 demonstrates superior clarity (C2) and depth (C3) by showcasing the fishing fight interface and a more actionable Care screen with specific maintenance tasks (wipe glass, trim plants) that are absent in Version 1.",
+        "Version 2 demonstrates superior polish and clarity in the mobile 'Care' screen layout, using a full-width card for the 'Filter bacteria' slider to improve readability and touch targets, whereas Version 1 cramps it into a column. Version 2 also explicitly shows the fishing control toggle (Flick/Classic), enhancing usability."
+      ]
+    },
+    "Pega-Thinking": {
+      "picks_AB_BA": [
+        "B",
+        "tie"
+      ],
+      "vote": "tie",
+      "reasons": [
+        "VERSION 2 shows slightly better organization (care sheet has clear 'WATER CHEMISTRY' and 'TANK CONDITION' section headers), demonstrates more depth of play (fishing fight screen with line tension, fish strength, and drag controls vs. just the cast screen), and presents clearer next-step actions in the garden. The visual design and feature set are otherwise nearly identical, making the margin small but consistent across C1–C4.",
+        "Both versions share identical text descriptions and visually equivalent screenshots showing the same warm cream palette, glass-box tank art, field-guide aesthetic, and feature set. The only differences are minor state variations (e.g., fishing screen showing fight vs. pre-cast state, slightly different care tile layout) that do not meaningfully affect visual craft, clarity, depth, or polish scores."
+      ]
+    },
+    "GLM-5.3-Flash": {
+      "picks_AB_BA": [
+        "B",
+        "B"
+      ],
+      "vote": "B",
+      "reasons": [
+        "The written packets are identical, but Version 2's screenshots show tighter information design: the care sheet groups readings under WATER CHEMISTRY/TANK CONDITION labels, fishing controls use illustrated step cards, and it includes the promised fishing-fight UI (reel dial, tension/strength bars, drag selector) that Version 1 omits. Version 1's only edge is a marginally livelier tank in the captures, which is not enough to offset Version 2's clarity and polish gains.",
+        "The feature text is identical, so the decision rests on the screenshots: Version 1 shows a more tidily grouped care sheet (separate Water chemistry / Tank condition sections with no orphan tile) and includes the fishing-fight screen (reel, tension, drag) that evidences the deeper loop, whereas Version 2 lumps all readings into one grid with an awkward lone Filter bacteria tile and only shows the cast state. Version 2's cast-line visual is a small plus but not enough to offset this."
+      ]
+    }
+  },
+  "votes": {
+    "A": 0,
+    "B": 1,
+    "tie": 2
+  },
+  "quorum": 3,
+  "b_wins": false,
+  "label": "council-judged (3 judges)"
+}

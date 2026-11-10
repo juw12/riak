@@ -62,7 +62,11 @@ def browser_tests():
     errors = []
     try:
         with sync_playwright() as pw:
-            browser = pw.chromium.launch()
+            try:
+                browser = pw.chromium.launch()
+            except Exception:
+                # bundled shell can lag behind a Playwright upgrade; use the installed Chrome instead
+                browser = pw.chromium.launch(executable_path=r"C:\Program Files\Google\Chrome\Application\chrome.exe")
             page = browser.new_page()
             page.on("pageerror", lambda e: errors.append(str(e)))
             page.goto(f"http://127.0.0.1:{PORT}/tests/unit.html")

@@ -48,3 +48,39 @@ Result: best stays w0 = v1.5.1 at 8.80 (council-judged, 3 judges). w1 reached 9.
 
 Decision: w1 kept (9.25 >= 8.80 + 0.3 and blind pair won). Shipped as v1.5.2 = w1 code only (tank.js, fishing.js, pond.js); w2's CSS is not shipped. Fishing backdrop now cached per spot/size/2-min slot (smoke had missed timed bites from per-frame scenery cost). Gates v152c: unit, smoke (errors []), audit, slop pass.
 Final: council 9.25 (C1 9, C2 9, C3 10, C4 9). Not 10/10.
+| 2026-11-10 08:38 | council pair | B wins: False | votes A/B/tie 0/1/2 | council-judged (3 judges) |
+| 2026-11-10 08:39 | council score | 8.8 | split: - | Pega-Vision=9.25, Pega-Thinking=8.1, GLM-5.3-Flash=8.8 |
+
+
+## Run 3: "fix whats still standing between" (2026-11-10)
+Run queue
+- [x] Fix the w1 judge asks: tank fish detail, koi vs tank style, Garden hierarchy, Care sheet grouping and alert, fishing controls diagram
+- [x] Gates for the candidate (unit, smoke errors [], audit, slop)
+- [x] Council score + blind pair vs best (w1) with 2x zoom crops of the changed regions
+- [ ] Ship the result, verify Pages live
+- [ ] Sync: README, landing shot, portfolio card check, Obsidian, lessons, precedent log
+
+Assumed: this is a new loop from best = w1 (v1.5.2), so the stall counter restarts; same rubric v1 and 9-shot set.
+Assumed: Playwright 1.60 lost its bundled headless shell; tests fall back to the installed Chrome (same engine the audit tool uses).
+
+| round | change | gates | judge score | pairwise vs w1 | kept? | note |
+|---|---|---|---|---|---|---|
+| w3 | two-tone scales, rim shade, translucent tail tips, rayed pectoral fan that rows (tank fish); koi fins fixed to point outward, wider rayed tail, scale arcs on every koi, lobed markings, tank-weight outline; Garden stock tiles + source tiles, one primary tray action; Care readings grouped (2x2 chemistry, 3-up condition), warnings first, water-change alert on top below quality 70; fishing gesture strip | 4/4 (unit 26/26, smoke errors [], audit, slop) | 8.80 (C1 8, C2 9, C3 10, C4 8; judges 9.25 / 8.10 / 8.80) | A0 / B1 / tie 2 | no | stall 1; asks: fish still read simple (1 judge), pond lanterns read as grey squares, koi control row discoverability |
+| 2026-11-10 08:54 | council score | 8.55 | split: - | Pega-Vision=9.25, Pega-Thinking=8.25, GLM-5.3-Flash=8.55 |
+| 2026-11-10 09:10 | council pair | B wins: False | votes A/B/tie 0/1/2 | council-judged (3 judges) |
+| 2026-11-10 09:11 | council score | 8.9 | split: - | Pega-Vision=9.55, Pega-Thinking=8.25, GLM-5.3-Flash=x |
+
+| w4 | w3 + pond lanterns redrawn (octagonal stone roof, ridges, finial, warm glow, moved to the bank), specular ridge on tank fish, tank fish +8% size | 4/4 (unit, smoke errors [] on retry, audit, slop) | 8.55 (judges 9.25 / 8.25 / 8.55) | A0 / B1 / tie 2 | no | stall 2 -> plateau |
+
+Judge drift check: w1 re-scored in this session at 8.90 (2 judges answered; first run 9.25). Same-session baseline 8.90 vs w3 8.80 / w4 8.55, so no candidate clears best + 0.3 and none won its blind pair.
+Judges split on whether the regrouped Care sheet and the fight-state shot are real gains or just different captured states (Pega-Thinking said "different captured states rather than quality differences").
+
+Decision: stop, plateau (2 rounds without a kept gain). Best stays w1 = v1.5.2 (council 9.25 at its own run, 8.90 re-scored). The w3+w4 work (incl. the koi fin direction bug fix) is kept on branch `hone/whole-w4`, not shipped to main.
+Not 10/10.
+
+Run queue (final)
+- [x] Fix the w1 judge asks
+- [x] Gates for the candidates
+- [x] Council score + blind pair vs best for w3 and w4, w1 re-scored for drift
+- [x] Ship decision: nothing ships to main (keep rule not met); candidates pushed to `hone/whole-w4`
+- [x] Sync: README unchanged (no release), landing shot unchanged, portfolio card check, Obsidian, lessons, precedent log
