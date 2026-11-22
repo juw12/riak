@@ -10,6 +10,15 @@ Inspired by cozy aquarium games such as *Fin & Fern: Cozy Aquarium* (iOS). Riak 
 free, open-source web app: no account, no ads, no purchases, and it runs on any phone or computer with a
 modern browser.
 
+## Get it on your device
+
+- **Windows:** [`Riak-Windows-Setup.exe`](https://github.com/juw12/riak/releases/download/desktop/Riak-Windows-Setup.exe) (no admin needed; if Windows says it protected your PC, choose *More info → Run anyway*), or without installing [`Riak-Windows-Portable.zip`](https://github.com/juw12/riak/releases/download/desktop/Riak-Windows-Portable.zip).
+- **Mac:** [`Riak-macOS-AppleSilicon.dmg`](https://github.com/juw12/riak/releases/download/desktop/Riak-macOS-AppleSilicon.dmg) (M1 and newer) or [`Riak-macOS-Intel.dmg`](https://github.com/juw12/riak/releases/download/desktop/Riak-macOS-Intel.dmg). The first time, macOS blocks it because it is not notarized: **System Settings → Privacy & Security → Open Anyway**.
+- **Android:** [`Riak-android.apk`](https://github.com/juw12/riak/releases/download/android/Riak-android.apk): open the file on the phone and allow your browser to install apps once.
+- **iPhone:** open https://juw12.github.io/riak/ in Safari, tap Share, then **Add to Home Screen**.
+
+The Windows, Mac and Android apps are the web app in its own window ([`desktop/`](desktop/README.md), [`android/`](android/README.md)) and change with it. Each build is opened on GitHub's machines before it is published: on Windows and on a Mac the page loads, the app starts and can store data; on an Android emulator it installs, opens and stays up. They are not code-signed or notarised, and no real phone or PC has run them yet.
+
 ## What you can do
 
 - **Tank** - a living vector aquarium. Fish swim, school, sleep at night and wake for food. Tap a fish to
